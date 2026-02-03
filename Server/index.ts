@@ -1,0 +1,11 @@
+import app  from "./app.ts";
+
+const PORT = process.env.PORT||50000
+
+const start = async ()=>{
+
+    app.listen(PORT,()=>{
+        console.log(`Server running on http://localhost:${PORT}`)
+    })
+}
+start()
