@@ -1,6 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Power, Plus } from 'lucide-react';
 
 // Action Button Component
 function ActionButton({ label, color, onClick }: { label: string; color: "blue" | "green" | "red" | "gray"; onClick?: () => void }) {
