@@ -59,12 +59,15 @@ const orders: Order[] = [
 
 export default function OrdersPage() {
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
 
       {/* ================= HEADER ================= */}
-      <h1 className="text-2xl font-semibold text-slate-800 mb-6">
-        Order Management
-      </h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
+          Order Management
+        </h1>
+        <p className="text-slate-500">Track and manage all customer orders</p>
+      </div>
 
 
       {/* ================= FILTERS ================= */}
@@ -97,10 +100,34 @@ export default function OrdersPage() {
       {/* ================= STATS ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
 
-        <StatCard icon={ShoppingCart} label="Total Orders" value="5" />
-        <StatCard icon={Clock} label="Pending" value="0" />
-        <StatCard icon={CheckCircle} label="Completed" value="2" />
-        <StatCard icon={DollarSign} label="Revenue" value="$384.95" />
+        <EnhancedStatCard 
+          icon="📦" 
+          label="Total Orders" 
+          value="5" 
+          color="from-blue-500 to-cyan-500"
+          change="+12%"
+        />
+        <EnhancedStatCard 
+          icon="⏱️" 
+          label="Pending" 
+          value="0" 
+          color="from-amber-500 to-orange-500"
+          change="0"
+        />
+        <EnhancedStatCard 
+          icon="✅" 
+          label="Completed" 
+          value="2" 
+          color="from-green-500 to-emerald-500"
+          change="+5%"
+        />
+        <EnhancedStatCard 
+          icon="💰" 
+          label="Revenue" 
+          value="$384.95" 
+          color="from-purple-500 to-indigo-500"
+          change="+18%"
+        />
 
       </div>
 
@@ -191,9 +218,9 @@ export default function OrdersPage() {
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
 
-                      <ActionBtn icon={Eye} label="View" />
-                      <ActionBtn icon={Pencil} label="Edit" />
-                      <ActionBtn icon={FileText} label="Invoice" />
+                      <ActionButton icon={Eye} label="View" color="blue" />
+                      <ActionButton icon={Pencil} label="Edit" color="green" />
+                      <ActionButton icon={FileText} label="Invoice" color="purple" />
 
                     </div>
                   </td>
@@ -210,57 +237,79 @@ export default function OrdersPage() {
 
 /* ================= COMPONENTS ================= */
 
-function StatCard({
-  icon: Icon,
+function EnhancedStatCard({
+  icon,
   label,
   value,
+  color,
+  change
 }: {
-  icon: any;
+  icon: string;
   label: string;
   value: string;
+  color: string;
+  change: string;
 }) {
   return (
-    <div className="bg-white border rounded-2xl p-5 shadow-sm flex items-center gap-4">
-      <div className="p-3 bg-indigo-50 rounded-xl">
-        <Icon className="w-5 h-5 text-indigo-600" />
+    <div className="bg-white/70 backdrop-blur-sm border border-white/50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-indigo-200 group">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="text-slate-500 text-sm font-medium">{label}</p>
+          <p className="text-3xl font-bold text-slate-800 mt-1">{value}</p>
+          <div className="flex items-center gap-1 mt-2">
+            <span className="text-green-600 text-sm font-semibold">{change}</span>
+            <span className="text-slate-400 text-xs">this week</span>
+          </div>
+        </div>
+        <div className={`text-2xl p-3 rounded-xl bg-gradient-to-r ${color} shadow-md group-hover:scale-110 transition-transform`}>
+          {icon}
+        </div>
       </div>
-      <div>
-        <p className="text-xs text-slate-500">{label}</p>
-        <p className="text-xl font-bold">{value}</p>
+      <div className="mt-4 w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className={`h-full bg-gradient-to-r ${color} rounded-full w-3/4 animate-pulse`}></div>
       </div>
     </div>
   );
-}
+};
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    Delivered: "bg-emerald-100 text-emerald-700",
-    Shipped: "bg-blue-100 text-blue-700",
-    Processing: "bg-amber-100 text-amber-700",
+    Delivered: "bg-emerald-100 text-emerald-700 shadow-sm",
+    Shipped: "bg-blue-100 text-blue-700 shadow-sm",
+    Processing: "bg-amber-100 text-amber-700 shadow-sm",
   };
 
   return (
     <span
-      className={`px-2 py-1 text-xs rounded-lg font-medium ${styles[status]}`}
+      className={`px-3 py-1.5 text-xs rounded-full font-semibold ${styles[status]}`}
     >
       {status}
     </span>
   );
 }
 
-function ActionBtn({
+function ActionButton({
   icon: Icon,
   label,
+  color
 }: {
   icon: any;
   label: string;
+  color: "blue" | "green" | "red" | "purple" | "gray";
 }) {
+  const colorClasses = {
+    blue: "bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200",
+    green: "bg-green-50 hover:bg-green-100 text-green-600 border-green-200",
+    red: "bg-red-50 hover:bg-red-100 text-red-600 border-red-200",
+    purple: "bg-purple-50 hover:bg-purple-100 text-purple-600 border-purple-200",
+    gray: "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
+  };
+  
   return (
     <button
-      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs
-                 hover:bg-slate-100 transition"
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all hover:scale-105 ${colorClasses[color]}`}
     >
-      <Icon className="w-4 h-4" />
+      <Icon className="w-3.5 h-3.5" />
       {label}
     </button>
   );
