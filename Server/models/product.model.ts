@@ -1,0 +1,48 @@
+import mongoose, { Schema, Model } from "mongoose";
+import { Product } from "../types/adminside.type";
+
+const ProductSchema: Schema<Product> = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 100,
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 5,
+    },
+    brand: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    imageUrl: {
+      type: String,
+      default: "",
+    },
+  },
+  { timestamps: true }
+);
+
+const ProductModel: Model<Product> =
+  mongoose.models.Product || mongoose.model<Product>("Product", ProductSchema);
+
+export default ProductModel;

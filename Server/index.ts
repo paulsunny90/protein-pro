@@ -1,7 +1,8 @@
 import app  from "./app.ts";
 import connectDB from "./config/db.config.ts"
 
-const PORT = process.env.PORT||50000
+const PORT = process.env.PORT || 5000
+
 
 const start = async ()=>{
     await  connectDB();
@@ -9,4 +10,4 @@ const start = async ()=>{
         console.log(`Server running on http://localhost:${PORT}`)
     })
 }
-start()
+start();
