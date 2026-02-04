@@ -1,4 +1,7 @@
+  
 
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const ProductDashboard = () => {
   const stats = [
@@ -25,9 +28,9 @@ const ProductDashboard = () => {
           </h1>
           <p className="text-slate-500 mt-1">Manage your product inventory and catalog</p>
         </div>
-        <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+        <Link to="/AddProduct" className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
           + New Product
-        </button>
+        </Link>
       </div>
 
       {/* Filters & Search */}
@@ -127,14 +130,7 @@ const ProductDashboard = () => {
                   </td>
                   <td className="p-4 text-slate-600">{item.reviews}</td>
                   <td className="p-4">
-                    <div className="flex flex-wrap gap-2">
-                      <ActionButton label="Edit" color="blue" />
-                      <ActionButton label="Delete" color="red" />
-                      <ActionButton 
-                        label={item.status === 'Active' ? 'Deactivate' : 'Activate'} 
-                        color={item.status === 'Active' ? 'red' : 'green'}
-                      />
-                    </div>
+                    <ProductActionButtons productId={item.sku} status={item.status} />
                   </td>
                 </tr>
               ))}
@@ -182,7 +178,7 @@ function StatCard({ label, value, icon, color, change }: {
 }
 
 // Action Button Component
-function ActionButton({ label, color }: { label: string; color: "blue" | "green" | "red" | "gray" }) {
+function ActionButton({ label, color, onClick }: { label: string; color: "blue" | "green" | "red" | "gray"; onClick?: () => void }) {
   const colorClasses = {
     blue: "bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200",
     green: "bg-green-50 hover:bg-green-100 text-green-600 border-green-200",
@@ -191,9 +187,45 @@ function ActionButton({ label, color }: { label: string; color: "blue" | "green"
   };
   
   return (
-    <button className={`px-3 py-1.5 border rounded-lg text-sm font-medium transition-all hover:scale-105 ${colorClasses[color]}`}>
+    <button 
+      className={`px-3 py-1.5 border rounded-lg text-sm font-medium transition-all hover:scale-105 ${colorClasses[color]}`}
+      onClick={onClick}
+    >
       {label}
     </button>
+  );
+}
+
+// Product Action Buttons Component
+function ProductActionButtons({ productId, status }: { productId: string; status: string }) {
+  const navigate = useNavigate();
+  
+  const handleEdit = () => {
+    navigate(`/EditProduct/${productId}`);
+  };
+  
+  const handleDelete = () => {
+    if (confirm('Are you sure you want to delete this product?')) {
+      console.log(`Deleting product ${productId}`);
+      // In a real app, you would call your API to delete the product
+    }
+  };
+  
+  const handleToggleStatus = () => {
+    console.log(`${status === 'Active' ? 'Deactivating' : 'Activating'} product ${productId}`);
+    // In a real app, you would call your API to toggle the status
+  };
+  
+  return (
+    <div className="flex flex-wrap gap-2">
+      <ActionButton label="Edit" color="blue" onClick={handleEdit} />
+      <ActionButton label="Delete" color="red" onClick={handleDelete} />
+      <ActionButton 
+        label={status === 'Active' ? 'Deactivate' : 'Activate'} 
+        color={status === 'Active' ? 'red' : 'green'}
+        onClick={handleToggleStatus}
+      />
+    </div>
   );
 }
 

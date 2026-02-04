@@ -1,4 +1,58 @@
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Pencil, Trash2, Power, Plus } from 'lucide-react';
 
+// Action Button Component
+function ActionButton({ label, color, onClick }: { label: string; color: "blue" | "green" | "red" | "gray"; onClick?: () => void }) {
+  const colorClasses = {
+    blue: "bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200",
+    green: "bg-green-50 hover:bg-green-100 text-green-600 border-green-200",
+    red: "bg-red-50 hover:bg-red-100 text-red-600 border-red-200",
+    gray: "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
+  };
+  
+  return (
+    <button 
+      className={`px-3 py-1.5 border rounded-lg text-sm font-medium transition-all hover:scale-105 ${colorClasses[color]}`}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}
+
+// Subscription Action Buttons Component
+function SubscriptionActionButtons({ planName, status }: { planName: string; status: string }) {
+  const navigate = useNavigate();
+  
+  const handleEdit = () => {
+    navigate(`/EditSubscription/${planName}`);
+  };
+  
+  const handleDelete = () => {
+    if (confirm('Are you sure you want to delete this subscription plan?')) {
+      console.log(`Deleting plan ${planName}`);
+      // In a real app, call your API to delete the plan
+    }
+  };
+  
+  const handleToggleStatus = () => {
+    console.log(`${status === 'Active' ? 'Deactivating' : 'Activating'} plan ${planName}`);
+    // In a real app, call your API to toggle the status
+  };
+  
+  return (
+    <div className="flex gap-2 flex-wrap">
+      <ActionButton label="Edit" color="blue" onClick={handleEdit} />
+      <ActionButton label="Delete" color="red" onClick={handleDelete} />
+      <ActionButton 
+        label={status === 'Active' ? 'Deactivate' : 'Activate'} 
+        color={status === 'Active' ? 'red' : 'green'}
+        onClick={handleToggleStatus}
+      />
+    </div>
+  );
+}
 
 const AdminSubscriptionPage = () => {
   const subscriptions = [
@@ -87,12 +141,7 @@ const AdminSubscriptionPage = () => {
                   </td>
                   <td className="p-4">
                     <div className="flex gap-2 flex-wrap">
-                      <ActionButton label="Edit" color="blue" />
-                      <ActionButton label="Delete" color="red" />
-                      <ActionButton 
-                        label={plan.status === 'Active' ? 'Deactivate' : 'Activate'} 
-                        color={plan.status === 'Active' ? 'red' : 'green'}
-                      />
+                      <SubscriptionActionButtons planName={plan.name} status={plan.status} />
                     </div>
                   </td>
                 </tr>
@@ -109,21 +158,5 @@ const AdminSubscriptionPage = () => {
     </div>
   );
 };
-
-// Action Button Component
-function ActionButton({ label, color }: { label: string; color: "blue" | "green" | "red" | "gray" }) {
-  const colorClasses = {
-    blue: "bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200",
-    green: "bg-green-50 hover:bg-green-100 text-green-600 border-green-200",
-    red: "bg-red-50 hover:bg-red-100 text-red-600 border-red-200",
-    gray: "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
-  };
-  
-  return (
-    <button className={`px-3 py-1.5 border rounded-lg text-sm font-medium transition-all hover:scale-105 ${colorClasses[color]}`}>
-      {label}
-    </button>
-  );
-}
 
 export default AdminSubscriptionPage;

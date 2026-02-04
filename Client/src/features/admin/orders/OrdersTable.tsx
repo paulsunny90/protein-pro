@@ -9,6 +9,7 @@ import {
   CheckCircle,
   DollarSign,
 } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 type Order = {
   id: string;
@@ -216,13 +217,7 @@ export default function OrdersPage() {
 
                   {/* ACTIONS */}
                   <td className="px-6 py-4">
-                    <div className="flex gap-2">
-
-                      <ActionButton icon={Eye} label="View" color="blue" />
-                      <ActionButton icon={Pencil} label="Edit" color="green" />
-                      <ActionButton icon={FileText} label="Invoice" color="purple" />
-
-                    </div>
+                    <OrderActionButtons orderId={order.id} />
                   </td>
                 </tr>
               ))}
@@ -291,11 +286,13 @@ function StatusBadge({ status }: { status: string }) {
 function ActionButton({
   icon: Icon,
   label,
-  color
+  color,
+  onClick
 }: {
   icon: any;
   label: string;
   color: "blue" | "green" | "red" | "purple" | "gray";
+  onClick?: () => void;
 }) {
   const colorClasses = {
     blue: "bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200",
@@ -306,11 +303,39 @@ function ActionButton({
   };
   
   return (
-    <button
+    <button 
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all hover:scale-105 ${colorClasses[color]}`}
+      onClick={onClick}
     >
       <Icon className="w-3.5 h-3.5" />
       {label}
     </button>
+  );
+}
+
+// Order Action Buttons Component
+function OrderActionButtons({ orderId }: { orderId: string }) {
+  const navigate = useNavigate();
+  
+  const handleView = () => {
+    console.log(`Viewing order ${orderId}`);
+    // In a real app, navigate to view order page
+  };
+  
+  const handleEdit = () => {
+    navigate(`/EditOrder/${orderId}`);
+  };
+  
+  const handleInvoice = () => {
+    console.log(`Generating invoice for order ${orderId}`);
+    // In a real app, navigate to generate invoice page
+  };
+  
+  return (
+    <div className="flex gap-2">
+      <ActionButton icon={Eye} label="View" color="blue" onClick={handleView} />
+      <ActionButton icon={Pencil} label="Edit" color="green" onClick={handleEdit} />
+      <ActionButton icon={FileText} label="Invoice" color="purple" onClick={handleInvoice} />
+    </div>
   );
 }
