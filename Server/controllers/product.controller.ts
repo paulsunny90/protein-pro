@@ -108,20 +108,25 @@ export const deleteProductController = async (req: Request<{ id: string }>, res:
     try {
         const { id } = req.params;
         const deletedProduct = await deleteProduct(id);
+        
+        if (!deletedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+        
         return res.status(200).json({
             success: true,
-            message: "Product delete  successfully",
+            message: "Product deleted successfully",
             data: deletedProduct
-
-        })
+        });
     } catch (error: any) {
-        return res.status(200).json({
-            success: true,
-            message: "Product delete  successfully",
+        console.error("Delete Product Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to delete product",
             error: error.message
-
-        })
-
+        });
     }
-
 }
