@@ -18,13 +18,13 @@ export interface Product {
   _id?: string;
   name: string;
   description: string;
+  brand: string;
+  category: string;
   price: number;
-  category?: string;
-  stock?: number;
-  sku?: string;
-  status?: string;
-  images?: string[];
-  tags?: string[];
+  imageUrl?: string;
+  isActive: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 interface ProductState {
@@ -54,7 +54,7 @@ export const fetchProducts = createAsyncThunk(
   "product/fetchAll",
   async () => {
     const res = await api.get("/");
-    return res.data;
+    return res.data.data; // Extract data from response structure
   }
 );
 
@@ -62,9 +62,13 @@ export const fetchProducts = createAsyncThunk(
 // ✅ ADD
 export const addProduct = createAsyncThunk(
   "product/add",
-  async (data: Product) => {
-    const res = await api.post("/", data);
-    return res.data;
+  async (data: Product | FormData) => {
+    const config = data instanceof FormData 
+      ? { headers: { "Content-Type": "multipart/form-data" } }
+      : {};
+    
+    const res = await api.post("/", data, config);
+    return res.data.data; // Extract data from response structure
   }
 );
 
@@ -74,7 +78,7 @@ export const updateProduct = createAsyncThunk(
   "product/update",
   async ({ id, data }: { id: string; data: Product }) => {
     const res = await api.put(`/${id}`, data);
-    return res.data;
+    return res.data.data; // Extract data from response structure
   }
 );
 

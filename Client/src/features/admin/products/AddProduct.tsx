@@ -11,14 +11,14 @@ const AddProduct = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    brand: '',
     category: '',
     price: '',
-    stock: '',
-    sku: '',
-    status: 'Active',
-    images: [] as string[],
-    tags: '',
+    isActive: true,
   });
+  
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const categories = [
     'Protein',
@@ -47,12 +47,47 @@ const AddProduct = () => {
     }));
   };
 
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tagsArray = e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+  const handleBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
-      tags: tagsArray.join(',')
+      brand: e.target.value
     }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size should be less than 5MB');
+        return;
+      }
+      
+      setSelectedFile(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    // Clear the file input
+    const fileInput = document.getElementById('image-upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
  const dispatch = useAppDispatch();
@@ -60,21 +95,61 @@ const AddProduct = () => {
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
+  // Client-side validation
+  if (formData.name.length < 3) {
+    alert("Product name must be at least 3 characters long");
+    return;
+  }
+    
+  if (formData.description.length < 5) {
+    alert("Description must be at least 5 characters long");
+    return;
+  }
+    
+  if (formData.brand.length < 1) {
+    alert("Brand is required");
+    return;
+  }
+    
+  if (formData.category.length < 1) {
+    alert("Category is required");
+    return;
+  }
+    
+  if (Number(formData.price) <= 0) {
+    alert("Price must be greater than 0");
+    return;
+  }
+
   try {
+    // Create FormData for file upload
+    const productData = new FormData();
+    
+    // Append product data as JSON string
+    productData.append('data', JSON.stringify({
+      ...formData,
+      price: Number(formData.price),
+      brand: formData.brand || 'ProteinPro'
+    }));
+    
+    // Append image file if selected
+    if (selectedFile) {
+      productData.append('image', selectedFile);
+    }
+
     await dispatch(
-      addProduct({
-        ...formData,
-        price: Number(formData.price),
-        stock: Number(formData.stock),
-        tags: formData.tags.split(",").map(t => t.trim())
-      })
+      addProduct(productData)
     ).unwrap();
 
     alert("Product added successfully!");
     navigate("/ProductDashboard");
-  } catch (error) {
-    console.error(error);
-    alert("Failed to add product");
+  } catch (error: any) {
+    console.error("API Error:", error);
+    if (error.message) {
+      alert(`Error: ${error.message}`);
+    } else {
+      alert("Failed to add product. Please check the form data and try again.");
+    }
   }
 };
 
@@ -170,6 +245,22 @@ const handleSubmit = async (e: React.FormEvent) => {
                     />
                   </div>
 
+                  {/* Brand */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-slate-700">
+                      Brand *
+                    </label>
+                    <input
+                      type="text"
+                      name="brand"
+                      value={formData.brand}
+                      onChange={handleBrandChange}
+                      required
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                      placeholder="Enter brand name"
+                    />
+                  </div>
+
                   {/* Price */}
                   <div>
                     <label className="block text-sm font-semibold mb-2 text-slate-700">
@@ -185,21 +276,6 @@ const handleSubmit = async (e: React.FormEvent) => {
                       step="0.01"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                       placeholder="0.00"
-                    />
-                  </div>
-
-                  {/* SKU */}
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-slate-700">
-                      SKU
-                    </label>
-                    <input
-                      type="text"
-                      name="sku"
-                      value={formData.sku}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      placeholder="Product SKU"
                     />
                   </div>
 
@@ -224,35 +300,22 @@ const handleSubmit = async (e: React.FormEvent) => {
                     </select>
                   </div>
 
-                  {/* Stock Quantity */}
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-slate-700">
-                      Stock Quantity
-                    </label>
-                    <input
-                      type="number"
-                      name="stock"
-                      value={formData.stock}
-                      onChange={handleChange}
-                      min="0"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      placeholder="0"
-                    />
-                  </div>
-
                   {/* Status */}
                   <div>
                     <label className="block text-sm font-semibold mb-2 text-slate-700">
                       Status
                     </label>
                     <select
-                      name="status"
-                      value={formData.status}
-                      onChange={handleChange}
+                      name="isActive"
+                      value={formData.isActive ? "true" : "false"}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        isActive: e.target.value === "true"
+                      }))}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     >
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                      <option value="true">Active</option>
+                      <option value="false">Inactive</option>
                     </select>
                   </div>
                 </div>
@@ -272,36 +335,60 @@ const handleSubmit = async (e: React.FormEvent) => {
                   />
                 </div>
 
-                {/* Tags */}
-                <div className="mb-8">
-                  <label className="block text-sm font-semibold mb-2 text-slate-700">
-                    Tags
-                  </label>
-                  <input
-                    type="text"
-                    name="tags"
-                    value={formData.tags}
-                    onChange={handleTagsChange}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                    placeholder="Enter tags separated by commas (e.g., protein, supplement, health)"
-                  />
-                </div>
+
 
                 {/* Images Upload */}
                 <div className="mb-8">
                   <label className="block text-sm font-semibold mb-2 text-slate-700">
                     Product Images
                   </label>
-                  <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center">
+                  
+                  {/* Preview Area */}
+                  {previewUrl && (
+                    <div className="mb-4 relative inline-block">
+                      <img 
+                        src={previewUrl} 
+                        alt="Preview" 
+                        className="w-32 h-32 object-cover rounded-lg border-2 border-slate-200 shadow-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors text-xs font-bold"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
+                  
+                  <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center hover:border-indigo-400 transition-colors">
                     <div className="flex flex-col items-center justify-center">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-slate-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                       </svg>
                       <p className="text-slate-500 mb-2">Drag and drop images here, or click to browse</p>
-                      <p className="text-sm text-slate-400">Supports JPG, PNG, SVG up to 5MB</p>
-                      <button type="button" className="mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-200 transition-colors">
-                        Select Files
+                      <p className="text-sm text-slate-400 mb-4">Supports JPG, PNG, SVG up to 5MB</p>
+                      
+                      <input
+                        id="image-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => document.getElementById('image-upload')?.click()}
+                        className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-200 transition-colors"
+                      >
+                        {selectedFile ? 'Change Image' : 'Select Files'}
                       </button>
+                      
+                      {selectedFile && (
+                        <p className="mt-2 text-sm text-green-600">
+                          Selected: {selectedFile.name}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>

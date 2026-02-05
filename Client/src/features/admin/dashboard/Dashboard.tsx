@@ -201,8 +201,8 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="h-80 min-h-[320px]">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <AreaChart data={salesData}>
                     <defs>
                       <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -253,8 +253,8 @@ export default function AdminDashboard() {
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
               </div>
 
-              <div className="h-80 flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="h-80 min-h-[320px] flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <PieChart>
                     <Pie
                       data={categories}
