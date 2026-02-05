@@ -265,7 +265,7 @@ export default function AdminDashboard() {
                       outerRadius={90}
                       innerRadius={60}
                       paddingAngle={3}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
                       labelLine={false}
                     >
                       {categories.map((_, index) => (

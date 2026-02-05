@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Package, ShoppingCart, DollarSign, CreditCard, UserCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAppDispatch } from '../../../store/hooks';
+import { addProduct } from '../../../store/slice/productSlice';
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -53,15 +55,29 @@ const AddProduct = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Product data submitted:', formData);
-    
-    // In a real app, you would send this data to your backend API
-    // For now, just showing a success message
-    alert('Product added successfully!');
-    navigate('/ProductDashboard'); // Navigate back to product dashboard
-  };
+ const dispatch = useAppDispatch();
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    await dispatch(
+      addProduct({
+        ...formData,
+        price: Number(formData.price),
+        stock: Number(formData.stock),
+        tags: formData.tags.split(",").map(t => t.trim())
+      })
+    ).unwrap();
+
+    alert("Product added successfully!");
+    navigate("/ProductDashboard");
+  } catch (error) {
+    console.error(error);
+    alert("Failed to add product");
+  }
+};
+
 
   const handleCancel = () => {
     navigate('/ProductDashboard');
