@@ -7,13 +7,21 @@ import {
 } from "../services/product.services";
 import { Productinput } from "../types/adminside.type";
 
-export const createProductController = async (req: Request<{}, {}, Productinput>, res: Response) => {
+export const createProductController = async (req: Request, res: Response) => {
     try {
-        const Productdata = req.body;
-         if (req.file) {
-         Productdata.imageUrl = `/uploads/${req.file.filename}`;
-    }
-        const Product = await createProduct(Productdata)
+        let Productdata: Productinput;
+        
+        // Handle both JSON and FormData
+        if (req.file) {
+            // FormData request
+            Productdata = JSON.parse(req.body.data);
+            Productdata.imageUrl = `/uploads/${req.file.filename}`;
+        } else {
+            // JSON request
+            Productdata = req.body;
+        }
+        
+        const Product = await createProduct(Productdata);
         return res.status(201).json({
             success: true,
             message: "Product created successfully",
@@ -22,9 +30,20 @@ export const createProductController = async (req: Request<{}, {}, Productinput>
 
     } catch (error: any) {
         console.error("Create Product Error:", error);
+        
+        // Handle Mongoose validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map((err: any) => err.message);
+            return res.status(400).json({
+                success: false,
+                message: "Validation failed",
+                error: messages.join('. ')
+            });
+        }
+        
         return res.status(500).json({
             success: false,
-            message: "Failed to created Product ",
+            message: "Failed to create Product",
             error: error.message,
         });
 
