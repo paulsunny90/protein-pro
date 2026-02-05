@@ -1,23 +1,49 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, DollarSign, CreditCard, UserCircle } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Package, 
+  ShoppingCart, 
+  DollarSign, 
+  CreditCard, 
+  UserCircle,
+  ArrowLeft
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { updateProduct } from '../../../store/slice/productSlice';
+
+interface Product {
+  _id?: string;
+  name: string;
+  description: string;
+  brand: string;
+  category: string;
+  price: number;
+  imageUrl?: string;
+  isActive: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 const EditProduct = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>(); // Product ID from URL params
+  const dispatch = useAppDispatch();
+  const { products, loading } = useAppSelector((state) => state.product);
   
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    brand: '',
     category: '',
     price: '',
-    stock: '',
-    sku: '',
-    status: 'Active',
-    images: [] as string[],
-    tags: '',
+    isActive: true,
   });
+  
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = [
     'Protein',
@@ -38,24 +64,29 @@ const EditProduct = () => {
     { label: 'Settings', icon: DollarSign, path: '/Settings' },
   ];
 
-  // Simulate loading product data (in a real app, this would come from an API)
+  // Find the product to edit
   useEffect(() => {
-    // This is where you would fetch the product data based on the ID
-    // For now, we'll simulate loading with dummy data
-    const dummyProduct = {
-      name: 'Whey Protein Powder',
-      description: 'High-quality whey protein powder for muscle recovery and growth.',
-      category: 'Protein',
-      price: '29.99',
-      stock: '150',
-      sku: 'WP-1001',
-      status: 'Active',
-      tags: 'protein, supplement, health, fitness',
-      images: [] as string[], // Add the missing images property
-    };
-    
-    setFormData(dummyProduct);
-  }, [id]);
+    if (id) {
+      const productToEdit = products.find(p => p._id === id);
+      if (productToEdit) {
+        setFormData({
+          name: productToEdit.name,
+          description: productToEdit.description,
+          brand: productToEdit.brand,
+          category: productToEdit.category,
+          price: productToEdit.price.toString(),
+          isActive: productToEdit.isActive,
+        });
+        if (productToEdit.imageUrl) {
+          setPreviewUrl(`http://localhost:5000${productToEdit.imageUrl}`);
+        }
+      } else {
+        // If product not found in store, you might want to fetch it
+        // For now, redirect to dashboard
+        navigate('/ProductDashboard');
+      }
+    }
+  }, [id, products, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -65,27 +96,139 @@ const EditProduct = () => {
     }));
   };
 
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tagsArray = e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+  const handleBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
-      tags: tagsArray.join(',')
+      brand: e.target.value
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size should be less than 5MB');
+        return;
+      }
+      
+      setSelectedFile(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    // Clear the file input
+    const fileInput = document.getElementById('image-upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Product data updated:', formData);
+
+    // Client-side validation
+    if (formData.name.length < 3) {
+      alert("Product name must be at least 3 characters long");
+      return;
+    }
     
-    // In a real app, you would send this data to your backend API
-    // For now, just showing a success message
-    alert('Product updated successfully!');
-    navigate('/ProductDashboard'); // Navigate back to product dashboard
+    if (formData.description.length < 5) {
+      alert("Description must be at least 5 characters long");
+      return;
+    }
+    
+    if (formData.brand.length < 1) {
+      alert("Brand is required");
+      return;
+    }
+    
+    if (formData.category.length < 1) {
+      alert("Category is required");
+      return;
+    }
+    
+    if (Number(formData.price) <= 0) {
+      alert("Price must be greater than 0");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      if (selectedFile) {
+        // Create FormData for file upload
+        const productData = new FormData();
+        
+        // Append product data as JSON string
+        productData.append('data', JSON.stringify({
+          ...formData,
+          price: Number(formData.price),
+          brand: formData.brand || 'ProteinPro'
+        }));
+        
+        // Append image file if selected
+        productData.append('image', selectedFile);
+
+        await dispatch(
+          updateProduct({ id: id!, data: productData })
+        ).unwrap();
+      } else {
+        // Regular JSON update
+        const updateData = {
+          ...formData,
+          price: Number(formData.price),
+          brand: formData.brand || 'ProteinPro'
+        } as Product;
+
+        await dispatch(
+          updateProduct({ id: id!, data: updateData })
+        ).unwrap();
+      }
+
+      alert("Product updated successfully!");
+      navigate("/ProductDashboard");
+    } catch (error: any) {
+      console.error("API Error:", error);
+      if (error.message) {
+        alert(`Error: ${error.message}`);
+      } else {
+        alert("Failed to update product. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
     navigate('/ProductDashboard');
   };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-slate-600">Loading product...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -121,32 +264,27 @@ const EditProduct = () => {
             </Link>
           ))}
         </nav>
-
-        <div className="p-4 border-t border-white/10">
-          <div className="bg-slate-800/50 rounded-xl p-3">
-            <p className="text-xs text-slate-400">System Status</p>
-            <div className="flex items-center gap-2 mt-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-xs text-green-400">All systems operational</span>
-            </div>
-          </div>
-        </div>
       </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Topbar */}
         <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-              Edit Product
-            </h1>
-            <p className="text-slate-500">Update product information</p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleCancel}
+              className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              <ArrowLeft className="w-6 h-6 text-slate-600" />
+            </button>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                Edit Product
+              </h1>
+              <p className="text-slate-500">Update your product details</p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="w-6 h-6 text-slate-600"></div>
-            </div>
             <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold cursor-pointer hover:scale-105 transition-transform">
               A
             </div>
@@ -174,6 +312,22 @@ const EditProduct = () => {
                     />
                   </div>
 
+                  {/* Brand */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-slate-700">
+                      Brand *
+                    </label>
+                    <input
+                      type="text"
+                      name="brand"
+                      value={formData.brand}
+                      onChange={handleBrandChange}
+                      required
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                      placeholder="Enter brand name"
+                    />
+                  </div>
+
                   {/* Price */}
                   <div>
                     <label className="block text-sm font-semibold mb-2 text-slate-700">
@@ -189,21 +343,6 @@ const EditProduct = () => {
                       step="0.01"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                       placeholder="0.00"
-                    />
-                  </div>
-
-                  {/* SKU */}
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-slate-700">
-                      SKU
-                    </label>
-                    <input
-                      type="text"
-                      name="sku"
-                      value={formData.sku}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      placeholder="Product SKU"
                     />
                   </div>
 
@@ -228,35 +367,22 @@ const EditProduct = () => {
                     </select>
                   </div>
 
-                  {/* Stock Quantity */}
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-slate-700">
-                      Stock Quantity
-                    </label>
-                    <input
-                      type="number"
-                      name="stock"
-                      value={formData.stock}
-                      onChange={handleChange}
-                      min="0"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      placeholder="0"
-                    />
-                  </div>
-
                   {/* Status */}
                   <div>
                     <label className="block text-sm font-semibold mb-2 text-slate-700">
                       Status
                     </label>
                     <select
-                      name="status"
-                      value={formData.status}
-                      onChange={handleChange}
+                      name="isActive"
+                      value={formData.isActive ? "true" : "false"}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        isActive: e.target.value === "true"
+                      }))}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     >
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                      <option value="true">Active</option>
+                      <option value="false">Inactive</option>
                     </select>
                   </div>
                 </div>
@@ -276,36 +402,58 @@ const EditProduct = () => {
                   />
                 </div>
 
-                {/* Tags */}
-                <div className="mb-8">
-                  <label className="block text-sm font-semibold mb-2 text-slate-700">
-                    Tags
-                  </label>
-                  <input
-                    type="text"
-                    name="tags"
-                    value={formData.tags}
-                    onChange={handleTagsChange}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                    placeholder="Enter tags separated by commas (e.g., protein, supplement, health)"
-                  />
-                </div>
-
                 {/* Images Upload */}
                 <div className="mb-8">
                   <label className="block text-sm font-semibold mb-2 text-slate-700">
                     Product Images
                   </label>
-                  <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center">
+                  
+                  {/* Preview Area */}
+                  {previewUrl && (
+                    <div className="mb-4 relative inline-block">
+                      <img 
+                        src={previewUrl} 
+                        alt="Preview" 
+                        className="w-32 h-32 object-cover rounded-lg border-2 border-slate-200 shadow-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors text-xs font-bold"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
+                  
+                  <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center hover:border-indigo-400 transition-colors">
                     <div className="flex flex-col items-center justify-center">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-slate-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                       </svg>
                       <p className="text-slate-500 mb-2">Drag and drop images here, or click to browse</p>
-                      <p className="text-sm text-slate-400">Supports JPG, PNG, SVG up to 5MB</p>
-                      <button type="button" className="mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-200 transition-colors">
-                        Select Files
+                      <p className="text-sm text-slate-400 mb-4">Supports JPG, PNG, SVG up to 5MB</p>
+                      
+                      <input
+                        id="image-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => document.getElementById('image-upload')?.click()}
+                        className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-200 transition-colors"
+                      >
+                        {selectedFile ? 'Change Image' : 'Select Files'}
                       </button>
+                      
+                      {selectedFile && (
+                        <p className="mt-2 text-sm text-green-600">
+                          Selected: {selectedFile.name}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -316,14 +464,16 @@ const EditProduct = () => {
                     type="button"
                     onClick={handleCancel}
                     className="px-6 py-3 border border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-colors"
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+                    className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
+                    disabled={isSubmitting}
                   >
-                    Update Product
+                    {isSubmitting ? 'Updating...' : 'Update Product'}
                   </button>
                 </div>
               </form>

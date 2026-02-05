@@ -76,8 +76,12 @@ export const addProduct = createAsyncThunk(
 // ✅ UPDATE
 export const updateProduct = createAsyncThunk(
   "product/update",
-  async ({ id, data }: { id: string; data: Product }) => {
-    const res = await api.put(`/${id}`, data);
+  async ({ id, data }: { id: string; data: Product | FormData }) => {
+    const config = data instanceof FormData 
+      ? { headers: { "Content-Type": "multipart/form-data" } }
+      : {};
+    
+    const res = await api.put(`/${id}`, data, config);
     return res.data.data; // Extract data from response structure
   }
 );
@@ -87,8 +91,12 @@ export const updateProduct = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   "product/delete",
   async (id: string) => {
-    await api.delete(`/${id}`);
-    return id;
+    const res = await api.delete(`/${id}`);
+    if (res.data.success) {
+      return id;
+    } else {
+      throw new Error(res.data.message || "Failed to delete product");
+    }
   }
 );
 
