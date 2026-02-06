@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Target, TrendingUp, Award, Plus, Edit3, BarChart3, Heart, User } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Target, TrendingUp, Award, Plus, Edit3, BarChart3, Heart } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const Dashboard = () => {
@@ -163,7 +163,7 @@ const Dashboard = () => {
               dataKey="value"
               label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`}
             >
-              {goalData.map((entry, index) => (
+              {goalData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>

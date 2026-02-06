@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Link } from 'react-router-dom';
 import { Package, TrendingUp, Heart, Users, Star, Shield } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Star, ShoppingCart, Heart, Shield, Truck, RotateCcw, StarHalf } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/AuthContext';
@@ -9,7 +9,6 @@ const ProductDetailsPage = () => {
   const { isAuthenticated } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('Medium');
-  const [selectedRating, setSelectedRating] = useState(0);
 
   // Mock product data - in a real app, this would come from an API
   const product = {

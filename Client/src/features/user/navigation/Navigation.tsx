@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Home, Package, BarChart3, Heart, Menu, TrendingUp, Mail, User, LogOut } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';

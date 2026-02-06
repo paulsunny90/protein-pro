@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, MapPin, Phone, Mail, User, Building2, CheckCircle, Clock, AlertCircle, Package } from 'lucide-react';
+import { CreditCard, MapPin, Phone, Mail, User, Building2, CheckCircle } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 

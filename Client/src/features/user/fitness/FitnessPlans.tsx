@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Dumbbell, Target, Timer, TrendingUp, Users, Star } from 'lucide-react';
 
 interface FitnessPlan {

@@ -14,7 +14,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(null);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, _password: string): Promise<boolean> => {
     // In a real app, you would make an API call to your backend
     // For now, we'll simulate a successful login
     try {
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+  const register = async (name: string, email: string, _password: string): Promise<boolean> => {
     // In a real app, you would make an API call to register the user
     try {
       // Simulate API call delay

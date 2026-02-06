@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Calculator, Heart, Activity, Target, TrendingUp, MessageCircle, Send, Bot } from 'lucide-react';
+import { useState } from 'react';
+import { Calculator, Heart, Target, Send, Bot } from 'lucide-react';
 
 const BMICalculator = () => {
   const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
@@ -17,7 +17,6 @@ const BMICalculator = () => {
     { id: 1, text: "Hello! I'm your health assistant. I can help you understand your BMI results and provide personalized health recommendations. Enter your details in the calculator to get started!", sender: 'ai' }
   ]);
   const [currentMessage, setCurrentMessage] = useState('');
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const calculateBMI = () => {
     if (!height || !weight) return;
@@ -76,6 +75,29 @@ const BMICalculator = () => {
 
   const getAIRecommendation = (bmi: number, category: string, gender: string, age: number) => {
     let recommendation = `Based on your BMI of ${bmi.toFixed(1)} (${category}), here are some personalized recommendations:\n\n`;
+    
+    // Gender-specific recommendations
+    if (gender === 'female') {
+      recommendation += `As a ${age > 50 ? 'woman over 50' : 'woman'}, consider:\n`;
+      if (age > 50) {
+        recommendation += "• Focus on calcium and vitamin D for bone health\n";
+        recommendation += "• Include strength training to maintain muscle mass\n";
+        recommendation += "• Monitor iron levels, especially if menstruating\n\n";
+      } else {
+        recommendation += "• Ensure adequate iron intake\n";
+        recommendation += "• Consider prenatal nutrition if planning pregnancy\n\n";
+      }
+    } else {
+      recommendation += `As a ${age > 50 ? 'man over 50' : 'man'}, consider:\n`;
+      if (age > 50) {
+        recommendation += "• Focus on heart health with omega-3 fatty acids\n";
+        recommendation += "• Include resistance training for muscle maintenance\n";
+        recommendation += "• Monitor testosterone levels with age\n\n";
+      } else {
+        recommendation += "• Focus on building lean muscle mass\n";
+        recommendation += "• Ensure adequate protein intake\n\n";
+      }
+    }
     
     if (bmi < 18.5) {
       recommendation += "• Consider increasing your caloric intake with nutrient-dense foods\n";
@@ -403,46 +425,6 @@ const BMICalculator = () => {
                   >
                     <Send className="h-5 w-5" />
                   </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Health Tips */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <div className="flex items-center mb-6">
-                <Activity className="h-8 w-8 text-blue-600 mr-3" />
-                <h2 className="text-2xl font-bold text-gray-900">Health & Fitness Tips</h2>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                    <Target className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Maintain Balance</h3>
-                  <p className="text-gray-600 text-sm">
-                    A balanced diet with adequate protein, carbs, and fats is essential for optimal health.
-                  </p>
-                </div>
-                
-                <div className="bg-green-50 rounded-lg p-6">
-                  <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                    <TrendingUp className="h-6 w-6 text-green-600" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Stay Active</h3>
-                  <p className="text-gray-600 text-sm">
-                    Regular exercise helps maintain a healthy weight and reduces disease risk.
-                  </p>
-                </div>
-                
-                <div className="bg-purple-50 rounded-lg p-6">
-                  <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                    <Heart className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Regular Monitoring</h3>
-                  <p className="text-gray-600 text-sm">
-                    Track your BMI and other health metrics regularly to monitor your progress.
-                  </p>
                 </div>
               </div>
             </div>
