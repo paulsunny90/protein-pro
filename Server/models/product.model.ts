@@ -38,6 +38,15 @@ const ProductSchema: Schema<Product> = new Schema(
       type: String,
       default: "",
     },
+    stock: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    sizes: [{
+      type: String,
+      enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+    }]
   },
   { timestamps: true }
 );

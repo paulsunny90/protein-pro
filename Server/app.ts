@@ -1,9 +1,10 @@
 import express from "express"
-import dotenv from  "dotenv"
+import dotenv from "dotenv"
 import cors from "cors"
-import productRoutes from "./routes/product.routes"
+import mainRoutes from "./routes/index.routes"
+import orderRoutes from "./routes/order.routes"
 
-dotenv .config()
+dotenv.config()
 
 const app = express()
 
@@ -18,6 +19,8 @@ app.use(cors({
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-app.use("/api", productRoutes)
+// Use all routes under /api
+app.use("/api", mainRoutes);
+app.use("/api/orders", orderRoutes);
 
 export default app;
