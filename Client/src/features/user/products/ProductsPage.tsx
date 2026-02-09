@@ -1,119 +1,47 @@
-import { useState } from 'react';
-import { ShoppingCart, Star, Filter, Grid, List, Heart, Shield } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { fetchProducts } from '../../../store/slice/productSlice';
+import { addToCart } from '../../../store/slice/cartSlice';
+import type { Product } from '../../../store/slice/productSlice';
+import { ShoppingCart, Star, Filter, Grid, List, Heart, Package } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const ProductsPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
 
-  // Mock product data
-  const products = [
-    {
-      id: 1,
-      name: 'Premium Whey Protein',
-      price: 49.99,
-      originalPrice: 59.99,
-      discount: 17,
-      rating: 4.5,
-      reviewCount: 128,
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      category: 'proteins',
-      inStock: true,
-      description: 'High-quality whey protein isolate with 25g protein per serving'
-    },
-    {
-      id: 2,
-      name: 'Plant-Based Protein Blend',
-      price: 39.99,
-      originalPrice: 49.99,
-      discount: 20,
-      rating: 4.3,
-      reviewCount: 96,
-      image: 'https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      category: 'proteins',
-      inStock: true,
-      description: 'Vegan-friendly protein blend with all essential amino acids'
-    },
-    {
-      id: 3,
-      name: 'BCAA Amino Acids',
-      price: 29.99,
-      originalPrice: 34.99,
-      discount: 14,
-      rating: 4.7,
-      reviewCount: 78,
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      category: 'amino-acids',
-      inStock: true,
-      description: 'Branched-chain amino acids for muscle recovery and growth'
-    },
-    {
-      id: 4,
-      name: 'Creatine Monohydrate',
-      price: 24.99,
-      originalPrice: 29.99,
-      discount: 17,
-      rating: 4.6,
-      reviewCount: 142,
-      image: 'https://images.unsplash.com/photo-1625772440111-9eac1da1a2c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      category: 'strength',
-      inStock: false,
-      description: 'Pure creatine monohydrate for improved strength and power'
-    },
-    {
-      id: 5,
-      name: 'Pre-Workout Booster',
-      price: 34.99,
-      originalPrice: 39.99,
-      discount: 13,
-      rating: 4.4,
-      reviewCount: 89,
-      image: 'https://images.unsplash.com/photo-1598974357801-cbca100e65d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      category: 'energy',
-      inStock: true,
-      description: 'Energy and focus supplement for intense workouts'
-    },
-    {
-      id: 6,
-      name: 'Post-Workout Recovery',
-      price: 32.99,
-      originalPrice: 37.99,
-      discount: 13,
-      rating: 4.2,
-      reviewCount: 67,
-      image: 'https://images.unsplash.com/photo-1590421312654-af5e646ec9be?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      category: 'recovery',
-      inStock: true,
-      description: 'Recovery formula with protein and carbohydrates'
-    },
-    {
-      id: 7,
-      name: 'Multivitamin Complex',
-      price: 27.99,
-      originalPrice: 32.99,
-      discount: 15,
-      rating: 4.8,
-      reviewCount: 156,
-      image: 'https://images.unsplash.com/photo-1570485071660-8d4f60337c64?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      category: 'vitamins',
-      inStock: true,
-      description: 'Complete multivitamin with essential nutrients'
-    },
-    {
-      id: 8,
-      name: 'Fish Oil Omega-3',
-      price: 19.99,
-      originalPrice: 24.99,
-      discount: 20,
-      rating: 4.5,
-      reviewCount: 112,
-      image: 'https://images.unsplash.com/photo-1598974357801-cbca100e65d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      category: 'omega-3',
-      inStock: true,
-      description: 'High-potency omega-3 fatty acids for heart health'
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { products } = useAppSelector((state: any) => state.product);
+
+  useEffect(() => {
+    dispatch(fetchProducts(false));
+  }, [dispatch]);
+
+  const handleAddToCart = async (e: React.MouseEvent, product: Product) => {
+    e.preventDefault(); // Prevent navigation to details page
+
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
     }
-  ];
+
+    if (product._id) {
+      try {
+        await dispatch(addToCart({
+          productId: product._id,
+          quantity: 1,
+          size: 'Medium'
+        })).unwrap();
+        alert(`${product.name} added to cart!`);
+      } catch (err: any) {
+        alert(err || 'Failed to add to cart');
+      }
+    }
+  };
 
   const categories = [
     { id: 'all', name: 'All Products' },
@@ -126,84 +54,71 @@ const ProductsPage = () => {
     { id: 'omega-3', name: 'Omega-3' }
   ];
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category === selectedCategory);
+  const filteredProducts = selectedCategory === 'all'
+    ? products
+    : products.filter((product: Product) => product.category === selectedCategory);
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  const sortedProducts = [...filteredProducts].sort((a: Product, b: Product) => {
     if (sortBy === 'price-low') return a.price - b.price;
     if (sortBy === 'price-high') return b.price - a.price;
     if (sortBy === 'rating') return b.rating - a.rating;
     return 0; // featured/default
   });
 
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
 
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />);
-    }
-
-    if (hasHalfStar) {
-      stars.push(<Star key="half" className="w-4 h-4 text-yellow-400 fill-current" />);
-    }
-
-    const emptyStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />);
-    }
-
-    return <div className="flex">{stars}</div>;
-  };
-
-  const renderProductCard = (product: any) => (
-    <Link to={`/products/${product.id}`} key={product.id} className="block group">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-        <div className="relative">
-          <img 
-            src={product.image} 
-            alt={product.name} 
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+  const renderProductCard = (product: Product) => (
+    <Link to={`/products/${product._id}`} key={product._id} className="block group animate-slide-up">
+      <div className="soft-card p-3 h-full flex flex-col soft-card-hover border-none">
+        <div className="relative aspect-square mb-6 overflow-hidden rounded-[1.8rem]">
+          <img
+            src={product.image}
+            alt={product.name}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300?text=No+Image';
+            }}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50">
-            <Heart className="w-4 h-4 text-gray-600" />
-          </button>
+          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button className="p-2.5 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-slate-100 hover:text-emerald-500 transition-colors">
+              <Heart className="w-4 h-4" />
+            </button>
+          </div>
           {product.discount > 0 && (
-            <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+            <div className="absolute top-3 left-3 bg-emerald-600 text-white text-[10px] font-black px-3 py-1.5 rounded-lg shadow-lg">
               -{product.discount}%
             </div>
           )}
           {!product.inStock && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <span className="text-white font-bold">OUT OF STOCK</span>
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center">
+              <span className="text-slate-900 text-[10px] font-black uppercase tracking-[0.2em]">Fully Committed</span>
             </div>
           )}
         </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">{product.name}</h3>
-          <p className="text-sm text-gray-600 mb-2">{product.description}</p>
-          <div className="flex items-center mb-2">
-            {renderStars(product.rating)}
-            <span className="text-xs text-gray-500 ml-1">({product.reviewCount})</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-lg font-bold text-gray-900">${product.price}</span>
-              {product.originalPrice > product.price && (
-                <span className="text-sm text-gray-500 line-through ml-2">${product.originalPrice}</span>
-              )}
+        <div className="px-3 pb-3 flex-grow flex flex-col">
+          <div className="flex items-center space-x-2 mb-2">
+            <div className="flex space-x-0.5 text-emerald-500">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`w-2.5 h-2.5 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-slate-200'}`} />
+              ))}
             </div>
-            <button 
-              className={`p-2 rounded-lg ${
-                product.inStock 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+            <span className="text-[10px] font-black text-slate-400">({product.reviewCount})</span>
+          </div>
+          <h3 className="text-lg font-black text-slate-900 mb-2 leading-tight group-hover:text-emerald-600 transition-colors">{product.name}</h3>
+          <p className="text-xs text-slate-500 line-clamp-2 mb-6 font-medium leading-relaxed">{product.description}</p>
+
+          <div className="mt-auto flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-2xl font-black text-slate-900 leading-none">${product.price}</span>
+            </div>
+            <button
+              onClick={(e) => handleAddToCart(e, product)}
+              className={`p-3 rounded-2xl transition-all active:scale-95 shadow-lg ${product.inStock
+                ? 'bg-emerald-600 text-white shadow-emerald-600/20 hover:bg-emerald-700'
+                : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                }`}
               disabled={!product.inStock}
             >
-              <ShoppingCart className="w-4 h-4" />
+              <ShoppingCart className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -211,55 +126,56 @@ const ProductsPage = () => {
     </Link>
   );
 
-  const renderProductListItem = (product: any) => (
-    <Link to={`/products/${product.id}`} key={product.id} className="block group">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 mb-4">
-        <div className="flex">
-          <div className="w-1/4 relative">
-            <img 
-              src={product.image} 
-              alt={product.name} 
-              className="w-full h-full object-cover"
-            />
-            <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50">
-              <Heart className="w-4 h-4 text-gray-600" />
-            </button>
+  const renderProductListItem = (product: Product) => (
+    <Link to={`/products/${product._id}`} key={product._id} className="block group mb-8 animate-slide-up">
+      <div className="soft-card p-4 soft-card-hover border-none flex flex-col md:flex-row gap-8">
+        <div className="w-full md:w-64 aspect-square overflow-hidden rounded-[1.8rem] shrink-0">
+          <img
+            src={product.image}
+            alt={product.name}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300?text=No+Image';
+            }}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+        </div>
+        <div className="flex-grow flex flex-col py-2">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <div className="flex space-x-0.5 text-emerald-500">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-slate-200'}`} />
+                ))}
+              </div>
+              <span className="text-xs font-black text-slate-400">({product.reviewCount} Reviews)</span>
+            </div>
             {product.discount > 0 && (
-              <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                -{product.discount}%
-              </div>
-            )}
-            {!product.inStock && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <span className="text-white font-bold">OUT OF STOCK</span>
-              </div>
+              <span className="bg-emerald-600 text-white text-[10px] font-black px-3 py-1.5 rounded-lg">
+                SAVE {product.discount}%
+              </span>
             )}
           </div>
-          <div className="w-3/4 p-4">
-            <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">{product.name}</h3>
-            <p className="text-sm text-gray-600 mb-2">{product.description}</p>
-            <div className="flex items-center mb-2">
-              {renderStars(product.rating)}
-              <span className="text-xs text-gray-500 ml-1">({product.reviewCount})</span>
+          <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors">{product.name}</h3>
+          <p className="text-slate-500 font-medium leading-relaxed max-w-2xl mb-6">{product.description}</p>
+
+          <div className="mt-auto flex items-center justify-between">
+            <div className="flex items-baseline space-x-3">
+              <span className="text-3xl font-black text-slate-900">${product.price}</span>
+              {product.originalPrice > product.price && (
+                <span className="text-lg text-slate-300 line-through font-bold">${product.originalPrice}</span>
+              )}
             </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-lg font-bold text-gray-900">${product.price}</span>
-                {product.originalPrice > product.price && (
-                  <span className="text-sm text-gray-500 line-through ml-2">${product.originalPrice}</span>
-                )}
-              </div>
-              <button 
-                className={`p-2 rounded-lg ${
-                  product.inStock 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            <button
+              onClick={(e) => handleAddToCart(e, product)}
+              className={`flex items-center space-x-3 px-8 py-3.5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs transition-all active:scale-95 shadow-lg ${product.inStock
+                ? 'bg-emerald-600 text-white shadow-emerald-600/20 hover:bg-emerald-700'
+                : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                 }`}
-                disabled={!product.inStock}
-              >
-                <ShoppingCart className="w-4 h-4" />
-              </button>
-            </div>
+              disabled={!product.inStock}
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span>{product.inStock ? 'Add to Cart' : 'Sold Out'}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -267,65 +183,73 @@ const ProductsPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Nutrition Products</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Discover our premium selection of nutrition supplements designed to fuel your fitness journey
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="text-center mb-20 animate-fade-in">
+          <div className="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">
+            <Package className="h-3 w-3" />
+            <span>High Performance Nutrition</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tighter">Premium Collection</h1>
+          <div className="w-16 h-1.5 bg-emerald-500 mx-auto rounded-full mb-8"></div>
+          <p className="text-lg text-slate-500 max-w-2xl mx-auto font-medium">
+            Biotechnologically perfected supplements engineered for your individual physiological demands.
           </p>
         </div>
 
         {/* Filters and Sorting */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex flex-wrap gap-4">
-              <div className="relative">
-                <select 
+        <div className="soft-card p-4 mb-12 border-none">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Filter By</span>
+              <div className="flex items-center bg-slate-50 rounded-2xl px-4 py-2 border border-slate-100">
+                <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 cursor-pointer pr-10"
                 >
                   {categories.map(category => (
                     <option key={category.id} value={category.id}>{category.name}</option>
                   ))}
                 </select>
-                <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <div className="bg-white p-1 rounded-lg shadow-sm -ml-8 pointer-events-none">
+                  <Filter className="w-3 h-3 text-emerald-500" />
+                </div>
               </div>
-              
-              <div className="relative">
-                <select 
+
+              <div className="flex items-center bg-slate-50 rounded-2xl px-4 py-2 border border-slate-100">
+                <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 cursor-pointer pr-10"
                 >
-                  <option value="featured">Featured</option>
+                  <option value="featured">Featured First</option>
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
                   <option value="rating">Top Rated</option>
                 </select>
-                <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <div className="bg-white p-1 rounded-lg shadow-sm -ml-8 pointer-events-none">
+                  <Filter className="w-3 h-3 text-emerald-500" />
+                </div>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-2">
-              <button 
+
+            <div className="flex items-center bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+              <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg ${
-                  viewMode === 'grid' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === 'grid'
+                  ? 'bg-white text-emerald-600 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-600'
+                  }`}
               >
                 <Grid className="w-4 h-4" />
               </button>
-              <button 
+              <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg ${
-                  viewMode === 'list' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
+                className={`p-2.5 rounded-xl transition-all ${viewMode === 'list'
+                  ? 'bg-white text-emerald-600 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-600'
+                  }`}
               >
                 <List className="w-4 h-4" />
               </button>
@@ -335,19 +259,21 @@ const ProductsPage = () => {
 
         {/* Products Grid/List */}
         <div className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'w-full'}>
-          {sortedProducts.map(product => 
-            viewMode === 'grid' 
-              ? renderProductCard(product) 
+          {sortedProducts.map((product: Product) => (
+            viewMode === 'grid'
+              ? renderProductCard(product)
               : renderProductListItem(product)
-          )}
+          ))}
         </div>
 
         {/* Empty State */}
         {sortedProducts.length === 0 && (
-          <div className="text-center py-12">
-            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No products found</h3>
-            <p className="text-gray-500">Try adjusting your filters to find what you're looking for.</p>
+          <div className="text-center py-32 animate-fade-in">
+            <div className="bg-emerald-50 w-24 h-24 mx-auto mb-8 rounded-[2rem] flex items-center justify-center">
+              <Package className="w-10 h-10 text-emerald-200" />
+            </div>
+            <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">No scientific match found</h3>
+            <p className="text-slate-500 font-medium">Try adjusting your filters to find your ideal nutrition solution.</p>
           </div>
         )}
       </div>

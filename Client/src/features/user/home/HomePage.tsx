@@ -64,70 +64,92 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+    <div className="min-h-screen bg-[#F8FAFC]">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                Transform Your Health with Premium Nutrition
-              </h1>
-              <p className="text-xl mb-8 text-blue-100 max-w-lg">
-                Personalized protein and nutrition solutions for your fitness goals. 
-                Subscribe today and start your transformation journey.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  to="/products"
-                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-colors text-center"
-                >
-                  Explore Products
-                </Link>
-                <Link
-                  to="/subscriptions"
-                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors text-center"
-                >
-                  View Plans
-                </Link>
-              </div>
-            </div>
-            <div className="hidden md:block">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <img 
-                  src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&h=400&q=80" 
-                  alt="Protein Products" 
-                  className="rounded-lg w-full object-cover"
-                />
+      <section className="relative pt-32 pb-40 overflow-hidden">
+        <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-emerald-50 rounded-full blur-[120px] opacity-60"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] bg-emerald-100/50 rounded-full blur-[80px] opacity-40"></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center space-x-3 bg-emerald-50 text-emerald-700 px-6 py-2 rounded-2xl text-xs font-black uppercase tracking-widest mb-10 animate-slide-up">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Premium Performance Nutrition</span>
+          </div>
+
+          <h1 className="text-6xl md:text-8xl font-black text-slate-900 mb-10 leading-[1.1] tracking-tighter animate-slide-up">
+            Science-Backed <br />
+            <span className="text-emerald-600">Peak Performance</span>
+          </h1>
+
+          <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed mb-12 animate-slide-up [animation-delay:100ms]">
+            NutriFit Pro delivers elite-grade supplements developed with one goal:
+            to empower your body to achieve its natural maximum potential.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-6 justify-center animate-slide-up [animation-delay:200ms]">
+            <Link
+              to="/products"
+              className="group bg-emerald-600 text-white px-10 py-5 rounded-[2rem] font-black text-lg hover:bg-emerald-700 transition-all shadow-[0_20px_40px_-10px_rgba(16,185,129,0.3)] active:scale-95 flex items-center justify-center"
+            >
+              Start Your Journey
+              <Package className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/subscriptions"
+              className="bg-white text-slate-700 border border-slate-200 px-10 py-5 rounded-[2rem] font-black text-lg hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center"
+            >
+              Subscription Plans
+            </Link>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto mt-32 px-4 animate-slide-up [animation-delay:300ms]">
+          <div className="soft-card p-1.5 overflow-hidden group">
+            <img
+              src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&h=600&q=80"
+              alt="Elite Fitness Environment"
+              className="rounded-[2.4rem] w-full h-[550px] object-cover transition-transform duration-1000 group-hover:scale-105"
+            />
+            <div className="absolute inset-x-0 bottom-0 p-12 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-b-[2.4rem]">
+              <div className="flex items-end justify-between">
+                <div>
+                  <h3 className="text-3xl font-black text-white mb-2">Pure Whey Elite</h3>
+                  <p className="text-emerald-300 font-bold uppercase tracking-widest text-sm">Most Trusted in Performance</p>
+                </div>
+                <div className="text-right">
+                  <span className="block text-emerald-400 text-xl font-black mb-1">$59.90</span>
+                  <button className="bg-white text-slate-900 px-6 py-3 rounded-2xl font-black text-sm hover:bg-emerald-50 transition-all active:scale-95">
+                    View Product
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
+      {/* Features Grid */}
+      <section className="py-32 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose NutriFit Pro?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We provide premium nutrition solutions tailored to your individual goals
+          <div className="text-center mb-24">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">Optimized Formulation</h2>
+            <div className="w-20 h-1.5 bg-emerald-500 mx-auto rounded-full mb-8"></div>
+            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+              Every NutriFit Pro solution is crafted with pharmaceutical precision
+              and athlete-level dedication.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {heroFeatures.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
-                <div key={index} className="text-center group">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <IconComponent className="h-8 w-8 text-white" />
+                <div key={index} className="soft-card p-12 soft-card-hover group">
+                  <div className="bg-emerald-50 w-20 h-20 rounded-3xl flex items-center justify-center mb-10 transition-transform group-hover:scale-110 group-hover:rotate-3 shadow-sm">
+                    <IconComponent className="h-10 w-10 text-emerald-600" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <h3 className="text-2xl font-black text-slate-900 mb-4">{feature.title}</h3>
+                  <p className="text-slate-500 leading-relaxed font-medium">{feature.description}</p>
                 </div>
               );
             })}
@@ -135,88 +157,74 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <Users className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-gray-900">10K+</div>
-              <div className="text-gray-600">Happy Customers</div>
+      {/* Trust Badges / Stats Section */}
+      <section className="pb-32 px-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {[
+            { label: 'Scientifically Tested', val: '100%', icon: Shield },
+            { label: 'Active Subscribers', val: '50k+', icon: Users },
+            { label: 'Energy Boost', val: '2x', icon: TrendingUp },
+            { label: 'Satisfaction Rate', val: '98%', icon: Star }
+          ].map((stat, idx) => (
+            <div key={idx} className="soft-card p-10 text-center hover:scale-105 transition-all">
+              <stat.icon className="h-10 w-10 text-emerald-500 mx-auto mb-6 opacity-20" />
+              <span className="block text-4xl font-black text-emerald-600 mb-2">{stat.val}</span>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{stat.label}</span>
             </div>
-            <div>
-              <Package className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-gray-900">50+</div>
-              <div className="text-gray-600">Premium Products</div>
-            </div>
-            <div>
-              <Star className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-gray-900">4.9</div>
-              <div className="text-gray-600">Average Rating</div>
-            </div>
-            <div>
-              <Shield className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-gray-900">24/7</div>
-              <div className="text-gray-600">Support</div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* Subscription Plans */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Choose Your Plan
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Flexible subscription options to suit your fitness journey
+      <section className="py-40 bg-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-64 h-64 bg-emerald-50 rounded-full blur-3xl -ml-32 opacity-40"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-24">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">Your Fitness Program</h2>
+            <p className="text-lg text-slate-500 max-w-2xl mx-auto font-medium">
+              Flexible options engineered to support your unique metabolic requirements
+              and lifestyle goals.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {subscriptionPlans.map((plan, index) => (
               <div
                 key={index}
-                className={`relative rounded-2xl p-8 border-2 ${
-                  plan.popular
-                    ? 'border-blue-500 bg-gradient-to-b from-blue-50 to-white scale-105'
-                    : 'border-gray-200 bg-white'
-                }`}
+                className={`soft-card p-12 soft-card-hover flex flex-col ${plan.popular ? 'border-emerald-500 shadow-2xl shadow-emerald-500/10 scale-105' : ''
+                  }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
-                      Most Popular
-                    </span>
+                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-emerald-600 text-white px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-600/20">
+                    Recommended
                   </div>
                 )}
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                    <span className="text-gray-600">{plan.period}</span>
+                <div className="flex-grow">
+                  <h3 className="text-2xl font-black text-slate-900 mb-2">{plan.name}</h3>
+                  <div className="flex items-baseline mb-10">
+                    <span className="text-5xl font-black text-slate-900">{plan.price}</span>
+                    <span className="text-slate-400 font-bold ml-2">{plan.period}</span>
                   </div>
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-5 mb-12">
                     {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                        <span className="text-gray-600">{feature}</span>
+                      <li key={idx} className="flex items-center text-slate-600 font-medium">
+                        <div className="bg-emerald-100 p-1 rounded-full mr-4">
+                          <Star className="w-3 h-3 text-emerald-600" />
+                        </div>
+                        {feature}
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    to="/subscriptions"
-                    className={`w-full block text-center py-3 px-6 rounded-lg font-semibold transition-colors ${
-                      plan.popular
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                    }`}
-                  >
-                    Select Plan
-                  </Link>
                 </div>
+                <Link
+                  to="/subscriptions"
+                  className={`w-full text-center py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest transition-all active:scale-95 ${plan.popular
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700'
+                      : 'bg-slate-50 text-slate-900 hover:bg-slate-100'
+                    }`}
+                >
+                  Get Started
+                </Link>
               </div>
             ))}
           </div>
@@ -224,26 +232,28 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Transform Your Health?
+      <section className="py-40 bg-emerald-600 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500 to-emerald-700"></div>
+        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:30px_30px]"></div>
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
+          <h2 className="text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter">
+            Build Your Finest <br /> Self Today.
           </h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Join thousands of satisfied customers on their fitness journey
+          <p className="text-xl mb-12 text-emerald-100 font-medium">
+            Join the NutriFit Pro community and unlock the science of transformation.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link
               to="/products"
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+              className="bg-white text-emerald-600 px-12 py-5 rounded-[2rem] font-black text-lg hover:bg-emerald-50 transition-all shadow-2xl active:scale-95"
             >
-              Shop Now
+              Shop All Products
             </Link>
             <Link
-              to="/contact"
-              className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
+              to="/signup"
+              className="bg-emerald-700 text-white border border-emerald-500 px-12 py-5 rounded-[2rem] font-black text-lg hover:bg-emerald-800 transition-all active:scale-95"
             >
-              Contact Us
+              Join the Pro Community
             </Link>
           </div>
         </div>
