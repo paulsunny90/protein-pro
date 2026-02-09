@@ -40,14 +40,6 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
                 <li><a href="#" className="hover:text-white">Nutrition Tracking</a></li>
               </ul>
             </div>
-            <div>
-              <h4 className="text-md font-medium mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>support@nutrifitpro.com</li>
-                <li>+1 (555) 123-4567</li>
-                <li>Live Chat Available</li>
-              </ul>
-            </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
             <p>&copy; 2026 NutriFit Pro. All rights reserved.</p>
