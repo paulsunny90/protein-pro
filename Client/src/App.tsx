@@ -9,13 +9,13 @@ import BMICalculator from './features/user/bmi-calculator/BMICalculator';
 import FitnessPlans from './features/user/fitness/FitnessPlans';
 import CartPage from './features/user/products/CartPage';
 import ProgressTracker from './features/user/progress-tracker/ProgressTracker';
-import ContactPage from './features/user/home/ContactPage';
 import LoginPage from './features/user/auth/LoginPage';
 import SignupPage from './features/user/auth/SignupPage';
 import ProductDetailsPage from './features/user/products/details/ProductDetailsPage';
 import OrderPage from './features/user/orders/OrderPage';
 
 // Admin routes
+import AdminLayout from './features/admin/AdminLayout'
 import AdminDashboard from './features/admin/dashboard/Dashboard'
 import UserManagement from './features/admin/UsersTable/UsersTable'
 import OrdersPage from './features/admin/orders/OrdersTable'
@@ -24,7 +24,9 @@ import AddProduct from './features/admin/products/AddProduct'
 import EditProduct from './features/admin/products/EditProduct'
 import EditSubscription from './features/admin/subscriptions/EditSubscription'
 import EditOrder from './features/admin/orders/EditOrder'
-import SubscriptionPage from './features/admin/subscriptions/Subscriptio'
+import SubscriptionPage from './features/admin/subscriptions/SubscriptionPage'
+import AdminLoginPage from './features/admin/auth/AdminLoginPage'
+import AdminProtectedRoute from './features/admin/auth/AdminProtectedRoute'
 
 const App = () => {
   return (
@@ -78,12 +80,7 @@ const App = () => {
                 <ProgressTracker />
               </UserLayout>
             } />
-            <Route path="/contact" element={
-              <UserLayout>
-                <ContactPage />
-              </UserLayout>
-            } />
-            
+
             {/* Auth routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
@@ -94,17 +91,23 @@ const App = () => {
                 <Dashboard />
               </UserLayout>
             } />
-            
+
             {/* Admin routes */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<UserManagement />} />
-            <Route path="/admin/orders" element={<OrdersPage />} />
-            <Route path="/admin/products" element={<ProductDashboard />} />
-            <Route path="/admin/products/add" element={<AddProduct />} />
-            <Route path="/admin/products/edit/:id" element={<EditProduct />} />
-            <Route path="/admin/subscriptions/edit/:id" element={<EditSubscription />} />
-            <Route path="/admin/orders/edit/:id" element={<EditOrder />} />
-            <Route path="/admin/subscriptions" element={<SubscriptionPage />} />
+            <Route path="/admin-login" element={<AdminLoginPage />} />
+
+            <Route path="/admin" element={<AdminProtectedRoute />}>
+              <Route element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="orders" element={<OrdersPage />} />
+                <Route path="products" element={<ProductDashboard />} />
+                <Route path="products/add" element={<AddProduct />} />
+                <Route path="products/edit/:id" element={<EditProduct />} />
+                <Route path="subscriptions/edit/:id" element={<EditSubscription />} />
+                <Route path="orders/edit/:id" element={<EditOrder />} />
+                <Route path="subscriptions" element={<SubscriptionPage />} />
+              </Route>
+            </Route>
           </Routes>
         </div>
       </BrowserRouter>
