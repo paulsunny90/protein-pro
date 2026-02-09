@@ -10,7 +10,7 @@ import { Productinput } from "../types/adminside.type";
 export const createProductController = async (req: Request, res: Response) => {
     try {
         let Productdata: Productinput;
-        
+
         // Handle both JSON and FormData
         if (req.file) {
             // FormData request
@@ -20,7 +20,7 @@ export const createProductController = async (req: Request, res: Response) => {
             // JSON request
             Productdata = req.body;
         }
-        
+
         const Product = await createProduct(Productdata);
         return res.status(201).json({
             success: true,
@@ -30,7 +30,7 @@ export const createProductController = async (req: Request, res: Response) => {
 
     } catch (error: any) {
         console.error("Create Product Error:", error);
-        
+
         // Handle Mongoose validation errors
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map((err: any) => err.message);
@@ -40,7 +40,7 @@ export const createProductController = async (req: Request, res: Response) => {
                 error: messages.join('. ')
             });
         }
-        
+
         return res.status(500).json({
             success: false,
             message: "Failed to create Product",
@@ -51,71 +51,83 @@ export const createProductController = async (req: Request, res: Response) => {
 
 }
 
-export const getroductController = async (_req: Request, res: Response) => {
+export const getProductController = async (req: Request, res: Response) => {
     try {
-        const Product = await getAllProducts();
+        const includeInactive = req.query.all === "true";
+        const products = await getAllProducts(includeInactive);
 
         return res.status(200).json({
             success: true,
-            message: "Product get successfully",
-            data: Product,
-
+            message: "Products retrieved successfully",
+            data: products,
         })
 
     } catch (error: any) {
         return res.status(500).json({
-            success: true,
-            message: "Product get Failed",
+            success: false,
+            message: "Failed to retrieve products",
             error: error.message,
-
         })
 
     }
 
 }
 
-export const editProductController = async (req: Request<{ id: string }, {}, Partial<Productinput>>, res: Response) => {
-
-
+export const editProductController = async (req: Request<{ id: string }>, res: Response) => {
     try {
         const { id } = req.params;
-        const updateData = req.body;
+        let updateData: Partial<Productinput>;
+
+        // Handle both JSON and FormData
+        if (req.file) {
+            // FormData request with file
+            updateData = JSON.parse(req.body.data);
+            updateData.imageUrl = `/uploads/${req.file.filename}`;
+        } else if (req.body.data && typeof req.body.data === 'string') {
+            // FormData request without file (frontend sends JSON string in 'data')
+            updateData = JSON.parse(req.body.data);
+        } else {
+            // Regular JSON request
+            updateData = req.body;
+        }
 
         const updatedProduct = await editProduct(id, updateData);
 
+        if (!updatedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
         return res.status(200).json({
             success: true,
-            message: "Product updated  successfully",
-            data: updateData
-
-        })
-
+            message: "Product updated successfully",
+            data: updatedProduct
+        });
 
     } catch (error: any) {
+        console.error("Edit Product Error:", error);
         return res.status(500).json({
-            success: true,
-            message: "Product updated  Failed",
+            success: false,
+            message: "Product update Failed",
             error: error.message
-
-        })
-
+        });
     }
-
-
 }
 
 export const deleteProductController = async (req: Request<{ id: string }>, res: Response) => {
     try {
         const { id } = req.params;
         const deletedProduct = await deleteProduct(id);
-        
+
         if (!deletedProduct) {
             return res.status(404).json({
                 success: false,
                 message: "Product not found"
             });
         }
-        
+
         return res.status(200).json({
             success: true,
             message: "Product deleted successfully",

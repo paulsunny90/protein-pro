@@ -40,19 +40,19 @@ export const authMiddleware = (
     console.log("AUTH MIDDLEWARE CALLED FOR:", req.method, req.url);
 
     const authHeader = req.headers.authorization;
-    console.log( authHeader);
+    console.log(authHeader);
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
-      console.log( token );
+      console.log(token);
     }
 
     if (!token && req.cookies?.accessToken) {
       token = req.cookies.accessToken;
-      console.log( token  );
+      console.log(token);
     }
 
-    console.log( token);
+    console.log(token);
     if (token) {
       console.log("TOKEN LENGTH 👉", token.length);
     }
@@ -61,15 +61,15 @@ export const authMiddleware = (
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET || "fallback_access_secret") as any;
     // req.user = decoded;
     req.user = {
-  ...decoded,
-  id: decoded.id || decoded._id 
-};
+      ...decoded,
+      id: decoded.id || decoded._id
+    };
 
     next();
-    
+
   } catch (error) {
     console.error("AUTH ERROR 👉", error);
     return res.status(401).json({ message: "Invalid or expired token" });

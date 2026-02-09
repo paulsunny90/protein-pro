@@ -127,7 +127,7 @@ export const updateCartItem = async (req: Request, res: Response) => {
     }
 
     const item = cart.items.find(
-      (item:any) => item.product.toString() === productId && item.size === size
+      (item: any) => item.product.toString() === productId && item.size === size
     );
 
     if (!item) {
@@ -135,7 +135,11 @@ export const updateCartItem = async (req: Request, res: Response) => {
     }
 
     if (quantity <= 0) {
-      item.deleteOne();
+      // Remove the item from the cart
+      const itemIndex = cart.items.indexOf(item);
+      if (itemIndex > -1) {
+        cart.items.splice(itemIndex, 1);
+      }
     } else {
       item.quantity = quantity;
     }

@@ -1,13 +1,10 @@
+
 import {
   Search,
   Eye,
   Pencil,
   FileText,
   Copy,
-  ShoppingCart,
-  Clock,
-  CheckCircle,
-  DollarSign,
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 
@@ -60,7 +57,7 @@ const orders: Order[] = [
 
 export default function OrdersPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div className="p-6">
 
       {/* ================= HEADER ================= */}
       <div className="mb-8">
@@ -101,31 +98,31 @@ export default function OrdersPage() {
       {/* ================= STATS ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
 
-        <EnhancedStatCard 
-          icon="📦" 
-          label="Total Orders" 
-          value="5" 
+        <EnhancedStatCard
+          icon="📦"
+          label="Total Orders"
+          value="5"
           color="from-blue-500 to-cyan-500"
           change="+12%"
         />
-        <EnhancedStatCard 
-          icon="⏱️" 
-          label="Pending" 
-          value="0" 
+        <EnhancedStatCard
+          icon="⏱️"
+          label="Pending"
+          value="0"
           color="from-amber-500 to-orange-500"
           change="0"
         />
-        <EnhancedStatCard 
-          icon="✅" 
-          label="Completed" 
-          value="2" 
+        <EnhancedStatCard
+          icon="✅"
+          label="Completed"
+          value="2"
           color="from-green-500 to-emerald-500"
           change="+5%"
         />
-        <EnhancedStatCard 
-          icon="💰" 
-          label="Revenue" 
-          value="$384.95" 
+        <EnhancedStatCard
+          icon="💰"
+          label="Revenue"
+          value="$384.95"
           color="from-purple-500 to-indigo-500"
           change="+18%"
         />
@@ -276,7 +273,7 @@ function StatusBadge({ status }: { status: string }) {
 
   return (
     <span
-      className={`px-3 py-1.5 text-xs rounded-full font-semibold ${styles[status]}`}
+      className={`px-3 py-1.5 text-xs rounded-full font-semibold ${styles[status]} `}
     >
       {status}
     </span>
@@ -301,10 +298,10 @@ function ActionButton({
     purple: "bg-purple-50 hover:bg-purple-100 text-purple-600 border-purple-200",
     gray: "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
   };
-  
+
   return (
-    <button 
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all hover:scale-105 ${colorClasses[color]}`}
+    <button
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all hover:scale-105 ${colorClasses[color]} `}
       onClick={onClick}
     >
       <Icon className="w-3.5 h-3.5" />
@@ -316,21 +313,21 @@ function ActionButton({
 // Order Action Buttons Component
 function OrderActionButtons({ orderId }: { orderId: string }) {
   const navigate = useNavigate();
-  
+
   const handleView = () => {
-    console.log(`Viewing order ${orderId}`);
+    console.log(`Viewing order ${orderId} `);
     // In a real app, navigate to view order page
   };
-  
+
   const handleEdit = () => {
-    navigate(`/EditOrder/${orderId}`);
+    navigate(`/admin/orders/edit/${orderId}`);
   };
-  
+
   const handleInvoice = () => {
     console.log(`Generating invoice for order ${orderId}`);
     // In a real app, navigate to generate invoice page
   };
-  
+
   return (
     <div className="flex gap-2">
       <ActionButton icon={Eye} label="View" color="blue" onClick={handleView} />

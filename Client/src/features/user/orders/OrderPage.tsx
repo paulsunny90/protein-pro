@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { CreditCard, MapPin, Phone, Mail, User, Building2, CheckCircle } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { createOrder } from '../../../store/slice/orderSlice';
+import { clearCart } from '../../../store/slice/cartSlice';
 
 const OrderPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { user } = useAuth();
+  const { items: cartItems } = useAppSelector((state: any) => state.cart);
+  const { loading } = useAppSelector((state: any) => state.order);
+
   const [step, setStep] = useState(1); // 1: Shipping, 2: Payment, 3: Review, 4: Confirmation
   const [shippingInfo, setShippingInfo] = useState({
     firstName: user?.name?.split(' ')[0] || '',
@@ -22,28 +28,36 @@ const OrderPage = () => {
   const [paymentMethod, setPaymentMethod] = useState('credit-card');
   const [orderSummary, setOrderSummary] = useState<any>(null);
 
-  // Get order details from location state (passed from product page or cart)
   useEffect(() => {
-    if (location.state) {
-      const { product, quantity, size } = location.state;
-      if (product) {
-        setOrderSummary({
-          items: [{
-            ...product,
-            quantity: quantity || 1,
-            size: size || 'Medium'
-          }],
-          subtotal: (product.price * (quantity || 1)).toFixed(2),
-          shipping: 0,
-          tax: ((product.price * (quantity || 1)) * 0.08).toFixed(2),
-          total: ((product.price * (quantity || 1)) * 1.08).toFixed(2)
-        });
-      }
+    if (cartItems.length > 0) {
+      const subtotal = cartItems.reduce(
+        (sum: number, item: any) => sum + (item.product?.price || 0) * item.quantity,
+        0
+      );
+      const shipping = subtotal > 0 ? 5.99 : 0;
+      const tax = subtotal * 0.08;
+      const total = subtotal + shipping + tax;
+
+      setOrderSummary({
+        items: cartItems.map((item: any) => ({
+          ...item.product,
+          quantity: item.quantity,
+          size: item.size,
+          // We need to keep product ID for the order
+          product: item.product?._id
+        })),
+        subtotal: subtotal.toFixed(2),
+        shipping: shipping.toFixed(2),
+        tax: tax.toFixed(2),
+        total: total.toFixed(2)
+      });
     } else {
-      // If no product passed, redirect to cart
-      navigate('/cart');
+      // If cart is empty, redirect to cart (unless we are at confirmation step)
+      if (step !== 4) {
+        navigate('/cart');
+      }
     }
-  }, [location.state, navigate]);
+  }, [cartItems, navigate, step]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -53,12 +67,27 @@ const OrderPage = () => {
     }));
   };
 
-  const handlePlaceOrder = () => {
-    // In a real app, this would send the order to the backend
-    console.log('Placing order:', { shippingInfo, paymentMethod, orderSummary });
-    
-    // Move to confirmation step
-    setStep(4);
+  const handlePlaceOrder = async () => {
+    const orderData = {
+      items: orderSummary.items.map((item: any) => ({
+        product: item.product, // ID
+        quantity: item.quantity,
+        size: item.size
+      })),
+      shippingAddress: shippingInfo,
+      paymentMethod,
+      totalAmount: parseFloat(orderSummary.total)
+    };
+
+    const resultAction = await dispatch(createOrder(orderData));
+
+    if (createOrder.fulfilled.match(resultAction)) {
+      dispatch(clearCart());
+      setStep(4);
+    } else {
+      console.error("Order creation failed");
+      // Optionally set an error state here
+    }
   };
 
   const renderStepIndicator = () => (
@@ -66,17 +95,15 @@ const OrderPage = () => {
       {[1, 2, 3].map((num) => (
         <div key={num} className="flex items-center">
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              step >= num ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
-            }`}
+            className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= num ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+              }`}
           >
             {step > num ? <CheckCircle className="w-5 h-5" /> : num}
           </div>
           {num < 3 && (
             <div
-              className={`w-16 h-1 ${
-                step > num ? 'bg-blue-600' : 'bg-gray-200'
-              }`}
+              className={`w-16 h-1 ${step > num ? 'bg-blue-600' : 'bg-gray-200'
+                }`}
             ></div>
           )}
         </div>
@@ -87,7 +114,7 @@ const OrderPage = () => {
   const renderShippingForm = () => (
     <div className="bg-white rounded-2xl shadow-lg p-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Shipping Information</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -105,7 +132,7 @@ const OrderPage = () => {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Last Name
@@ -122,7 +149,7 @@ const OrderPage = () => {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Email Address
@@ -139,7 +166,7 @@ const OrderPage = () => {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Phone Number
@@ -156,7 +183,7 @@ const OrderPage = () => {
             />
           </div>
         </div>
-        
+
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Address
@@ -173,7 +200,7 @@ const OrderPage = () => {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             City
@@ -190,7 +217,7 @@ const OrderPage = () => {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             State
@@ -207,7 +234,7 @@ const OrderPage = () => {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             ZIP Code
@@ -224,7 +251,7 @@ const OrderPage = () => {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Country
@@ -243,14 +270,14 @@ const OrderPage = () => {
           </select>
         </div>
       </div>
-      
+
       <div className="mt-8 flex justify-end">
         <button
           onClick={() => setStep(2)}
-          disabled={!shippingInfo.address || !shippingInfo.city || !shippingInfo.state || !shippingInfo.zipCode}
+          disabled={!shippingInfo.address || !shippingInfo.city || !shippingInfo.state || !shippingInfo.zipCode || loading}
           className="bg-blue-600 text-white py-3 px-8 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Continue to Payment
+          {loading ? 'Processing...' : 'Continue to Payment'}
         </button>
       </div>
     </div>
@@ -259,12 +286,11 @@ const OrderPage = () => {
   const renderPaymentForm = () => (
     <div className="bg-white rounded-2xl shadow-lg p-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Payment Method</h2>
-      
+
       <div className="space-y-4 mb-8">
-        <div 
-          className={`border-2 rounded-lg p-4 cursor-pointer ${
-            paymentMethod === 'credit-card' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-          }`}
+        <div
+          className={`border-2 rounded-lg p-4 cursor-pointer ${paymentMethod === 'credit-card' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+            }`}
           onClick={() => setPaymentMethod('credit-card')}
         >
           <div className="flex items-center">
@@ -277,11 +303,10 @@ const OrderPage = () => {
             </div>
           </div>
         </div>
-        
-        <div 
-          className={`border-2 rounded-lg p-4 cursor-pointer ${
-            paymentMethod === 'paypal' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-          }`}
+
+        <div
+          className={`border-2 rounded-lg p-4 cursor-pointer ${paymentMethod === 'paypal' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+            }`}
           onClick={() => setPaymentMethod('paypal')}
         >
           <div className="flex items-center">
@@ -295,7 +320,7 @@ const OrderPage = () => {
           </div>
         </div>
       </div>
-      
+
       {paymentMethod === 'credit-card' && (
         <div className="space-y-6">
           <div>
@@ -308,7 +333,7 @@ const OrderPage = () => {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -320,7 +345,7 @@ const OrderPage = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 CVV
@@ -332,7 +357,7 @@ const OrderPage = () => {
               />
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Cardholder Name
@@ -345,7 +370,7 @@ const OrderPage = () => {
           </div>
         </div>
       )}
-      
+
       <div className="mt-8 flex justify-between">
         <button
           onClick={() => setStep(1)}
@@ -366,7 +391,7 @@ const OrderPage = () => {
   const renderReviewOrder = () => (
     <div className="bg-white rounded-2xl shadow-lg p-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Review Your Order</h2>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-gray-50 rounded-lg p-6">
@@ -378,19 +403,19 @@ const OrderPage = () => {
             <p className="text-gray-700 mt-2">{shippingInfo.phone}</p>
             <p className="text-gray-700">{shippingInfo.email}</p>
           </div>
-          
+
           <div className="bg-gray-50 rounded-lg p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Payment Method</h3>
             <p className="text-gray-700 capitalize">{paymentMethod.replace('-', ' ')}</p>
           </div>
-          
+
           <div className="bg-gray-50 rounded-lg p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Items</h3>
             {orderSummary?.items.map((item: any, index: number) => (
               <div key={index} className="flex items-center py-4 border-b border-gray-200 last:border-b-0">
-                <img 
-                  src={item.images?.[0] || 'https://via.placeholder.com/80x80'} 
-                  alt={item.name} 
+                <img
+                  src={item.images?.[0] || 'https://placehold.co/80x80'}
+                  alt={item.name}
                   className="w-16 h-16 object-cover rounded-lg"
                 />
                 <div className="ml-4 flex-1">
@@ -405,7 +430,7 @@ const OrderPage = () => {
             ))}
           </div>
         </div>
-        
+
         <div className="bg-gray-50 rounded-lg p-6 h-fit">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h3>
           <div className="space-y-3">
@@ -426,7 +451,7 @@ const OrderPage = () => {
               <span>${orderSummary?.total}</span>
             </div>
           </div>
-          
+
           <button
             onClick={handlePlaceOrder}
             className="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
@@ -435,7 +460,7 @@ const OrderPage = () => {
           </button>
         </div>
       </div>
-      
+
       <div className="mt-8 flex justify-between">
         <button
           onClick={() => setStep(2)}
@@ -452,18 +477,18 @@ const OrderPage = () => {
       <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
         <CheckCircle className="h-8 w-8 text-green-600" />
       </div>
-      
+
       <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Confirmed!</h2>
       <p className="text-gray-600 mb-8">
         Thank you for your purchase. Your order has been placed successfully.
       </p>
-      
+
       <div className="bg-gray-50 rounded-lg p-6 max-w-md mx-auto mb-8">
         <h3 className="text-lg font-medium text-gray-900 mb-2">Order Details</h3>
         <p className="text-gray-600">Order #12345</p>
         <p className="text-gray-600">Total: ${orderSummary?.total}</p>
       </div>
-      
+
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <button
           onClick={() => navigate('/')}
@@ -488,9 +513,9 @@ const OrderPage = () => {
           <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
           <p className="text-gray-600 mt-2">Complete your purchase securely</p>
         </div>
-        
+
         {renderStepIndicator()}
-        
+
         {step === 1 && renderShippingForm()}
         {step === 2 && renderPaymentForm()}
         {step === 3 && renderReviewOrder()}

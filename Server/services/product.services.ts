@@ -2,13 +2,14 @@ import mongoose from "mongoose";
 import ProductModel from "../models/product.model";
 import { Productinput } from "../types/adminside.type";
 
-export const createProduct = async(data: Productinput) => {
+export const createProduct = async (data: Productinput) => {
     console.log("SERVICE DATA:", data); // debug
     return await ProductModel.create(data);
 }
 
-export const getAllProducts = async() => {
-    return await ProductModel.find({ isActive: true });
+export const getAllProducts = async (includeInactive: boolean = false) => {
+    const filter = includeInactive ? {} : { isActive: true };
+    return await ProductModel.find(filter);
 }
 
 export const editProduct = async (id: string, data: Partial<Productinput>) => {

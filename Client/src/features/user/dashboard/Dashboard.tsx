@@ -11,7 +11,7 @@ const Dashboard = () => {
     email: 'john.doe@example.com',
     joinDate: 'Jan 15, 2024',
     membership: 'Gold Plan',
-    avatar: 'https://via.placeholder.com/100x100'
+    avatar: 'https://placehold.co/100x100'
   };
 
   // Mock data for progress
@@ -109,18 +109,17 @@ const Dashboard = () => {
                   {goal.current} {goal.unit} / {goal.target} {goal.unit}
                 </p>
               </div>
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                goal.completed 
-                  ? 'bg-green-100 text-green-800' 
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${goal.completed
+                  ? 'bg-green-100 text-green-800'
                   : 'bg-yellow-100 text-yellow-800'
-              }`}>
+                }`}>
                 {goal.completed ? 'Completed' : 'In Progress'}
               </span>
             </div>
             <div className="mt-4">
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 h-2 rounded-full" 
+                <div
+                  className="bg-blue-600 h-2 rounded-full"
                   style={{ width: `${Math.min(100, (goal.current / goal.target) * 100)}%` }}
                 ></div>
               </div>
@@ -181,9 +180,9 @@ const Dashboard = () => {
         <div className="bg-white rounded-xl shadow-md p-6 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-center justify-between">
             <div className="flex items-center mb-4 md:mb-0">
-              <img 
-                src={user.avatar} 
-                alt="Profile" 
+              <img
+                src={user.avatar}
+                alt="Profile"
                 className="w-16 h-16 rounded-full border-4 border-blue-100"
               />
               <div className="ml-4">
@@ -231,11 +230,10 @@ const Dashboard = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === tab.id
+                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
+                    }`}
                 >
                   <tab.icon className="h-4 w-4 mr-2" />
                   {tab.name}

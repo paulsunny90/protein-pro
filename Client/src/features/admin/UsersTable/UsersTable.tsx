@@ -69,7 +69,7 @@ export default function UserManagement() {
     users.reduce((a, b) => a + b.orders, 0) / users.length;
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+    <div className="p-6 space-y-8">
 
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -111,31 +111,31 @@ export default function UserManagement() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Total Users" 
-          value={total} 
-          icon="👥" 
+        <StatCard
+          title="Total Users"
+          value={total}
+          icon="👥"
           color="from-blue-500 to-cyan-500"
           change="+12%"
         />
-        <StatCard 
-          title="Active Users" 
-          value={active} 
-          icon="✅" 
+        <StatCard
+          title="Active Users"
+          value={active}
+          icon="✅"
           color="from-green-500 to-emerald-500"
           change="+8%"
         />
-        <StatCard 
-          title="Suspended" 
-          value={suspended} 
-          icon="⏸️" 
+        <StatCard
+          title="Suspended"
+          value={suspended}
+          icon="⏸️"
           color="from-orange-500 to-red-500"
           change="-2%"
         />
-        <StatCard 
-          title="Avg. Orders" 
-          value={avgOrders.toFixed(1)} 
-          icon="📊" 
+        <StatCard
+          title="Avg. Orders"
+          value={avgOrders.toFixed(1)}
+          icon="📊"
           color="from-purple-500 to-indigo-500"
           change="+5%"
         />
@@ -232,7 +232,7 @@ export default function UserManagement() {
             </tbody>
           </table>
         </div>
-        
+
         <div className="mt-6 pt-4 border-t border-slate-200 flex justify-center">
           <button className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
             Load More Users
@@ -245,14 +245,14 @@ export default function UserManagement() {
 
 /* ---------- small components ---------- */
 
-function StatCard({ 
-  title, 
-  value, 
-  icon, 
+function StatCard({
+  title,
+  value,
+  icon,
   color,
   change
-}: { 
-  title: string; 
+}: {
+  title: string;
   value: number | string;
   icon: string;
   color: string;
@@ -295,7 +295,7 @@ function ActionButton({
     red: "bg-red-50 hover:bg-red-100 text-red-600 border-red-200",
     gray: "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
   };
-  
+
   return (
     <button className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-xs font-medium transition-all hover:scale-105 ${colorClasses[color]}`}>
       <Icon className="w-3.5 h-3.5" />

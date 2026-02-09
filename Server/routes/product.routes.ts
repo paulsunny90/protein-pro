@@ -1,20 +1,20 @@
 import express from "express";
 import { upload } from "../config/upload.config";
-import { 
+import {
     createProductController,
-    getroductController,
+    getProductController,
     editProductController,
-    deleteProductController 
-    
+    deleteProductController
 
- } from "../controllers/product.controller";
+
+} from "../controllers/product.controller";
 
 const router = express.Router();
 
-router.post("/product/", upload.single("image"), createProductController);
-router.get("/product/", getroductController)
-router.put("/product/:id", upload.single("image"), editProductController)
-router.delete("/product/:id", deleteProductController)
+router.post("/", upload.single("image"), createProductController);
+router.get("/", getProductController)
+router.put("/:id", upload.single("image"), editProductController)
+router.delete("/:id", deleteProductController)
 
 
 export default router;

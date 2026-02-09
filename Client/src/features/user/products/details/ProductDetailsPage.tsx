@@ -1,61 +1,47 @@
-import { useState } from 'react';
-import { Star, ShoppingCart, Heart, Shield, Truck, RotateCcw, StarHalf } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Star, ShoppingCart, Heart, Shield, Truck, RotateCcw, StarHalf, Loader2 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { fetchProductById } from '../../../../store/slice/productSlice';
+import { addToCart } from '../../../../store/slice/cartSlice';
 
 const ProductDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const dispatch = useAppDispatch();
+
+  const { products, loading: productLoading, error: productError } = useAppSelector((state) => state.product);
+  const product = products.find(p => p._id === id);
+
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('Medium');
 
-  // Mock product data - in a real app, this would come from an API
-  const product = {
-    id: id || '1',
-    name: 'Premium Whey Protein Powder',
-    price: 49.99,
-    originalPrice: 59.99,
-    discount: 17,
-    rating: 4.5,
-    reviewCount: 128,
-    inStock: true,
-    stockCount: 42,
-    description: 'Our premium whey protein powder is made from grass-fed cows and contains 25g of high-quality protein per serving. Perfect for post-workout recovery and muscle building.',
-    features: [
-      '25g Protein per Serving',
-      'Low Fat and Carbs',
-      'Grass-Fed Ingredients',
-      'No Artificial Sweeteners',
-      'Fast Absorption',
-      'Rich in BCAAs'
-    ],
-    sizes: ['Small', 'Medium', 'Large'],
-    flavors: ['Vanilla', 'Chocolate', 'Strawberry', 'Banana'],
-    images: [
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
-    ],
-    nutritionalInfo: {
-      calories: 120,
-      protein: 25,
-      carbs: 2,
-      fat: 1,
-      sugar: 1,
-      sodium: 150
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchProductById(id));
     }
-  };
+  }, [dispatch, id]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
-    // In a real app, this would dispatch an action to add the item to cart
-    console.log(`Added ${quantity}x ${product.name} to cart`);
-    // Show success notification
-    alert(`${product.name} added to cart!`);
+
+    if (product?._id) {
+      try {
+        await dispatch(addToCart({
+          productId: product._id,
+          quantity,
+          size: selectedSize
+        })).unwrap();
+        alert(`${product.name} added to cart!`);
+      } catch (err: any) {
+        alert(err || 'Failed to add to cart');
+      }
+    }
   };
 
   const handleBuyNow = () => {
@@ -88,6 +74,63 @@ const ProductDetailsPage = () => {
     return <div className="flex">{stars}</div>;
   };
 
+  if (productLoading && !product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  if (productError && !product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Product not found</h2>
+          <p className="text-gray-600">{productError}</p>
+          <button
+            onClick={() => navigate('/products')}
+            className="mt-4 text-blue-600 hover:text-blue-800 font-medium"
+          >
+            Back to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) return null;
+
+  // Use placeholder data for things not in the DB model yet
+  const displayProduct = {
+    ...product,
+    originalPrice: product.originalPrice || product.price * 1.2,
+    discount: product.discount || 15,
+    rating: product.rating || 4.5,
+    reviewCount: product.reviewCount || 100,
+    features: [
+      '25g Protein per Serving',
+      'Low Fat and Carbs',
+      'Grass-Fed Ingredients',
+      'No Artificial Sweeteners',
+      'Fast Absorption',
+      'Rich in BCAAs'
+    ],
+    sizes: ['Small', 'Medium', 'Large'],
+    flavors: ['Vanilla', 'Chocolate', 'Strawberry', 'Banana'],
+    images: product.image ? [product.image] : [
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+    ],
+    nutritionalInfo: {
+      calories: 120,
+      protein: 25,
+      carbs: 2,
+      fat: 1,
+      sugar: 1,
+      sodium: 150
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -106,7 +149,7 @@ const ProductDetailsPage = () => {
             <li>
               <div className="flex items-center">
                 <span className="mx-2 text-gray-400">/</span>
-                <span className="text-gray-500">{product.name}</span>
+                <span className="text-gray-500">{displayProduct.name}</span>
               </div>
             </li>
           </ol>
@@ -118,18 +161,21 @@ const ProductDetailsPage = () => {
             {/* Product Images */}
             <div className="space-y-4">
               <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
-                <img 
-                  src={product.images[0]} 
-                  alt={product.name} 
+                <img
+                  src={displayProduct.images[0]}
+                  alt={displayProduct.name}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300?text=No+Image';
+                  }}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="grid grid-cols-3 gap-4">
-                {product.images.slice(0, 3).map((image, index) => (
+                {displayProduct.images.slice(0, 3).map((image, index) => (
                   <div key={index} className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                    <img 
-                      src={image} 
-                      alt={`${product.name} ${index + 1}`} 
+                    <img
+                      src={image}
+                      alt={`${displayProduct.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -144,37 +190,36 @@ const ProductDetailsPage = () => {
                   Best Seller
                 </span>
               </div>
-              
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-              
+
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{displayProduct.name}</h1>
+
               <div className="flex items-center mb-4">
                 <div className="flex items-center">
-                  {renderStars(product.rating)}
+                  {renderStars(displayProduct.rating)}
                 </div>
-                <span className="ml-2 text-sm text-gray-600">({product.reviewCount} reviews)</span>
-              </div>
-              
-              <div className="flex items-center mb-6">
-                <span className="text-3xl font-bold text-gray-900">${product.price}</span>
-                <span className="ml-3 text-xl text-gray-500 line-through">${product.originalPrice}</span>
-                <span className="ml-3 text-lg font-semibold text-green-600">Save {product.discount}%</span>
+                <span className="ml-2 text-sm text-gray-600">({displayProduct.reviewCount} reviews)</span>
               </div>
 
-              <p className="text-gray-700 mb-6">{product.description}</p>
+              <div className="flex items-center mb-6">
+                <span className="text-3xl font-bold text-gray-900">${displayProduct.price}</span>
+                <span className="ml-3 text-xl text-gray-500 line-through">${displayProduct.originalPrice.toFixed(2)}</span>
+                <span className="ml-3 text-lg font-semibold text-green-600">Save {displayProduct.discount}%</span>
+              </div>
+
+              <p className="text-gray-700 mb-6">{displayProduct.description}</p>
 
               {/* Size Selection */}
               <div className="mb-6">
                 <h3 className="text-lg font-medium text-gray-900 mb-3">Size</h3>
                 <div className="flex flex-wrap gap-3">
-                  {product.sizes.map((size) => (
+                  {displayProduct.sizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`px-4 py-2 border rounded-lg font-medium ${
-                        selectedSize === size
-                          ? 'border-blue-500 bg-blue-50 text-blue-600'
-                          : 'border-gray-300 text-gray-700 hover:border-gray-400'
-                      }`}
+                      className={`px-4 py-2 border rounded-lg font-medium ${selectedSize === size
+                        ? 'border-blue-500 bg-blue-50 text-blue-600'
+                        : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                        }`}
                     >
                       {size}
                     </button>
@@ -186,7 +231,7 @@ const ProductDetailsPage = () => {
               <div className="mb-6">
                 <h3 className="text-lg font-medium text-gray-900 mb-3">Flavor</h3>
                 <div className="flex flex-wrap gap-3">
-                  {product.flavors.map((flavor) => (
+                  {displayProduct.flavors.map((flavor) => (
                     <button
                       key={flavor}
                       className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:border-gray-400"
@@ -221,9 +266,9 @@ const ProductDetailsPage = () => {
 
               {/* Stock Status */}
               <div className="mb-6">
-                {product.inStock ? (
+                {displayProduct.inStock ? (
                   <p className="text-green-600 font-medium">
-                    In Stock • {product.stockCount} available
+                    In Stock
                   </p>
                 ) : (
                   <p className="text-red-600 font-medium">Out of Stock</p>
@@ -254,7 +299,7 @@ const ProductDetailsPage = () => {
               <div className="mt-8">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Features</h3>
                 <ul className="space-y-2">
-                  {product.features.map((feature, index) => (
+                  {displayProduct.features.map((feature, index) => (
                     <li key={index} className="flex items-center">
                       <Shield className="h-5 w-5 text-green-500 mr-2" />
                       <span className="text-gray-700">{feature}</span>
@@ -270,27 +315,27 @@ const ProductDetailsPage = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Nutritional Information</h2>
             <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
               <div className="bg-blue-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-blue-600">{product.nutritionalInfo.calories}</div>
+                <div className="text-2xl font-bold text-blue-600">{displayProduct.nutritionalInfo.calories}</div>
                 <div className="text-sm text-gray-600">Calories</div>
               </div>
               <div className="bg-green-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-green-600">{product.nutritionalInfo.protein}g</div>
+                <div className="text-2xl font-bold text-green-600">{displayProduct.nutritionalInfo.protein}g</div>
                 <div className="text-sm text-gray-600">Protein</div>
               </div>
               <div className="bg-yellow-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-yellow-600">{product.nutritionalInfo.carbs}g</div>
+                <div className="text-2xl font-bold text-yellow-600">{displayProduct.nutritionalInfo.carbs}g</div>
                 <div className="text-sm text-gray-600">Carbs</div>
               </div>
               <div className="bg-red-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-red-600">{product.nutritionalInfo.fat}g</div>
+                <div className="text-2xl font-bold text-red-600">{displayProduct.nutritionalInfo.fat}g</div>
                 <div className="text-sm text-gray-600">Fat</div>
               </div>
               <div className="bg-purple-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-purple-600">{product.nutritionalInfo.sugar}g</div>
+                <div className="text-2xl font-bold text-purple-600">{displayProduct.nutritionalInfo.sugar}g</div>
                 <div className="text-sm text-gray-600">Sugar</div>
               </div>
               <div className="bg-indigo-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-indigo-600">{product.nutritionalInfo.sodium}mg</div>
+                <div className="text-2xl font-bold text-indigo-600">{displayProduct.nutritionalInfo.sodium}mg</div>
                 <div className="text-sm text-gray-600">Sodium</div>
               </div>
             </div>

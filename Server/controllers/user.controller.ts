@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import Userlog from "../models/user.model";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwt.utils";
 
 export const setPassword = async (req: Request, res: Response) => {
   const userId = (req as any).user.id;
@@ -58,9 +59,29 @@ export const registerUser = async (req: Request, res: Response) => {
       isVerified: true,
     });
 
+    // Generate tokens for auto-login
+    const accessToken = generateAccessToken(newUser);
+    const refreshTokenValue = generateRefreshToken(newUser);
+
+    // Set cookies
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false, // Set to true in production
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshTokenValue, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false, // Set to true in production
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     res.status(201).json({
       message: "Signup successful",
       user: newUser,
+      token: accessToken,
     });
 
   } catch (error) {

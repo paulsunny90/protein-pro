@@ -44,9 +44,9 @@ export const createOrder = async (req: Request, res: Response) => {
     if (!req.user) return res.status(401).json({ message: "User not found in request" });
 
     const order = new OrderModel({
-      user: req.user.id, 
+      user: req.user.id,
       orderItems,
-      shippingAddress, 
+      shippingAddress,
       paymentMethod: "ONLINE",
       itemsPrice,
       shippingPrice,
@@ -81,12 +81,23 @@ export const getOrderById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const order = await OrderModel.findById(id); 
+    const order = await OrderModel.findById(id);
     // REMOVE .populate("orderItems.product") if your IDs are "2", "6", etc.
     // REMOVE .populate("user") if you still get the Schema error.
 
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.status(200).json(order);
+  } catch (error: any) {
+    res.status(500).json({ message: "Server Error: " + error.message });
+  }
+};
+
+export const getAllOrders = async (_req: Request, res: Response) => {
+  try {
+    const orders = await OrderModel.find()
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 });
+    res.status(200).json(orders);
   } catch (error: any) {
     res.status(500).json({ message: "Server Error: " + error.message });
   }

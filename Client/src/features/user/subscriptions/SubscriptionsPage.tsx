@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckCircle, Clock, Star, Shield, Users } from 'lucide-react';
 
 interface SubscriptionPlan {
@@ -114,7 +114,7 @@ const SubscriptionsPage = () => {
     }
   ];
 
-  const selectedPlanDetails = plans.find(plan => plan.id === selectedPlan);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
@@ -125,7 +125,7 @@ const SubscriptionsPage = () => {
             Choose Your Nutrition Plan
           </h1>
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Flexible subscription options to fuel your fitness journey. 
+            Flexible subscription options to fuel your fitness journey.
             Customize your nutrition and get it delivered regularly.
           </p>
         </div>
@@ -138,21 +138,19 @@ const SubscriptionsPage = () => {
             <div className="bg-gray-100 p-1 rounded-lg flex">
               <button
                 onClick={() => setBillingCycle('monthly')}
-                className={`px-6 py-2 rounded-md font-medium transition-colors ${
-                  billingCycle === 'monthly'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`px-6 py-2 rounded-md font-medium transition-colors ${billingCycle === 'monthly'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+                  }`}
               >
                 Monthly
               </button>
               <button
                 onClick={() => setBillingCycle('annual')}
-                className={`px-6 py-2 rounded-md font-medium transition-colors ${
-                  billingCycle === 'annual'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`px-6 py-2 rounded-md font-medium transition-colors ${billingCycle === 'annual'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+                  }`}
               >
                 Annual (Save up to 25%)
               </button>
@@ -164,11 +162,10 @@ const SubscriptionsPage = () => {
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl p-8 border-2 cursor-pointer transition-all ${
-                  selectedPlan === plan.id
-                    ? 'border-blue-500 bg-gradient-to-b from-blue-50 to-white scale-105 ring-2 ring-blue-200'
-                    : 'border-gray-200 bg-white hover:border-blue-300'
-                } ${plan.popular ? 'border-blue-500' : ''}`}
+                className={`relative rounded-2xl p-8 border-2 cursor-pointer transition-all ${selectedPlan === plan.id
+                  ? 'border-blue-500 bg-gradient-to-b from-blue-50 to-white scale-105 ring-2 ring-blue-200'
+                  : 'border-gray-200 bg-white hover:border-blue-300'
+                  } ${plan.popular ? 'border-blue-500' : ''}`}
                 onClick={() => setSelectedPlan(plan.id)}
               >
                 {plan.popular && (
@@ -193,16 +190,15 @@ const SubscriptionsPage = () => {
                     <span className="text-gray-600 ml-1">{plan.period}</span>
                   </div>
                   <button
-                    className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
-                      selectedPlan === plan.id
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                    }`}
+                    className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${selectedPlan === plan.id
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                      }`}
                   >
                     {selectedPlan === plan.id ? 'Selected' : 'Select Plan'}
                   </button>
                 </div>
-                
+
                 <ul className="space-y-3">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-center">
@@ -255,7 +251,7 @@ const SubscriptionsPage = () => {
                 Tailored Nutrition for Your Goals
               </h2>
               <p className="text-lg text-gray-600 mb-8">
-                Our subscription service adapts to your changing needs. Whether you're bulking, cutting, 
+                Our subscription service adapts to your changing needs. Whether you're bulking, cutting,
                 or maintaining, we've got the right nutrition plan for you.
               </p>
               <div className="space-y-4">

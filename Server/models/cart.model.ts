@@ -3,6 +3,7 @@ import mongoose, { Schema, Types } from "mongoose";
 interface CartItem {
   product: Types.ObjectId;
   quantity: number;
+  size: string;
 }
 
 const cartSchema = new Schema(
@@ -23,6 +24,10 @@ const cartSchema = new Schema(
           type: Number,
           default: 1,
           min: 1,
+        },
+        size: {
+          type: String,
+          default: 'M',
         },
       },
     ],

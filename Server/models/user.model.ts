@@ -53,7 +53,14 @@ const userSchema: Schema<UserLogin> = new Schema(
         isVerified: {
             type: Boolean,
             default: false
-
+        },
+        plan: {
+            type: String,
+            enum: {
+                values: ["none", "silver", "gold", "platinum"],
+                message: "Plan must be none, silver, gold, or platinum"
+            },
+            default: "none"
         },
 
 
