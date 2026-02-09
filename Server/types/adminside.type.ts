@@ -1,4 +1,4 @@
-import {Document,Types} from "mongoose"
+import { Document, Types } from "mongoose"
 
 // Extend Express Request type to include user property
 declare global {
@@ -15,28 +15,38 @@ declare global {
   }
 }
 
-export interface Product extends Document{
+export interface Product extends Document {
   name: string;
   description: string;
   brand: string;
   category: string;
   price: number;
-  imageUrl?: string; 
+  imageUrl?: string;
   isActive: boolean;
   stock?: number;
   sizes?: string[];
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  fiber?: number;
 }
 
-export interface Productinput{
+export interface Productinput {
   name: string;
   description: string;
   brand: string;
   category: string;
   price: number;
-  imageUrl?: string; 
+  imageUrl?: string;
   isActive?: boolean;
   stock?: number;
   sizes?: string[];
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  fiber?: number;
 }
 
 export interface Category extends Document {
@@ -74,6 +84,7 @@ export interface UserLogin extends Document {
   authProvider: "local" | "google";
   googleID?: string;
   isVerified: boolean;
+  plan: "none" | "silver" | "gold" | "platinum";
 }
 
 export interface UserAddress extends Document {

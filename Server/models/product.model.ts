@@ -46,7 +46,27 @@ const ProductSchema: Schema<Product> = new Schema(
     sizes: [{
       type: String,
       enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
-    }]
+    }],
+    calories: {
+      type: Number,
+      default: 0
+    },
+    protein: {
+      type: Number,
+      default: 0
+    },
+    carbs: {
+      type: Number,
+      default: 0
+    },
+    fat: {
+      type: Number,
+      default: 0
+    },
+    fiber: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 );
