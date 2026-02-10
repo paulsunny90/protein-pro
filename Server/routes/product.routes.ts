@@ -4,12 +4,13 @@ import {
     createProductController,
     getProductController,
     editProductController,
-    deleteProductController
-
-
+    deleteProductController,
+    getProductByIdController
 } from "../controllers/product.controller";
 
 const router = express.Router();
+
+router.get("/:id", getProductByIdController);
 
 router.post("/", upload.array("images", 5), createProductController);
 router.get("/", getProductController)

@@ -12,6 +12,11 @@ export const getAllProducts = async (includeInactive: boolean = false) => {
     return await ProductModel.find(filter);
 }
 
+export const getProductById = async (id: string) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) return null;
+    return await ProductModel.findById(id);
+}
+
 export const editProduct = async (id: string, data: Partial<Productinput>) => {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
 

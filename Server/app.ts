@@ -1,7 +1,9 @@
 import express from "express"
 import dotenv from "dotenv"
 import cors from "cors"
-import cookieParser from "cookie-parser"
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const cookieParser = require("cookie-parser");
 import mainRoutes from "./routes/index.routes"
 import orderRoutes from "./routes/order.routes"
 
@@ -25,5 +27,13 @@ app.use("/uploads", express.static("uploads"));
 // Use all routes under /api
 app.use("/api", mainRoutes);
 app.use("/api/orders", orderRoutes);
+
+// Auth routes (separate from /api to match callback URL)
+import passport from "passport";
+import "./config/google.config";
+import authRoutes from "./routes/auth.routes";
+
+app.use(passport.initialize());
+app.use("/auth", authRoutes);
 
 export default app;

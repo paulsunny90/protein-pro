@@ -3,7 +3,8 @@ import {
     createProduct,
     getAllProducts,
     editProduct,
-    deleteProduct
+    deleteProduct,
+    getProductById
 } from "../services/product.services";
 import { Productinput } from "../types/adminside.type";
 
@@ -73,6 +74,34 @@ export const getProductController = async (req: Request, res: Response) => {
 
     }
 
+}
+
+
+export const getProductByIdController = async (req: Request<{ id: string }>, res: Response) => {
+    try {
+        const { id } = req.params;
+        const product = await getProductById(id);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Product retrieved successfully",
+            data: product
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Failed to retrieve product",
+            error: error.message
+        });
+    }
 }
 
 export const editProductController = async (req: Request<{ id: string }>, res: Response) => {
