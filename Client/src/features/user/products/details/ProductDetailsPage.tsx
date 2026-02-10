@@ -122,12 +122,11 @@ const ProductDetailsPage = () => {
       'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
     ],
     nutritionalInfo: {
-      calories: 120,
-      protein: 25,
-      carbs: 2,
-      fat: 1,
-      sugar: 1,
-      sodium: 150
+      calories: product.calories || 0,
+      protein: product.protein || 0,
+      carbs: product.carbs || 0,
+      fat: product.fat || 0,
+      fiber: product.fiber || 0,
     }
   };
 
@@ -313,7 +312,7 @@ const ProductDetailsPage = () => {
           {/* Nutritional Information */}
           <div className="border-t border-gray-200 p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Nutritional Information</h2>
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="bg-blue-50 p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-blue-600">{displayProduct.nutritionalInfo.calories}</div>
                 <div className="text-sm text-gray-600">Calories</div>
@@ -331,12 +330,8 @@ const ProductDetailsPage = () => {
                 <div className="text-sm text-gray-600">Fat</div>
               </div>
               <div className="bg-purple-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-purple-600">{displayProduct.nutritionalInfo.sugar}g</div>
-                <div className="text-sm text-gray-600">Sugar</div>
-              </div>
-              <div className="bg-indigo-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-indigo-600">{displayProduct.nutritionalInfo.sodium}mg</div>
-                <div className="text-sm text-gray-600">Sodium</div>
+                <div className="text-2xl font-bold text-purple-600">{displayProduct.nutritionalInfo.fiber}g</div>
+                <div className="text-sm text-gray-600">Fiber</div>
               </div>
             </div>
           </div>

@@ -14,6 +14,7 @@ import CartPage from './features/user/products/CartPage';
 import ProgressTracker from './features/user/progress-tracker/ProgressTracker';
 import LoginPage from './features/user/auth/LoginPage';
 import SignupPage from './features/user/auth/SignupPage';
+import LoginSuccess from './features/user/auth/LoginSuccess';
 import ProductDetailsPage from './features/user/products/details/ProductDetailsPage';
 import OrderPage from './features/user/orders/OrderPage';
 
@@ -102,6 +103,7 @@ const App = () => {
             {/* Auth routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/auth/login-success" element={<LoginSuccess />} />
 
             {/* Protected routes */}
             <Route path="/dashboard" element={
