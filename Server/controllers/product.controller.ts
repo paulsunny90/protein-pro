@@ -12,10 +12,12 @@ export const createProductController = async (req: Request, res: Response) => {
         let Productdata: Productinput;
 
         // Handle both JSON and FormData
-        if (req.file) {
-            // FormData request
+        if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+            // FormData request with multiple files
             Productdata = JSON.parse(req.body.data);
-            Productdata.imageUrl = `/uploads/${req.file.filename}`;
+            Productdata.images = req.files.map(file => `/uploads/${file.filename}`);
+            // Set the first image as primary imageUrl for backward compatibility
+            Productdata.imageUrl = Productdata.images[0];
         } else {
             // JSON request
             Productdata = req.body;
@@ -79,10 +81,19 @@ export const editProductController = async (req: Request<{ id: string }>, res: R
         let updateData: Partial<Productinput>;
 
         // Handle both JSON and FormData
-        if (req.file) {
-            // FormData request with file
+        if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+            // FormData request with new files
             updateData = JSON.parse(req.body.data);
-            updateData.imageUrl = `/uploads/${req.file.filename}`;
+            const newImages = req.files.map(file => `/uploads/${file.filename}`);
+
+            // Preserve existing images if specified in the request
+            const existingImages = updateData.images || [];
+            updateData.images = [...existingImages, ...newImages];
+
+            // Set the first image as primary imageUrl for backward compatibility
+            if (updateData.images.length > 0) {
+                updateData.imageUrl = updateData.images[0];
+            }
         } else if (req.body.data && typeof req.body.data === 'string') {
             // FormData request without file (frontend sends JSON string in 'data')
             updateData = JSON.parse(req.body.data);

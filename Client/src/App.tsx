@@ -3,6 +3,9 @@ import { AuthProvider } from './contexts/AuthContext';
 import UserLayout from './features/user/UserLayout';
 import HomePage from './features/user/home/HomePage';
 import ProductsPage from './features/user/products/ProductsPage';
+import BabyProductsPage from './features/user/categoryProductsPage/babys';
+import MenProductsPage from './features/user/categoryProductsPage/mens';
+import WomenProductsPage from './features/user/categoryProductsPage/women';
 import SubscriptionsPage from './features/user/subscriptions/SubscriptionsPage';
 import Dashboard from './features/user/dashboard/Dashboard';
 import BMICalculator from './features/user/bmi-calculator/BMICalculator';
@@ -43,6 +46,21 @@ const App = () => {
             <Route path="/products" element={
               <UserLayout>
                 <ProductsPage />
+              </UserLayout>
+            } />
+            <Route path="/products/baby" element={
+              <UserLayout>
+                <BabyProductsPage />
+              </UserLayout>
+            } />
+            <Route path="/products/men" element={
+              <UserLayout>
+                <MenProductsPage />
+              </UserLayout>
+            } />
+            <Route path="/products/women" element={
+              <UserLayout>
+                <WomenProductsPage />
               </UserLayout>
             } />
             <Route path="/products/:id" element={

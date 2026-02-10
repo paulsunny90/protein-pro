@@ -20,8 +20,11 @@ export interface Product extends Document {
   description: string;
   brand: string;
   category: string;
+  targetGroup: 'Mens' | 'Women' | 'Babys' | 'All';
+  productType: 'Foods' | 'Supplements';
   price: number;
   imageUrl?: string;
+  images?: string[];
   isActive: boolean;
   stock?: number;
   sizes?: string[];
@@ -37,8 +40,11 @@ export interface Productinput {
   description: string;
   brand: string;
   category: string;
+  targetGroup: 'Mens' | 'Women' | 'Babys' | 'All';
+  productType: 'Foods' | 'Supplements';
   price: number;
   imageUrl?: string;
+  images?: string[];
   isActive?: boolean;
   stock?: number;
   sizes?: string[];

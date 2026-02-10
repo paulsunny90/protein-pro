@@ -11,9 +11,9 @@ import {
 
 const router = express.Router();
 
-router.post("/", upload.single("image"), createProductController);
+router.post("/", upload.array("images", 5), createProductController);
 router.get("/", getProductController)
-router.put("/:id", upload.single("image"), editProductController)
+router.put("/:id", upload.array("images", 5), editProductController)
 router.delete("/:id", deleteProductController)
 
 

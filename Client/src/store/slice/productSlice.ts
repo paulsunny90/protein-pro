@@ -21,12 +21,15 @@ export interface Product {
   description: string;
   brand: string;
   category: string;
+  targetGroup: 'Mens' | 'Women' | 'Babys' | 'All';
+  productType: 'Foods' | 'Supplements';
   price: number;
   originalPrice: number;
   rating: number; // Added
   reviewCount: number; // Added
   image: string; // Changed from imageUrl to image to match component
   imageUrl?: string; // Keep for backward compatibility if needed
+  images?: string[]; // Multiple images array
   isActive: boolean;
   inStock: boolean; // Added
   discount: number; // Added
@@ -35,6 +38,7 @@ export interface Product {
   carbs?: number;
   fat?: number;
   fiber?: number;
+  stock?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -69,7 +73,8 @@ export const fetchProducts = createAsyncThunk(
     // Map backend data to frontend structure
     return res.data.data.map((p: any) => ({
       ...p,
-      image: formatImageUrl(p.imageUrl), // Map imageUrl to image with formatting
+      image: formatImageUrl(p.images?.[0] || p.imageUrl), // Use first image from array or fallback to imageUrl
+      images: p.images?.map((img: string) => formatImageUrl(img)) || [], // Map all images
       rating: p.rating || 4.5, // Default rating if missing
       reviewCount: p.reviewCount || 0,
       discount: p.discount || 0,

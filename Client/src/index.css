@@ -76,4 +76,17 @@
   .card-hover {
     @apply hover:shadow-2xl hover:-translate-y-1 transition-all duration-300;
   }
+
+  /* Soft UI System */
+  .soft-card {
+    @apply bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100/50;
+  }
+  
+  .soft-card-hover {
+    @apply transition-all duration-500 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1;
+  }
+
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl shadow-slate-200/20;
+  }
 }

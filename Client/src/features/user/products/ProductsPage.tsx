@@ -4,7 +4,7 @@ import { fetchProducts } from '../../../store/slice/productSlice';
 import { addToCart } from '../../../store/slice/cartSlice';
 import type { Product } from '../../../store/slice/productSlice';
 import { ShoppingCart, Star, Filter, Grid, List, Heart, Package } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, NavLink } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const ProductsPage = () => {
@@ -42,6 +42,7 @@ const ProductsPage = () => {
       }
     }
   };
+
 
   const categories = [
     { id: 'all', name: 'All Products' },
@@ -182,6 +183,10 @@ const ProductsPage = () => {
     </Link>
   );
 
+  const base = "px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-[0.15em] transition-all duration-300";
+  const active = "bg-white text-emerald-600 shadow-sm ring-1 ring-emerald-100 scale-105";
+  const inactive = "text-slate-500 hover:text-slate-800 hover:bg-slate-200/50";
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -196,64 +201,100 @@ const ProductsPage = () => {
             Biotechnologically perfected supplements engineered for your individual physiological demands.
           </p>
         </div>
+        {/* Category Navbar */}
+        <div className="flex justify-center mb-12 animate-fade-in delay-100">
+          <div className="inline-flex bg-slate-100/50 backdrop-blur-sm p-1.5 rounded-full border border-slate-200/50">
+            <NavLink
+              to="/products/men"
+              className={({ isActive }) =>
+                `${base} ${isActive ? active : inactive}`
+              }
+            >
+              MEN
+            </NavLink>
+
+            <NavLink
+              to="/products/women"
+              className={({ isActive }) =>
+                `${base} ${isActive ? active : inactive}`
+              }
+            >
+              WOMEN
+            </NavLink>
+
+            <NavLink
+              to="/products/baby"
+              className={({ isActive }) =>
+                `${base} ${isActive ? active : inactive}`
+              }
+            >
+              KIDS
+            </NavLink>
+          </div>
+        </div>
+
 
         {/* Filters and Sorting */}
-        <div className="soft-card p-4 mb-12 border-none">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="flex flex-wrap items-center gap-4">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Filter By</span>
-              <div className="flex items-center bg-slate-50 rounded-2xl px-4 py-2 border border-slate-100">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 cursor-pointer pr-10"
-                >
-                  {categories.map(category => (
-                    <option key={category.id} value={category.id}>{category.name}</option>
-                  ))}
-                </select>
-                <div className="bg-white p-1 rounded-lg shadow-sm -ml-8 pointer-events-none">
-                  <Filter className="w-3 h-3 text-emerald-500" />
-                </div>
-              </div>
+        {/* Filters and Sorting */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 px-4">
+          <div className="flex items-center gap-4 bg-white p-2 pr-6 rounded-full shadow-sm border border-slate-100">
+            <div className="bg-slate-900 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+              Filter By
+            </div>
 
-              <div className="flex items-center bg-slate-50 rounded-2xl px-4 py-2 border border-slate-100">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 cursor-pointer pr-10"
-                >
-                  <option value="featured">Featured First</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Top Rated</option>
-                </select>
-                <div className="bg-white p-1 rounded-lg shadow-sm -ml-8 pointer-events-none">
-                  <Filter className="w-3 h-3 text-emerald-500" />
-                </div>
+            <div className="relative group">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="appearance-none bg-transparent pl-4 pr-10 py-2 text-sm font-bold text-slate-600 focus:outline-none cursor-pointer hover:text-emerald-600 transition-colors"
+              >
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>{category.name}</option>
+                ))}
+              </select>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-emerald-500 transition-colors">
+                <Filter className="w-3 h-3" />
               </div>
             </div>
 
-            <div className="flex items-center bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2.5 rounded-xl transition-all ${viewMode === 'grid'
-                  ? 'bg-white text-emerald-600 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-600'
-                  }`}
+            <div className="w-px h-6 bg-slate-200"></div>
+
+            <div className="relative group">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="appearance-none bg-transparent pl-4 pr-10 py-2 text-sm font-bold text-slate-600 focus:outline-none cursor-pointer hover:text-emerald-600 transition-colors"
               >
-                <Grid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2.5 rounded-xl transition-all ${viewMode === 'list'
-                  ? 'bg-white text-emerald-600 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-600'
-                  }`}
-              >
-                <List className="w-4 h-4" />
-              </button>
+                <option value="featured">Featured First</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Top Rated</option>
+              </select>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-emerald-500 transition-colors">
+                <Filter className="w-3 h-3" />
+              </div>
             </div>
+          </div>
+
+          <div className="flex items-center bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-3 rounded-xl transition-all duration-300 ${viewMode === 'grid'
+                ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
+                : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                }`}
+            >
+              <Grid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-3 rounded-xl transition-all duration-300 ${viewMode === 'list'
+                ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
+                : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
