@@ -30,6 +30,17 @@ const ProductSchema: Schema<Product> = new Schema(
       type: String,
       required: true,
     },
+    targetGroup: {
+      type: String,
+      enum: ['Mens', 'Women', 'Babys', 'All'],
+      default: 'All',
+    },
+    productType: {
+      type: String,
+      enum: ['Foods', 'Supplements'],
+      required: true,
+      default: 'Supplements',
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -37,6 +48,10 @@ const ProductSchema: Schema<Product> = new Schema(
     imageUrl: {
       type: String,
       default: "",
+    },
+    images: {
+      type: [String],
+      default: []
     },
     stock: {
       type: Number,
