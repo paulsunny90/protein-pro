@@ -17,6 +17,9 @@ import SignupPage from './features/user/auth/SignupPage';
 import LoginSuccess from './features/user/auth/LoginSuccess';
 import ProductDetailsPage from './features/user/products/details/ProductDetailsPage';
 import OrderPage from './features/user/orders/OrderPage';
+import MyOrdersPage from './features/user/orders/MyOrdersPage';
+import SavedAddressesPage from './features/user/profile/SavedAddressesPage';
+import GiftCardsPage from './features/user/profile/GiftCardsPage';
 
 // Admin routes
 import AdminLayout from './features/admin/AdminLayout'
@@ -92,6 +95,21 @@ const App = () => {
             <Route path="/order" element={
               <UserLayout>
                 <OrderPage />
+              </UserLayout>
+            } />
+            <Route path="/orders" element={
+              <UserLayout>
+                <MyOrdersPage />
+              </UserLayout>
+            } />
+            <Route path="/saved-addresses" element={
+              <UserLayout>
+                <SavedAddressesPage />
+              </UserLayout>
+            } />
+            <Route path="/gift-cards" element={
+              <UserLayout>
+                <GiftCardsPage />
               </UserLayout>
             } />
             <Route path="/progress" element={

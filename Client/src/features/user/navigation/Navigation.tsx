@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Home, Package, BarChart3, Heart, Menu, TrendingUp, User, LogOut } from 'lucide-react';
+import { ShoppingCart, Home, Package, BarChart3, Heart, Menu, TrendingUp, User, LogOut, ShoppingBag, Gift, MapPin } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const Navigation = () => {
@@ -70,14 +70,47 @@ const Navigation = () => {
                 </button>
 
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-3 w-56 bg-white rounded-3xl shadow-2xl shadow-emerald-500/10 border border-slate-100 py-2 z-50 animate-slide-up">
+                  <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl shadow-emerald-500/10 border border-slate-100 py-2 z-50 animate-slide-up">
+                    <div className="px-4 py-3 border-b border-slate-100">
+                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Account</p>
+                    </div>
+
                     <Link
                       to="/dashboard"
+                      onClick={() => setIsUserMenuOpen(false)}
                       className="block px-6 py-3 text-sm font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 flex items-center transition-colors"
                     >
                       <User className="h-4 w-4 mr-3" />
                       Personal Dashboard
                     </Link>
+
+                    <Link
+                      to="/orders"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="block px-6 py-3 text-sm font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 flex items-center transition-colors"
+                    >
+                      <ShoppingBag className="h-4 w-4 mr-3" />
+                      My Orders
+                    </Link>
+
+                    <Link
+                      to="/saved-addresses"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="block px-6 py-3 text-sm font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 flex items-center transition-colors"
+                    >
+                      <MapPin className="h-4 w-4 mr-3" />
+                      Saved Addresses
+                    </Link>
+
+                    <Link
+                      to="/gift-cards"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="block px-6 py-3 text-sm font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 flex items-center transition-colors"
+                    >
+                      <Gift className="h-4 w-4 mr-3" />
+                      Gift Cards
+                    </Link>
+
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-6 py-3 text-sm font-bold text-rose-600 hover:bg-rose-50 flex items-center transition-colors border-t border-slate-50 mt-1 pt-3"

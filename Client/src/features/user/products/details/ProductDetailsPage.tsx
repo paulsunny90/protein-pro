@@ -44,13 +44,25 @@ const ProductDetailsPage = () => {
     }
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
-    // Navigate to checkout
-    navigate('/order', { state: { product, quantity, size: selectedSize } });
+
+    if (product?._id) {
+      try {
+        await dispatch(addToCart({
+          productId: product._id,
+          quantity,
+          size: selectedSize
+        })).unwrap();
+        navigate('/order');
+      } catch (err: any) {
+        console.error("Failed to add to cart:", err);
+        navigate('/order');
+      }
+    }
   };
 
   const renderStars = (rating: number) => {
