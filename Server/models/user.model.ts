@@ -62,6 +62,12 @@ const userSchema: Schema<UserLogin> = new Schema(
             },
             default: "none"
         },
+        otp: {
+            type: String
+        },
+        otpExpires: {
+            type: Date
+        }
 
 
 
