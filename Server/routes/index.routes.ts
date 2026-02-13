@@ -6,6 +6,7 @@ import authRoutes from "./auth.routes";
 import userRoutes from "./user.routes";
 import cartRoutes from "./cart.routes";
 import productRoutes from "./product.routes";
+import addressRoutes from "./address.routes";
 
 import wishlistRoutes from "./wishlist.routes";
 
@@ -19,6 +20,7 @@ router.use("/auth", authRoutes);
 router.use("/user", userRoutes);
 router.use("/cart", cartRoutes);
 router.use("/products", productRoutes);
+router.use("/addresses", addressRoutes);
 router.use("/wishlist", wishlistRoutes);
 router.use("/upload", uploadRoutes);
 
