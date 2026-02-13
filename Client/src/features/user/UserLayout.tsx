@@ -34,10 +34,8 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
             <div>
               <h4 className="text-md font-medium mb-4">Services</h4>
               <ul className="space-y-2 text-sm text-gray-300">
-                <li><a href="#" className="hover:text-white">Subscription Plans</a></li>
                 <li><a href="#" className="hover:text-white">Fitness Programs</a></li>
                 <li><a href="#" className="hover:text-white">BMI Calculator</a></li>
-                <li><a href="#" className="hover:text-white">Nutrition Tracking</a></li>
               </ul>
             </div>
           </div>

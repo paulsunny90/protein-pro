@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Home, Package, BarChart3, Heart, Menu, TrendingUp, User, LogOut, ShoppingBag, Gift, MapPin } from 'lucide-react';
+import { ShoppingCart, Home, Package, Heart, Menu, User, LogOut, ShoppingBag, Gift, MapPin } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const Navigation = () => {
@@ -12,9 +12,7 @@ const Navigation = () => {
   const navLinks = [
     { name: 'Home', path: '/', icon: Home },
     { name: 'Products', path: '/products', icon: Package },
-    { name: 'Fitness Plans', path: '/fitness', icon: BarChart3 },
     { name: 'BMI Calculator', path: '/bmi', icon: Heart },
-    { name: 'Progress', path: '/progress', icon: TrendingUp },
     { name: 'Cart', path: '/cart', icon: ShoppingCart },
   ];
 
@@ -35,7 +33,6 @@ const Navigation = () => {
             </Link>
           </div>
 
-          {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-1">
             {navLinks.map((link) => {
               const IconComponent = link.icon;
@@ -55,7 +52,6 @@ const Navigation = () => {
             })}
           </div>
 
-          {/* Auth Buttons or User Menu */}
           <div className="flex items-center">
             {isAuthenticated ? (
               <div className="relative">
@@ -123,23 +119,12 @@ const Navigation = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-3">
-                <Link
-                  to="/login"
-                  className="text-slate-600 hover:text-emerald-600 font-bold px-4 py-2 rounded-xl transition-all"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/signup"
-                  className="bg-emerald-600 text-white px-6 py-2.5 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 active:scale-95"
-                >
-                  Join Now
-                </Link>
+                <Link to="/login" className="text-slate-600 hover:text-emerald-600 font-bold px-4 py-2 rounded-xl transition-all">Sign In</Link>
+                <Link to="/signup" className="bg-emerald-600 text-white px-6 py-2.5 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 active:scale-95">Join Now</Link>
               </div>
             )}
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -151,7 +136,6 @@ const Navigation = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-slate-50 animate-slide-up">
           <div className="px-4 pt-4 pb-6 space-y-2">
@@ -175,20 +159,8 @@ const Navigation = () => {
 
             {!isAuthenticated && (
               <div className="pt-4 space-y-2 border-t border-slate-50">
-                <Link
-                  to="/login"
-                  className="block w-full text-center px-4 py-3 rounded-2xl text-base font-bold text-slate-600 hover:bg-slate-50"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/signup"
-                  className="block w-full text-center px-4 py-3 rounded-2xl text-base font-bold bg-emerald-600 text-white shadow-lg shadow-emerald-600/20"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Join Now
-                </Link>
+                <Link to="/login" className="block w-full text-center px-4 py-3 rounded-2xl text-base font-bold text-slate-600 hover:bg-slate-50" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
+                <Link to="/signup" className="block w-full text-center px-4 py-3 rounded-2xl text-base font-bold bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" onClick={() => setIsMenuOpen(false)}>Join Now</Link>
               </div>
             )}
           </div>

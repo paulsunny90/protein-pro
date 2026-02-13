@@ -9,9 +9,7 @@ import WomenProductsPage from './features/user/categoryProductsPage/women';
 import SubscriptionsPage from './features/user/subscriptions/SubscriptionsPage';
 import Dashboard from './features/user/dashboard/Dashboard';
 import BMICalculator from './features/user/bmi-calculator/BMICalculator';
-import FitnessPlans from './features/user/fitness/FitnessPlans';
 import CartPage from './features/user/products/CartPage';
-import ProgressTracker from './features/user/progress-tracker/ProgressTracker';
 import LoginPage from './features/user/auth/LoginPage';
 import SignupPage from './features/user/auth/SignupPage';
 import LoginSuccess from './features/user/auth/LoginSuccess';
@@ -42,81 +40,19 @@ const App = () => {
         <div className="App">
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={
-              <UserLayout>
-                <HomePage />
-              </UserLayout>
-            } />
-            <Route path="/products" element={
-              <UserLayout>
-                <ProductsPage />
-              </UserLayout>
-            } />
-            <Route path="/products/baby" element={
-              <UserLayout>
-                <BabyProductsPage />
-              </UserLayout>
-            } />
-            <Route path="/products/men" element={
-              <UserLayout>
-                <MenProductsPage />
-              </UserLayout>
-            } />
-            <Route path="/products/women" element={
-              <UserLayout>
-                <WomenProductsPage />
-              </UserLayout>
-            } />
-            <Route path="/products/:id" element={
-              <UserLayout>
-                <ProductDetailsPage />
-              </UserLayout>
-            } />
-            <Route path="/subscriptions" element={
-              <UserLayout>
-                <SubscriptionsPage />
-              </UserLayout>
-            } />
-            <Route path="/bmi" element={
-              <UserLayout>
-                <BMICalculator />
-              </UserLayout>
-            } />
-            <Route path="/fitness" element={
-              <UserLayout>
-                <FitnessPlans />
-              </UserLayout>
-            } />
-            <Route path="/cart" element={
-              <UserLayout>
-                <CartPage />
-              </UserLayout>
-            } />
-            <Route path="/order" element={
-              <UserLayout>
-                <OrderPage />
-              </UserLayout>
-            } />
-            <Route path="/orders" element={
-              <UserLayout>
-                <MyOrdersPage />
-              </UserLayout>
-            } />
-            <Route path="/saved-addresses" element={
-              <UserLayout>
-                <SavedAddressesPage />
-              </UserLayout>
-            } />
-            <Route path="/gift-cards" element={
-              <UserLayout>
-                <GiftCardsPage />
-              </UserLayout>
-            } />
-            <Route path="/progress" element={
-              <UserLayout>
-                <ProgressTracker />
-              </UserLayout>
-            } />
+            <Route path="/" element={<UserLayout><HomePage /></UserLayout>} />
+            <Route path="/products" element={<UserLayout><ProductsPage /></UserLayout>} />
+            <Route path="/products/baby" element={<UserLayout><BabyProductsPage /></UserLayout>} />
+            <Route path="/products/men" element={<UserLayout><MenProductsPage /></UserLayout>} />
+            <Route path="/products/women" element={<UserLayout><WomenProductsPage /></UserLayout>} />
+            <Route path="/products/:id" element={<UserLayout><ProductDetailsPage /></UserLayout>} />
+            <Route path="/subscriptions" element={<UserLayout><SubscriptionsPage /></UserLayout>} />
+            <Route path="/bmi" element={<UserLayout><BMICalculator /></UserLayout>} />
+            <Route path="/cart" element={<UserLayout><CartPage /></UserLayout>} />
+            <Route path="/order" element={<UserLayout><OrderPage /></UserLayout>} />
+            <Route path="/orders" element={<UserLayout><MyOrdersPage /></UserLayout>} />
+            <Route path="/saved-addresses" element={<UserLayout><SavedAddressesPage /></UserLayout>} />
+            <Route path="/gift-cards" element={<UserLayout><GiftCardsPage /></UserLayout>} />
 
             {/* Auth routes */}
             <Route path="/login" element={<LoginPage />} />
@@ -124,15 +60,10 @@ const App = () => {
             <Route path="/auth/login-success" element={<LoginSuccess />} />
 
             {/* Protected routes */}
-            <Route path="/dashboard" element={
-              <UserLayout>
-                <Dashboard />
-              </UserLayout>
-            } />
+            <Route path="/dashboard" element={<UserLayout><Dashboard /></UserLayout>} />
 
             {/* Admin routes */}
             <Route path="/admin-login" element={<AdminLoginPage />} />
-
             <Route path="/admin" element={<AdminProtectedRoute />}>
               <Route element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />

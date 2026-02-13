@@ -1,61 +1,43 @@
-import { useState } from 'react';
-import { MapPin, Plus, Edit2, Trash2, Home, Building2, CheckCircle, X, User, Mail, Phone } from 'lucide-react';
-
-interface Address {
-    id: string;
-    type: 'home' | 'work' | 'other';
-    name: string;
-    phone: string;
-    email: string;
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-    isDefault: boolean;
-}
+import { useState, useEffect } from 'react';
+import { MapPin, Plus, Edit2, Trash2, Home, CheckCircle, X, User, Phone, Loader2, Mail } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import {
+    fetchAddresses,
+    addAddress,
+    editAddress,
+    removeAddress,
+    markAsDefault,
+    clearAddressError,
+    setError as setAddressError
+} from '../../../store/slice/addressSlice';
+import type { Address } from '../../../services/addressService';
 
 const SavedAddressesPage = () => {
-    const [addresses] = useState<Address[]>([
-        {
-            id: '1',
-            type: 'home',
-            name: 'John Doe',
-            phone: '(123) 456-7890',
-            email: 'john@example.com',
-            street: '123 Main St, Apt 4B',
-            city: 'New York',
-            state: 'NY',
-            zipCode: '10001',
-            country: 'United States',
-            isDefault: true
-        }
-    ]);
+    const dispatch = useAppDispatch();
+    const { addresses, loading, error } = useAppSelector((state) => state.address);
 
+    const [submitting, setSubmitting] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState<Partial<Address>>({
-        type: 'home',
-        name: '',
-        phone: '',
+        firstName: '',
+        lastName: '',
         email: '',
+        houseNoOrName: '',
+        phone: '',
         street: '',
         city: '',
         state: '',
-        zipCode: '',
+        postalCode: '',
         country: 'United States',
         isDefault: false
     });
 
-    const getAddressIcon = (type: string) => {
-        switch (type) {
-            case 'home':
-                return <Home className="w-5 h-5" />;
-            case 'work':
-                return <Building2 className="w-5 h-5" />;
-            default:
-                return <MapPin className="w-5 h-5" />;
-        }
-    };
+    // Fetch addresses on component mount
+    useEffect(() => {
+        dispatch(fetchAddresses());
+    }, [dispatch]);
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -65,24 +47,87 @@ const SavedAddressesPage = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Add logic to save address
-        console.log('Saving address:', formData);
-        setShowAddForm(false);
-        // Reset form
+
+        // Basic Validation
+        if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone ||
+            !formData.street || !formData.city || !formData.state ||
+            !formData.postalCode || !formData.country) {
+            dispatch(setAddressError('Please fill in all required fields.'));
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            if (editingId) {
+                await dispatch(editAddress({ id: editingId, data: formData })).unwrap();
+            } else {
+                await dispatch(addAddress(formData)).unwrap();
+            }
+
+            // Close form and reset
+            setShowAddForm(false);
+            setEditingId(null);
+            resetForm();
+        } catch (err: any) {
+            console.error('Error saving address:', err);
+            dispatch(setAddressError(err.message || err || 'Failed to save address'));
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleEdit = (address: Address) => {
+        setEditingId(address._id || null);
         setFormData({
-            type: 'home',
-            name: '',
-            phone: '',
+            firstName: address.firstName,
+            lastName: address.lastName,
+            email: address.email,
+            houseNoOrName: address.houseNoOrName,
+            phone: address.phone,
+            street: address.street,
+            city: address.city,
+            state: address.state,
+            postalCode: address.postalCode,
+            country: address.country,
+            isDefault: address.isDefault
+        });
+        setShowAddForm(true);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('Are you sure you want to delete this address?')) {
+            return;
+        }
+        dispatch(removeAddress(id));
+    };
+
+    const handleSetDefault = async (id: string) => {
+        dispatch(markAsDefault(id));
+    };
+
+    const resetForm = () => {
+        setFormData({
+            firstName: '',
+            lastName: '',
             email: '',
+            houseNoOrName: '',
+            phone: '',
             street: '',
             city: '',
             state: '',
-            zipCode: '',
+            postalCode: '',
             country: 'United States',
             isDefault: false
         });
+        setEditingId(null);
+        dispatch(clearAddressError());
+    };
+
+    const handleCloseForm = () => {
+        setShowAddForm(false);
+        resetForm();
     };
 
     return (
@@ -103,15 +148,30 @@ const SavedAddressesPage = () => {
                     </button>
                 </div>
 
+                {/* Error Message */}
+                {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 flex justify-between items-center">
+                        <span>{error}</span>
+                        <button onClick={() => dispatch(clearAddressError())}><X className="w-4 h-4" /></button>
+                    </div>
+                )}
+
+                {/* Loading State */}
+                {loading && !showAddForm && (
+                    <div className="flex justify-center items-center py-20">
+                        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                    </div>
+                )}
+
                 {/* Add/Edit Address Modal */}
                 {showAddForm && (
                     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
                         <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slide-up">
                             {/* Modal Header */}
                             <div className="sticky top-0 bg-white border-b border-gray-100 px-8 py-6 flex justify-between items-center rounded-t-3xl">
-                                <h2 className="text-2xl font-bold text-gray-900">Add New Address</h2>
+                                <h2 className="text-2xl font-bold text-gray-900">{editingId ? 'Edit Address' : 'Add New Address'}</h2>
                                 <button
-                                    onClick={() => setShowAddForm(false)}
+                                    onClick={handleCloseForm}
                                     className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
                                 >
                                     <X className="w-6 h-6 text-gray-600" />
@@ -120,47 +180,56 @@ const SavedAddressesPage = () => {
 
                             {/* Form */}
                             <form onSubmit={handleSubmit} className="p-8">
-                                {/* Address Type */}
-                                <div className="mb-6">
-                                    <label className="block text-sm font-bold text-gray-700 mb-3">Address Type</label>
-                                    <div className="grid grid-cols-3 gap-3">
-                                        {(['home', 'work', 'other'] as const).map((type) => (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() => setFormData(prev => ({ ...prev, type }))}
-                                                className={`p-4 rounded-xl border-2 font-bold capitalize transition-all ${formData.type === type
-                                                        ? 'border-blue-500 bg-blue-50 text-blue-600'
-                                                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                                                    }`}
-                                            >
-                                                <div className="flex flex-col items-center gap-2">
-                                                    {getAddressIcon(type)}
-                                                    {type}
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Personal Information */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Full Name</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">First Name</label>
                                         <div className="relative">
                                             <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
                                             <input
                                                 type="text"
-                                                name="name"
-                                                value={formData.name}
+                                                name="firstName"
+                                                value={formData.firstName || ''}
                                                 onChange={handleInputChange}
-                                                placeholder="John Doe"
+                                                placeholder="John"
                                                 required
                                                 className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
                                             />
                                         </div>
                                     </div>
 
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
+                                        <div className="relative">
+                                            <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                                            <input
+                                                type="text"
+                                                name="lastName"
+                                                value={formData.lastName || ''}
+                                                onChange={handleInputChange}
+                                                placeholder="Doe"
+                                                required
+                                                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                                        <div className="relative">
+                                            <Mail className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={formData.email || ''}
+                                                onChange={handleInputChange}
+                                                placeholder="john@example.com"
+                                                required
+                                                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
+                                            />
+                                        </div>
+                                    </div>
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
                                         <div className="relative">
@@ -168,9 +237,9 @@ const SavedAddressesPage = () => {
                                             <input
                                                 type="tel"
                                                 name="phone"
-                                                value={formData.phone}
+                                                value={formData.phone || ''}
                                                 onChange={handleInputChange}
-                                                placeholder="(123) 456-7890"
+                                                placeholder="1234567890"
                                                 required
                                                 className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
                                             />
@@ -179,22 +248,20 @@ const SavedAddressesPage = () => {
                                 </div>
 
                                 <div className="mb-6">
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">House No. / Name (Optional)</label>
                                     <div className="relative">
-                                        <Mail className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                                        <Home className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
                                         <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
+                                            type="text"
+                                            name="houseNoOrName"
+                                            value={formData.houseNoOrName || ''}
                                             onChange={handleInputChange}
-                                            placeholder="john@example.com"
-                                            required
+                                            placeholder="Apt 4B"
                                             className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
                                         />
                                     </div>
                                 </div>
 
-                                {/* Address Details */}
                                 <div className="mb-6">
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Street Address</label>
                                     <div className="relative">
@@ -202,9 +269,9 @@ const SavedAddressesPage = () => {
                                         <input
                                             type="text"
                                             name="street"
-                                            value={formData.street}
+                                            value={formData.street || ''}
                                             onChange={handleInputChange}
-                                            placeholder="123 Main St, Apt 4B"
+                                            placeholder="123 Main St"
                                             required
                                             className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
                                         />
@@ -217,7 +284,7 @@ const SavedAddressesPage = () => {
                                         <input
                                             type="text"
                                             name="city"
-                                            value={formData.city}
+                                            value={formData.city || ''}
                                             onChange={handleInputChange}
                                             placeholder="New York"
                                             required
@@ -226,11 +293,11 @@ const SavedAddressesPage = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">State / Province</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">State</label>
                                         <input
                                             type="text"
                                             name="state"
-                                            value={formData.state}
+                                            value={formData.state || ''}
                                             onChange={handleInputChange}
                                             placeholder="NY"
                                             required
@@ -241,11 +308,11 @@ const SavedAddressesPage = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">ZIP / Postal Code</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">ZIP Code</label>
                                         <input
                                             type="text"
-                                            name="zipCode"
-                                            value={formData.zipCode}
+                                            name="postalCode"
+                                            value={formData.postalCode || ''}
                                             onChange={handleInputChange}
                                             placeholder="10001"
                                             required
@@ -270,7 +337,6 @@ const SavedAddressesPage = () => {
                                     </div>
                                 </div>
 
-                                {/* Default Address Checkbox */}
                                 <div className="mb-8">
                                     <label className="flex items-center cursor-pointer group">
                                         <input
@@ -286,20 +352,20 @@ const SavedAddressesPage = () => {
                                     </label>
                                 </div>
 
-                                {/* Action Buttons */}
                                 <div className="flex gap-4">
                                     <button
                                         type="button"
-                                        onClick={() => setShowAddForm(false)}
+                                        onClick={handleCloseForm}
                                         className="flex-1 py-3 px-6 border-2 border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
-                                        className="flex-1 py-3 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 hover:-translate-y-0.5 transition-all duration-300"
+                                        disabled={submitting}
+                                        className="flex-1 py-3 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
                                     >
-                                        Save Address
+                                        {submitting ? 'Saving...' : 'Save Address'}
                                     </button>
                                 </div>
                             </form>
@@ -310,8 +376,7 @@ const SavedAddressesPage = () => {
                 {/* Addresses Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {addresses.map((address) => (
-                        <div key={address.id} className="soft-card p-6 relative hover:shadow-xl transition-all duration-300 animate-fade-in">
-                            {/* Default Badge */}
+                        <div key={address._id} className="soft-card p-6 relative hover:shadow-xl transition-all duration-300 animate-fade-in">
                             {address.isDefault && (
                                 <div className="absolute top-4 right-4 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                                     <CheckCircle className="w-3 h-3" />
@@ -319,41 +384,62 @@ const SavedAddressesPage = () => {
                                 </div>
                             )}
 
-                            {/* Address Type Icon */}
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
-                                    {getAddressIcon(address.type)}
+                                    <MapPin className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-900 capitalize">{address.type}</h3>
-                                    <p className="text-sm text-gray-500">{address.name}</p>
+                                    <h3 className="text-lg font-bold text-gray-900 capitalize">Address</h3>
+                                    <p className="text-sm text-gray-500">{address.firstName} {address.lastName}</p>
+                                    <div className="flex items-center text-sm text-gray-500 mt-2">
+                                        <Mail className="w-4 h-4 mr-2" />
+                                        {address.email}
+                                    </div>
+                                    <div className="flex items-center text-sm text-gray-500">
+                                        <Phone className="w-4 h-4 mr-2" />
+                                        {address.phone}
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Address Details */}
                             <div className="mb-6 text-gray-700">
                                 <p className="font-medium">{address.street}</p>
-                                <p>{address.city}, {address.state} {address.zipCode}</p>
+                                {address.houseNoOrName && <p className="text-sm text-gray-500">{address.houseNoOrName}</p>}
+                                <p>{address.city}, {address.state} {address.postalCode}</p>
                                 <p>{address.country}</p>
                             </div>
 
-                            {/* Actions */}
                             <div className="flex gap-3">
-                                <button className="flex-1 flex items-center justify-center bg-blue-50 text-blue-600 py-2.5 px-4 rounded-xl font-bold hover:bg-blue-100 transition-colors">
+                                <button
+                                    onClick={() => handleEdit(address)}
+                                    className="flex-1 flex items-center justify-center bg-blue-50 text-blue-600 py-2.5 px-4 rounded-xl font-bold hover:bg-blue-100 transition-colors"
+                                >
                                     <Edit2 className="w-4 h-4 mr-2" />
                                     Edit
                                 </button>
-                                <button className="flex items-center justify-center bg-red-50 text-red-600 py-2.5 px-4 rounded-xl font-bold hover:bg-red-100 transition-colors">
+                                <button
+                                    onClick={() => handleSetDefault(address._id!)}
+                                    disabled={address.isDefault}
+                                    className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded-xl font-bold transition-colors ${address.isDefault
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-green-50 text-green-600 hover:bg-green-100'
+                                        }`}
+                                >
+                                    Set Default
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(address._id!)}
+                                    className="flex items-center justify-center bg-red-50 text-red-600 py-2.5 px-4 rounded-xl font-bold hover:bg-red-100 transition-colors"
+                                >
                                     <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
                     ))}
 
-                    {/* Add New Address Card */}
                     <button
                         onClick={() => setShowAddForm(true)}
-                        className="soft-card p-6 border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50/50 transition-all duration-300 flex flex-col items-center justify-center min-h-[280px] group"
+                        className="soft-card p-6 border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50/50 transition-all duration-300 flex flex-col items-center justify-center min-h-[220px] group"
                     >
                         <div className="bg-blue-100 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform">
                             <Plus className="w-8 h-8 text-blue-600" />
@@ -363,9 +449,8 @@ const SavedAddressesPage = () => {
                     </button>
                 </div>
 
-                {/* Empty State */}
-                {addresses.length === 0 && (
-                    <div className="soft-card p-12 text-center">
+                {addresses.length === 0 && !loading && (
+                    <div className="soft-card p-12 text-center mt-10">
                         <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                             <MapPin className="w-12 h-12 text-gray-400" />
                         </div>

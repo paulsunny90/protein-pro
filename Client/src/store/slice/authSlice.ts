@@ -59,6 +59,32 @@ export const loginUser = createAsyncThunk(
     }
 );
 
+// OTP Request
+export const requestOTP = createAsyncThunk(
+    'auth/requestOTP',
+    async (data: { identifier: string; name?: string }, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/request-otp', data);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to send OTP');
+        }
+    }
+);
+
+// OTP Verification
+export const verifyOTP = createAsyncThunk(
+    'auth/verifyOTP',
+    async (otpData: { identifier: string; otp: string }, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/verify-otp', otpData);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Verification failed');
+        }
+    }
+);
+
 // Logout
 export const logoutUser = createAsyncThunk(
     'auth/logout',
@@ -125,6 +151,21 @@ const authSlice = createSlice({
                 state.token = action.payload.token; // Optional if using local storage
             })
             .addCase(loginUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            // OTP Verification
+            .addCase(verifyOTP.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(verifyOTP.fulfilled, (state, action) => {
+                state.loading = false;
+                state.isAuthenticated = true;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+            })
+            .addCase(verifyOTP.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })
