@@ -91,13 +91,16 @@ export interface UserLogin extends Document {
   googleID?: string;
   isVerified: boolean;
   plan: "none" | "silver" | "gold" | "platinum";
+  otp?: string;
+  otpExpires?: Date;
 }
 
 export interface UserAddress extends Document {
-  userLogin: Types.ObjectId;
+  user: Types.ObjectId;
   firstName: string;
   lastName: string;
-  houseNoOrName: string;
+  email: string;
+  houseNoOrName?: string;
   phone: string;
   street: string;
   city: string;
