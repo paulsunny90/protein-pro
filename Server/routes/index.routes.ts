@@ -9,7 +9,6 @@ import productRoutes from "./product.routes";
 import addressRoutes from "./address.routes";
 
 import wishlistRoutes from "./wishlist.routes";
-
 import uploadRoutes from "./upload.routes";
 
 const router = Router();

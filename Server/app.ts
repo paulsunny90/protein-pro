@@ -1,16 +1,14 @@
-import express from "express"
 import dotenv from "dotenv"
+dotenv.config()
+import express from "express"
 import cors from "cors"
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const cookieParser = require("cookie-parser");
 import mainRoutes from "./routes/index.routes"
 import orderRoutes from "./routes/order.routes"
-
-dotenv.config()
-
+import chatRoutes from "./routes/chat.routes"
 const app = express()
-
 app.use(cookieParser());
 
 // Enable CORS for all routes
@@ -25,7 +23,10 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 // Use all routes under /api
+import userRoutes from "./routes/user.routes";
+app.use("/api", chatRoutes);
 app.use("/api", mainRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/orders", orderRoutes);
 
 // Auth routes (separate from /api to match callback URL)

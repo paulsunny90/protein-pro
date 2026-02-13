@@ -1,72 +1,88 @@
+import { useEffect, useState } from "react";
 import {
   Search,
   UserPlus,
   Eye,
   Pencil,
   Power,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
-
-type User = {
-  name: string;
-  email: string;
-  role: string;
-  status: "Active" | "Suspended";
-  subscription: string;
-  orders: number;
-  spent: string;
-  lastActive: string;
-};
-
-const users: User[] = [
-  {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    role: "customer",
-    status: "Active",
-    subscription: "Gold",
-    orders: 12,
-    spent: "$245.99",
-    lastActive: "2023-06-10",
-  },
-  {
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    role: "customer",
-    status: "Active",
-    subscription: "Silver",
-    orders: 8,
-    spent: "$189.50",
-    lastActive: "2023-06-08",
-  },
-  {
-    name: "Robert Johnson",
-    email: "robert.j@example.com",
-    role: "customer",
-    status: "Suspended",
-    subscription: "Platinum",
-    orders: 24,
-    spent: "$523.75",
-    lastActive: "2023-05-22",
-  },
-];
+import { getAllUsers, type User } from "../../../services/userService";
 
 const badgeStyles: Record<string, string> = {
   Active: "bg-green-100 text-green-700",
   Suspended: "bg-red-100 text-red-700",
+  Verified: "bg-blue-100 text-blue-700",
+  Unverified: "bg-yellow-100 text-yellow-700",
 };
 
 const planStyles: Record<string, string> = {
-  Gold: "bg-purple-100 text-purple-700",
-  Silver: "bg-indigo-100 text-indigo-700",
-  Platinum: "bg-pink-100 text-pink-700",
+  gold: "bg-purple-100 text-purple-700",
+  silver: "bg-indigo-100 text-indigo-700",
+  platinum: "bg-pink-100 text-pink-700",
+  none: "bg-slate-100 text-slate-700",
 };
 
 export default function UserManagement() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllUsers();
+        setUsers(data);
+        setError(null);
+      } catch (err: any) {
+        console.error("Error fetching users:", err);
+        setError(err.response?.data?.message || "Failed to load users. Please check if you are logged in as an admin.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const filteredUsers = users.filter(u =>
+    u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const total = users.length;
-  const active = users.filter((u) => u.status === "Active").length;
-  const suspended = users.filter((u) => u.status === "Suspended").length;
-  const avgOrders =
-    users.reduce((a, b) => a + b.orders, 0) / users.length;
+  const verifiedCount = users.filter((u) => u.isVerified).length;
+  const adminCount = users.filter((u) => u.role === "admin").length;
+  const premiumCount = users.filter((u) => u.plan !== "none").length;
+
+  if (loading) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
+        <p className="text-slate-500 font-medium">Fetching User Directory...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="bg-red-50 p-4 rounded-2xl flex items-center gap-3 border border-red-200 text-red-700">
+          <AlertCircle className="w-6 h-6" />
+          <p className="font-medium">{error}</p>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-8">
@@ -92,20 +108,22 @@ export default function UserManagement() {
           <Search className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
           <input
             placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 bg-white/70 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           />
         </div>
 
         <select className="px-4 py-3 rounded-xl border border-slate-200 bg-white/70 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
           <option>All Roles</option>
-          <option>Customer</option>
+          <option>User</option>
           <option>Admin</option>
         </select>
 
         <select className="px-4 py-3 rounded-xl border border-slate-200 bg-white/70 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
           <option>All Statuses</option>
-          <option>Active</option>
-          <option>Suspended</option>
+          <option>Verified</option>
+          <option>Unverified</option>
         </select>
       </div>
 
@@ -119,23 +137,23 @@ export default function UserManagement() {
           change="+12%"
         />
         <StatCard
-          title="Active Users"
-          value={active}
+          title="Verified Users"
+          value={verifiedCount}
           icon="✅"
           color="from-green-500 to-emerald-500"
           change="+8%"
         />
         <StatCard
-          title="Suspended"
-          value={suspended}
-          icon="⏸️"
+          title="Admins"
+          value={adminCount}
+          icon="🛡️"
           color="from-orange-500 to-red-500"
-          change="-2%"
+          change="0%"
         />
         <StatCard
-          title="Avg. Orders"
-          value={avgOrders.toFixed(1)}
-          icon="📊"
+          title="Premium Plans"
+          value={premiumCount}
+          icon="✨"
           color="from-purple-500 to-indigo-500"
           change="+5%"
         />
@@ -147,41 +165,39 @@ export default function UserManagement() {
           <h2 className="text-xl font-bold text-slate-800">User Directory</h2>
           <div className="flex items-center gap-3">
             <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium">
-              {users.length} users
+              {filteredUsers.length} users found
             </span>
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-slate-200">
+        <div className="overflow-x-auto rounded-xl border border-slate-200">
           <table className="w-full text-sm">
             <thead className="bg-slate-50/50">
               <tr>
-                <th className="text-left py-4 px-6 font-semibold text-slate-700">User</th>
-                <th className="py-4 px-6 font-semibold text-slate-700">Email</th>
-                <th className="py-4 px-6 font-semibold text-slate-700">Role</th>
-                <th className="py-4 px-6 font-semibold text-slate-700">Status</th>
-                <th className="py-4 px-6 font-semibold text-slate-700">Subscription</th>
-                <th className="py-4 px-6 font-semibold text-slate-700">Orders</th>
-                <th className="py-4 px-6 font-semibold text-slate-700">Spent</th>
-                <th className="py-4 px-6 font-semibold text-slate-700">Last Active</th>
-                <th className="py-4 px-6 font-semibold text-slate-700">Actions</th>
+                <th className="text-left py-4 px-6 font-semibold text-slate-700 min-w-[200px]">User</th>
+                <th className="text-left py-4 px-6 font-semibold text-slate-700">Email</th>
+                <th className="text-left py-4 px-6 font-semibold text-slate-700">Role</th>
+                <th className="text-left py-4 px-6 font-semibold text-slate-700">Status</th>
+                <th className="text-left py-4 px-6 font-semibold text-slate-700">Plan</th>
+                <th className="text-left py-4 px-6 font-semibold text-slate-700">Joined</th>
+                <th className="text-left py-4 px-6 font-semibold text-slate-700">Actions</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-slate-100">
-              {users.map((u, i) => (
-                <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+              {filteredUsers.map((u) => (
+                <tr key={u._id} className="hover:bg-slate-50/50 transition-colors">
                   {/* User */}
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-md">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-md uppercase">
                         {u.name.charAt(0)}
                       </div>
                       <div>
                         <span className="font-semibold text-slate-800">{u.name}</span>
                         <div className="flex items-center gap-1 mt-1">
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="text-xs text-slate-500">Online</span>
+                          <div className={`w-2 h-2 rounded-full ${u.isVerified ? 'bg-green-500' : 'bg-slate-300'}`}></div>
+                          <span className="text-xs text-slate-500">{u.isVerified ? 'Verified' : 'Unverified'}</span>
                         </div>
                       </div>
                     </div>
@@ -190,30 +206,28 @@ export default function UserManagement() {
                   <td className="px-6 text-slate-600">{u.email}</td>
 
                   <td className="px-6">
-                    <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">
+                    <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${u.role === 'admin' ? 'bg-orange-100 text-orange-700' : 'bg-blue-50 text-blue-700'}`}>
                       {u.role}
                     </span>
                   </td>
 
                   <td className="px-6">
                     <span
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm ${badgeStyles[u.status]}`}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm ${u.isVerified ? badgeStyles.Verified : badgeStyles.Unverified}`}
                     >
-                      {u.status}
+                      {u.isVerified ? "Verified" : "Unverified"}
                     </span>
                   </td>
 
                   <td className="px-6">
                     <span
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm ${planStyles[u.subscription]}`}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm uppercase ${planStyles[u.plan] || planStyles.none}`}
                     >
-                      {u.subscription}
+                      {u.plan}
                     </span>
                   </td>
 
-                  <td className="px-6 font-semibold text-slate-800">{u.orders}</td>
-                  <td className="px-6 font-semibold text-slate-800">{u.spent}</td>
-                  <td className="px-6 text-slate-500">{u.lastActive}</td>
+                  <td className="px-6 text-slate-500">{new Date(u.createdAt).toLocaleDateString()}</td>
 
                   {/* Actions */}
                   <td className="px-6 py-4">
@@ -222,13 +236,20 @@ export default function UserManagement() {
                       <ActionButton icon={Pencil} label="Edit" color="green" />
                       <ActionButton
                         icon={Power}
-                        label={u.status === "Active" ? "Suspend" : "Activate"}
-                        color={u.status === "Active" ? "red" : "green"}
+                        label={u.isVerified ? "Suspend" : "Activate"}
+                        color={u.isVerified ? "red" : "green"}
                       />
                     </div>
                   </td>
                 </tr>
               ))}
+              {filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-slate-500 font-medium">
+                    No users found matching your search.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

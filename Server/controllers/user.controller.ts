@@ -89,3 +89,17 @@ export const registerUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Get all users (Admin only)
+export const getAllUsers = async (_req: Request, res: Response) => {
+  try {
+    const users = await Userlog.find()
+      .select('-password') // Exclude password field
+      .sort({ createdAt: -1 }); // Most recent first
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("GET ALL USERS ERROR:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

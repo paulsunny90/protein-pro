@@ -30,7 +30,6 @@ import EditProduct from './features/admin/products/EditProduct'
 import EditSubscription from './features/admin/subscriptions/EditSubscription'
 import EditOrder from './features/admin/orders/EditOrder'
 import SubscriptionPage from './features/admin/subscriptions/SubscriptionPage'
-import AdminLoginPage from './features/admin/auth/AdminLoginPage'
 import AdminProtectedRoute from './features/admin/auth/AdminProtectedRoute'
 
 const App = () => {
@@ -63,7 +62,6 @@ const App = () => {
             <Route path="/dashboard" element={<UserLayout><Dashboard /></UserLayout>} />
 
             {/* Admin routes */}
-            <Route path="/admin-login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminProtectedRoute />}>
               <Route element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />

@@ -1,66 +1,81 @@
-
+import { useEffect, useState } from "react";
 import {
   Search,
   Eye,
   Pencil,
   FileText,
   Copy,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-
-type Order = {
-  id: string;
-  name: string;
-  email: string;
-  date: string;
-  status: string;
-  payment: string;
-  items: number;
-  total: number;
-  tracking?: string;
-};
-
-const orders: Order[] = [
-  {
-    id: "ORD-001",
-    name: "John Doe",
-    email: "john@example.com",
-    date: "2023-06-15",
-    status: "Delivered",
-    payment: "Paid",
-    items: 3,
-    total: 49.99,
-    tracking: "TRK-123456789",
-  },
-  {
-    id: "ORD-002",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    date: "2023-06-14",
-    status: "Shipped",
-    payment: "Paid",
-    items: 2,
-    total: 79.99,
-    tracking: "TRK-987654321",
-  },
-  {
-    id: "ORD-003",
-    name: "Robert Johnson",
-    email: "robert@example.com",
-    date: "2023-06-13",
-    status: "Processing",
-    payment: "Paid",
-    items: 5,
-    total: 129.99,
-  },
-];
+import { getAllOrders, type Order } from "../../../services/orderService";
 
 export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllOrders();
+        setOrders(data);
+        setError(null);
+      } catch (err: any) {
+        console.error("Error fetching orders:", err);
+        setError(err.response?.data?.message || "Failed to load orders. Please ensure you are logged in as an admin.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  const filteredOrders = orders.filter(o =>
+    o.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    o.user?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    o._id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalRevenue = orders.reduce((acc, curr) => acc + curr.totalPrice, 0);
+  const pendingOrders = orders.filter(o => o.orderStatus === "Pending").length;
+  const completedOrders = orders.filter(o => o.orderStatus === "Delivered").length;
+
+  if (loading) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
+        <p className="text-slate-500 font-medium">Fetching Order Directory...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="bg-red-50 p-4 rounded-2xl flex items-center gap-3 border border-red-200 text-red-700">
+          <AlertCircle className="w-6 h-6" />
+          <p className="font-medium">{error}</p>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6">
 
       {/* ================= HEADER ================= */}
-      <div className="mb-8">
+      <div className="mb-8 font-primary">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
           Order Management
         </h1>
@@ -78,7 +93,9 @@ export default function OrdersPage() {
           <div className="relative">
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
             <input
-              placeholder="Search by customer or email..."
+              placeholder="Search by ID, name or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9 pr-3 py-2 w-64 rounded-lg border border-slate-300 text-sm
                          focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
             />
@@ -87,10 +104,16 @@ export default function OrdersPage() {
 
         <select className="px-3 py-2 rounded-lg border text-sm bg-white">
           <option>All Statuses</option>
+          <option>Pending</option>
+          <option>Confirmed</option>
+          <option>Shipped</option>
+          <option>Delivered</option>
         </select>
 
         <select className="px-3 py-2 rounded-lg border text-sm bg-white">
           <option>All Payments</option>
+          <option>Paid</option>
+          <option>Unpaid</option>
         </select>
       </div>
 
@@ -101,28 +124,28 @@ export default function OrdersPage() {
         <EnhancedStatCard
           icon="📦"
           label="Total Orders"
-          value="5"
+          value={orders.length.toString()}
           color="from-blue-500 to-cyan-500"
           change="+12%"
         />
         <EnhancedStatCard
           icon="⏱️"
           label="Pending"
-          value="0"
+          value={pendingOrders.toString()}
           color="from-amber-500 to-orange-500"
           change="0"
         />
         <EnhancedStatCard
           icon="✅"
           label="Completed"
-          value="2"
+          value={completedOrders.toString()}
           color="from-green-500 to-emerald-500"
           change="+5%"
         />
         <EnhancedStatCard
           icon="💰"
           label="Revenue"
-          value="$384.95"
+          value={`$${totalRevenue.toFixed(2)}`}
           color="from-purple-500 to-indigo-500"
           change="+18%"
         />
@@ -134,7 +157,7 @@ export default function OrdersPage() {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
 
         <div className="px-6 py-4 font-semibold border-b text-slate-700">
-          Orders
+          Order Directory
         </div>
 
         <div className="overflow-x-auto">
@@ -163,48 +186,48 @@ export default function OrdersPage() {
 
             {/* ---------- BODY ---------- */}
             <tbody className="divide-y">
-              {orders.map((order) => (
+              {filteredOrders.map((order) => (
                 <tr
-                  key={order.id}
+                  key={order._id}
                   className="hover:bg-slate-50 transition"
                 >
                   {/* ID */}
-                  <td className="px-6 py-4 font-medium">{order.id}</td>
+                  <td className="px-6 py-4 font-medium">#{order._id.slice(-6).toUpperCase()}</td>
 
                   {/* CUSTOMER */}
                   <td className="px-6 py-4">
-                    <p className="font-medium">{order.name}</p>
-                    <p className="text-xs text-slate-500">{order.email}</p>
+                    <p className="font-medium">{order.user?.name || 'Unknown User'}</p>
+                    <p className="text-xs text-slate-500">{order.user?.email || '-'}</p>
                   </td>
 
                   {/* DATE */}
-                  <td className="px-6 py-4">{order.date}</td>
+                  <td className="px-6 py-4">{new Date(order.createdAt).toLocaleDateString()}</td>
 
                   {/* STATUS */}
                   <td className="px-6 py-4">
-                    <StatusBadge status={order.status} />
+                    <StatusBadge status={order.orderStatus} />
                   </td>
 
                   {/* PAYMENT */}
                   <td className="px-6 py-4">
-                    <span className="text-emerald-600 font-medium">
-                      {order.payment}
+                    <span className={`font-medium ${order.isPaid ? 'text-emerald-600' : 'text-red-600'}`}>
+                      {order.isPaid ? 'Paid' : 'Unpaid'}
                     </span>
                   </td>
 
                   {/* ITEMS */}
-                  <td className="px-6 py-4">{order.items}</td>
+                  <td className="px-6 py-4">{order.orderItems.length}</td>
 
                   {/* TOTAL */}
                   <td className="px-6 py-4 font-semibold">
-                    ${order.total}
+                    ${order.totalPrice.toFixed(2)}
                   </td>
 
                   {/* TRACKING */}
                   <td className="px-6 py-4">
-                    {order.tracking ? (
+                    {order.orderStatus === 'Shipped' || order.orderStatus === 'Delivered' ? (
                       <div className="flex items-center gap-2 text-xs font-mono">
-                        {order.tracking}
+                        TRK-{order._id.slice(-8).toUpperCase()}
                         <Copy className="w-4 h-4 cursor-pointer text-slate-400 hover:text-slate-600" />
                       </div>
                     ) : (
@@ -214,10 +237,17 @@ export default function OrdersPage() {
 
                   {/* ACTIONS */}
                   <td className="px-6 py-4">
-                    <OrderActionButtons orderId={order.id} />
+                    <OrderActionButtons orderId={order._id} />
                   </td>
                 </tr>
               ))}
+              {filteredOrders.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="py-12 text-center text-slate-500 font-medium">
+                    No orders found matching your search.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -250,7 +280,7 @@ function EnhancedStatCard({
           <p className="text-3xl font-bold text-slate-800 mt-1">{value}</p>
           <div className="flex items-center gap-1 mt-2">
             <span className="text-green-600 text-sm font-semibold">{change}</span>
-            <span className="text-slate-400 text-xs">this week</span>
+            <span className="text-slate-400 text-xs">this month</span>
           </div>
         </div>
         <div className={`text-2xl p-3 rounded-xl bg-gradient-to-r ${color} shadow-md group-hover:scale-110 transition-transform`}>
@@ -269,11 +299,14 @@ function StatusBadge({ status }: { status: string }) {
     Delivered: "bg-emerald-100 text-emerald-700 shadow-sm",
     Shipped: "bg-blue-100 text-blue-700 shadow-sm",
     Processing: "bg-amber-100 text-amber-700 shadow-sm",
+    Pending: "bg-slate-100 text-slate-700 shadow-sm",
+    Confirmed: "bg-indigo-100 text-indigo-700 shadow-sm",
+    Cancelled: "bg-red-100 text-red-700 shadow-sm",
   };
 
   return (
     <span
-      className={`px-3 py-1.5 text-xs rounded-full font-semibold ${styles[status]} `}
+      className={`px-3 py-1.5 text-xs rounded-full font-semibold ${styles[status] || styles.Pending} `}
     >
       {status}
     </span>
@@ -316,7 +349,6 @@ function OrderActionButtons({ orderId }: { orderId: string }) {
 
   const handleView = () => {
     console.log(`Viewing order ${orderId} `);
-    // In a real app, navigate to view order page
   };
 
   const handleEdit = () => {
@@ -325,7 +357,6 @@ function OrderActionButtons({ orderId }: { orderId: string }) {
 
   const handleInvoice = () => {
     console.log(`Generating invoice for order ${orderId}`);
-    // In a real app, navigate to generate invoice page
   };
 
   return (
@@ -336,3 +367,6 @@ function OrderActionButtons({ orderId }: { orderId: string }) {
     </div>
   );
 }
+
+
+

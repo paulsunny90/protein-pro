@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Home, Package, Heart, Menu, User, LogOut, ShoppingBag, Gift, MapPin } from 'lucide-react';
+import { ShoppingCart, Home, Package, Heart, Menu, User, LogOut, ShoppingBag, Gift, MapPin, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const Navigation = () => {
@@ -79,6 +79,17 @@ const Navigation = () => {
                       <User className="h-4 w-4 mr-3" />
                       Personal Dashboard
                     </Link>
+
+                    {user?.role === 'admin' && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="block px-6 py-3 text-sm font-bold text-emerald-600 hover:bg-emerald-50 flex items-center transition-colors"
+                      >
+                        <ShieldCheck className="h-4 w-4 mr-3" />
+                        Admin Panel
+                      </Link>
+                    )}
 
                     <Link
                       to="/orders"

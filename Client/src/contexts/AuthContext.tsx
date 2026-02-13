@@ -1,15 +1,13 @@
 import { createContext, useContext, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { loginUser, registerUser, logoutUser, checkAuth, requestOTP as requestOTPAction, verifyOTP as verifyOTPAction } from '../store/slice/authSlice';
+import { loginUser, registerUser, logoutUser, checkAuth } from '../store/slice/authSlice';
 
 interface AuthContextType {
   user: any;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<boolean>;
-  requestOTP: (identifier: string, name?: string) => Promise<boolean>;
-  verifyOTP: (identifier: string, otp: string) => Promise<boolean>;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
@@ -56,31 +54,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     dispatch(logoutUser());
   };
 
-  const requestOTP = async (identifier: string, name?: string): Promise<boolean> => {
-    try {
-      const resultAction = await dispatch(requestOTPAction({ identifier, name }));
-      return requestOTPAction.fulfilled.match(resultAction);
-    } catch (err) {
-      return false;
-    }
-  };
-
-  const verifyOTP = async (identifier: string, otp: string): Promise<boolean> => {
-    try {
-      const resultAction = await dispatch(verifyOTPAction({ identifier, otp }));
-      return verifyOTPAction.fulfilled.match(resultAction);
-    } catch (err) {
-      return false;
-    }
-  };
-
   const value = {
     user,
     login,
     logout,
     register,
-    requestOTP,
-    verifyOTP,
     isAuthenticated,
     loading,
     error

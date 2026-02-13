@@ -34,11 +34,7 @@ export const registerUser = createAsyncThunk(
     'auth/register',
     async (userData: any, { rejectWithValue }) => {
         try {
-            const response = await api.post('/auth/register', userData); // Updated endpoint to match backend route
-            // Backend: router.post("/register", registerUser); in user.routes.ts mounted at /user ?? 
-            // Wait, app.ts says: app.use("/api/auth", authRoutes); app.use("/api/user", userRoutes);
-            // auth.routes.ts has /register. So it should be /auth/register
-            // Corrected below in implementation
+            const response = await api.post('/auth/register', userData);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Registration failed');
@@ -55,32 +51,6 @@ export const loginUser = createAsyncThunk(
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Login failed');
-        }
-    }
-);
-
-// OTP Request
-export const requestOTP = createAsyncThunk(
-    'auth/requestOTP',
-    async (data: { identifier: string; name?: string }, { rejectWithValue }) => {
-        try {
-            const response = await api.post('/auth/request-otp', data);
-            return response.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to send OTP');
-        }
-    }
-);
-
-// OTP Verification
-export const verifyOTP = createAsyncThunk(
-    'auth/verifyOTP',
-    async (otpData: { identifier: string; otp: string }, { rejectWithValue }) => {
-        try {
-            const response = await api.post('/auth/verify-otp', otpData);
-            return response.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || 'Verification failed');
         }
     }
 );
@@ -103,7 +73,7 @@ export const checkAuth = createAsyncThunk(
     'auth/checkAuth',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await api.get('/user/profile'); // user.routes.ts: router.get("/profile", authMiddleware, getProfile);
+            const response = await api.get('/user/profile');
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch user');
@@ -131,8 +101,6 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
-                // If your backend returns token in body, save it? Code said cookies.
-                // Assuming cookies for now.
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
@@ -148,24 +116,9 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
-                state.token = action.payload.token; // Optional if using local storage
-            })
-            .addCase(loginUser.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            })
-            // OTP Verification
-            .addCase(verifyOTP.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(verifyOTP.fulfilled, (state, action) => {
-                state.loading = false;
-                state.isAuthenticated = true;
-                state.user = action.payload.user;
                 state.token = action.payload.token;
             })
-            .addCase(verifyOTP.rejected, (state, action) => {
+            .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })
