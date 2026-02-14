@@ -32,7 +32,6 @@ const EditProduct = () => {
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isFetchingInitial, setIsFetchingInitial] = useState(true);
 
   const categories = [
     'Protein',
@@ -98,7 +97,6 @@ const EditProduct = () => {
         // Only redirect if we definitely can't find the product
         navigate('/admin/products');
       }
-      setIsFetchingInitial(false);
     };
 
     loadProduct();
