@@ -12,7 +12,7 @@
     "test:verbose": "jest --verbose",
     "dev": "nodemon --watch . --exec tsx index.ts",
     "build": "tsc",
-    "start": "tsx index.ts"
+    "start": "NODE_ENV=production tsx index.ts"
   },
   "keywords": [],
   "dependencies": {
