@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Lock, Mail, Eye, EyeOff, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import { BASE_URL } from '../../../utils/imageUtils';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -158,7 +159,7 @@ const LoginPage = () => {
             <div className="mt-8 flex gap-4">
               <button
                 type="button"
-                onClick={() => window.location.href = "http://localhost:5000/auth/google"}
+                onClick={() => window.location.href = `${BASE_URL}/auth/google`}
                 className="flex-1 flex justify-center items-center py-4 px-4 border border-slate-100 rounded-2xl bg-white hover:bg-slate-50 transition-all shadow-sm active:scale-95 group"
               >
                 <img className="h-5 w-5 group-hover:scale-110 transition-transform" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
