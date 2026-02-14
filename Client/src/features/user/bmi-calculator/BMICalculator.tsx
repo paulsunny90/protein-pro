@@ -166,10 +166,10 @@ const BMICalculator = () => {
       const aiResponse = await sendChatMessage(userMsgText, context);
 
       setChatMessages(prev => [...prev, { id: Date.now(), text: aiResponse, sender: 'ai' as const }]);
-    } catch (error) {
+    } catch (error: any) {
       setChatMessages(prev => [...prev, {
         id: Date.now(),
-        text: "I'm sorry, I'm having trouble connecting to my health knowledge base right now. Please try again later.",
+        text: error.message || "I'm sorry, I'm having trouble connecting to my health knowledge base right now. Please try again later.",
         sender: 'ai' as const
       }]);
     } finally {

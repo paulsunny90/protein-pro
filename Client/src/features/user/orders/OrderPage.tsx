@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { createOrder } from '../../../store/slice/orderSlice';
-import { clearCart } from '../../../store/slice/cartSlice';
+import { clearCart, fetchCart } from '../../../store/slice/cartSlice';
 import { fetchAddresses } from '../../../store/slice/addressSlice';
 import PaymentPage from './payPage';
 import OrderSuccessPage from './OredeSucesespage';
 import type { Address } from '../../../services/addressService';
+import api from '../../../utils/api';
 
 const OrderPage = () => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const OrderPage = () => {
 
   useEffect(() => {
     dispatch(fetchAddresses());
+    dispatch(fetchCart());
   }, [dispatch]);
 
   useEffect(() => {
@@ -60,7 +62,6 @@ const OrderPage = () => {
     }
   }, [addresses, user?.email, isManualEntry]);
 
-  const [paymentMethod, setPaymentMethod] = useState('credit-card');
   const [orderSummary, setOrderSummary] = useState<any>(null);
 
   useEffect(() => {
@@ -97,7 +98,7 @@ const OrderPage = () => {
     setShippingInfo(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (paypalDetails?: any) => {
     if (!orderSummary) return;
     const orderData = {
       orderItems: orderSummary.items.map((item: any) => ({
@@ -107,13 +108,22 @@ const OrderPage = () => {
         price: item.price
       })),
       shippingAddress: shippingInfo,
-      paymentMethod: paymentMethod === 'credit-card' ? 'ONLINE' : 'COD',
+      paymentMethod: 'ONLINE', // PayPal payment
       itemsPrice: parseFloat(orderSummary.subtotal),
       shippingPrice: parseFloat(orderSummary.shipping),
       totalPrice: parseFloat(orderSummary.total)
     };
+
     const resultAction = await dispatch(createOrder(orderData));
+
     if (createOrder.fulfilled.match(resultAction)) {
+      const createdOrder = resultAction.payload;
+
+      if (paypalDetails && createdOrder._id) {
+        // If PayPal was used, update the order to paid
+        await api.put(`/orders/${createdOrder._id}/pay`, paypalDetails);
+      }
+
       orderSuccessRef.current = true;
       dispatch(clearCart());
       setStep(3);
@@ -204,16 +214,16 @@ const OrderPage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slide-up">
-          <InputField label="First Name" icon={User} type="text" name="firstName" value={shippingInfo.firstName} onChange={handleInputChange} placeholder="John" />
-          <InputField label="Last Name" icon={User} type="text" name="lastName" value={shippingInfo.lastName} onChange={handleInputChange} placeholder="Doe" />
-          <InputField label="Email Address" icon={Mail} type="email" name="email" value={shippingInfo.email} onChange={handleInputChange} placeholder="john@example.com" />
-          <InputField label="Phone Number" icon={Phone} type="tel" name="phone" value={shippingInfo.phone} onChange={handleInputChange} placeholder="(123) 456-7890" />
+          <InputField label="First Name" icon={User} type="text" name="firstName" value={shippingInfo.firstName} onChange={handleInputChange} placeholder="Rahul" />
+          <InputField label="Last Name" icon={User} type="text" name="lastName" value={shippingInfo.lastName} onChange={handleInputChange} placeholder="Sharma" />
+          <InputField label="Email Address" icon={Mail} type="email" name="email" value={shippingInfo.email} onChange={handleInputChange} placeholder="rahul@example.com" />
+          <InputField label="Phone Number" icon={Phone} type="tel" name="phone" value={shippingInfo.phone} onChange={handleInputChange} placeholder="+91 98765 43210" />
           <div className="md:col-span-2">
-            <InputField label="Street Address" icon={MapPin} type="text" name="address" value={shippingInfo.address} onChange={handleInputChange} placeholder="123 Main St, Apt 4B" />
+            <InputField label="Street Address / House No" icon={MapPin} type="text" name="address" value={shippingInfo.address} onChange={handleInputChange} placeholder="123, MG Road, Sector 15" />
           </div>
-          <InputField label="City" icon={Building2} type="text" name="city" value={shippingInfo.city} onChange={handleInputChange} placeholder="New York" />
-          <InputField label="State / Province" icon={Building2} type="text" name="state" value={shippingInfo.state} onChange={handleInputChange} placeholder="NY" />
-          <InputField label="ZIP / Postal Code" icon={MapPin} type="text" name="zipCode" value={shippingInfo.zipCode} onChange={handleInputChange} placeholder="10001" />
+          <InputField label="City" icon={Building2} type="text" name="city" value={shippingInfo.city} onChange={handleInputChange} placeholder="Mumbai" />
+          <InputField label="State" icon={Building2} type="text" name="state" value={shippingInfo.state} onChange={handleInputChange} placeholder="Maharashtra" />
+          <InputField label="PIN Code" icon={MapPin} type="text" name="zipCode" value={shippingInfo.zipCode} onChange={handleInputChange} placeholder="400001" />
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Country</label>
             <div className="relative">
@@ -223,11 +233,10 @@ const OrderPage = () => {
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 outline-none text-gray-800 font-medium appearance-none cursor-pointer"
               >
+                <option>India</option>
                 <option>United States</option>
-                <option>Canada</option>
-                <option>United Kingdom</option>
-                <option>Australia</option>
-                <option>Germany</option>
+                <option>United Arab Emirates</option>
+                <option>Singapore</option>
               </select>
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500">
                 <ChevronRight className="w-5 h-5 rotate-90" />
@@ -266,13 +275,11 @@ const OrderPage = () => {
         )}
         <div className="transition-all duration-500 ease-in-out">
           {step === 1 && renderShippingForm()}
-          {step === 2 && (
+          {step === 2 && orderSummary && (
             <PaymentPage
-              paymentMethod={paymentMethod}
-              setPaymentMethod={setPaymentMethod}
               onNext={handlePlaceOrder}
               onBack={() => setStep(1)}
-              loading={loading}
+              totalAmount={orderSummary.total}
             />
           )}
           {step === 3 && (

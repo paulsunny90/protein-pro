@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import UserLayout from './features/user/UserLayout';
-import HomePage from './features/user/home/HomePage';
+import HomePage from './features/user/home/PremiumHomePage';
 import ProductsPage from './features/user/products/ProductsPage';
 import BabyProductsPage from './features/user/categoryProductsPage/babys';
 import MenProductsPage from './features/user/categoryProductsPage/mens';
@@ -31,53 +31,56 @@ import EditSubscription from './features/admin/subscriptions/EditSubscription'
 import EditOrder from './features/admin/orders/EditOrder'
 import SubscriptionPage from './features/admin/subscriptions/SubscriptionPage'
 import AdminProtectedRoute from './features/admin/auth/AdminProtectedRoute'
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 const App = () => {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <div className="App">
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<UserLayout><HomePage /></UserLayout>} />
-            <Route path="/products" element={<UserLayout><ProductsPage /></UserLayout>} />
-            <Route path="/products/baby" element={<UserLayout><BabyProductsPage /></UserLayout>} />
-            <Route path="/products/men" element={<UserLayout><MenProductsPage /></UserLayout>} />
-            <Route path="/products/women" element={<UserLayout><WomenProductsPage /></UserLayout>} />
-            <Route path="/products/:id" element={<UserLayout><ProductDetailsPage /></UserLayout>} />
-            <Route path="/subscriptions" element={<UserLayout><SubscriptionsPage /></UserLayout>} />
-            <Route path="/bmi" element={<UserLayout><BMICalculator /></UserLayout>} />
-            <Route path="/cart" element={<UserLayout><CartPage /></UserLayout>} />
-            <Route path="/order" element={<UserLayout><OrderPage /></UserLayout>} />
-            <Route path="/orders" element={<UserLayout><MyOrdersPage /></UserLayout>} />
-            <Route path="/saved-addresses" element={<UserLayout><SavedAddressesPage /></UserLayout>} />
-            <Route path="/gift-cards" element={<UserLayout><GiftCardsPage /></UserLayout>} />
+      <PayPalScriptProvider options={{ clientId: "sb" }}>
+        <BrowserRouter>
+          <div className="App">
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<UserLayout><HomePage /></UserLayout>} />
+              <Route path="/products" element={<UserLayout><ProductsPage /></UserLayout>} />
+              <Route path="/products/baby" element={<UserLayout><BabyProductsPage /></UserLayout>} />
+              <Route path="/products/men" element={<UserLayout><MenProductsPage /></UserLayout>} />
+              <Route path="/products/women" element={<UserLayout><WomenProductsPage /></UserLayout>} />
+              <Route path="/products/:id" element={<UserLayout><ProductDetailsPage /></UserLayout>} />
+              <Route path="/subscriptions" element={<UserLayout><SubscriptionsPage /></UserLayout>} />
+              <Route path="/bmi" element={<UserLayout><BMICalculator /></UserLayout>} />
+              <Route path="/cart" element={<UserLayout><CartPage /></UserLayout>} />
+              <Route path="/order" element={<UserLayout><OrderPage /></UserLayout>} />
+              <Route path="/orders" element={<UserLayout><MyOrdersPage /></UserLayout>} />
+              <Route path="/saved-addresses" element={<UserLayout><SavedAddressesPage /></UserLayout>} />
+              <Route path="/gift-cards" element={<UserLayout><GiftCardsPage /></UserLayout>} />
 
-            {/* Auth routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/auth/login-success" element={<LoginSuccess />} />
+              {/* Auth routes */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/auth/login-success" element={<LoginSuccess />} />
 
-            {/* Protected routes */}
-            <Route path="/dashboard" element={<UserLayout><Dashboard /></UserLayout>} />
+              {/* Protected routes */}
+              <Route path="/dashboard" element={<UserLayout><Dashboard /></UserLayout>} />
 
-            {/* Admin routes */}
-            <Route path="/admin" element={<AdminProtectedRoute />}>
-              <Route element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="users" element={<UserManagement />} />
-                <Route path="orders" element={<OrdersPage />} />
-                <Route path="products" element={<ProductDashboard />} />
-                <Route path="products/add" element={<AddProduct />} />
-                <Route path="products/edit/:id" element={<EditProduct />} />
-                <Route path="subscriptions/edit/:id" element={<EditSubscription />} />
-                <Route path="orders/edit/:id" element={<EditOrder />} />
-                <Route path="subscriptions" element={<SubscriptionPage />} />
+              {/* Admin routes */}
+              <Route path="/admin" element={<AdminProtectedRoute />}>
+                <Route element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="users" element={<UserManagement />} />
+                  <Route path="orders" element={<OrdersPage />} />
+                  <Route path="products" element={<ProductDashboard />} />
+                  <Route path="products/add" element={<AddProduct />} />
+                  <Route path="products/edit/:id" element={<EditProduct />} />
+                  <Route path="subscriptions/edit/:id" element={<EditSubscription />} />
+                  <Route path="orders/edit/:id" element={<EditOrder />} />
+                  <Route path="subscriptions" element={<SubscriptionPage />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
-        </div>
-      </BrowserRouter>
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </PayPalScriptProvider>
     </AuthProvider>
   )
 }

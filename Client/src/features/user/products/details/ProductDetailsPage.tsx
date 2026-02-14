@@ -212,8 +212,8 @@ const ProductDetailsPage = () => {
               </div>
 
               <div className="flex items-center mb-6">
-                <span className="text-3xl font-bold text-gray-900">${displayProduct.price}</span>
-                <span className="ml-3 text-xl text-gray-500 line-through">${displayProduct.originalPrice.toFixed(2)}</span>
+                <span className="text-3xl font-bold text-gray-900">₹{displayProduct.price}</span>
+                <span className="ml-3 text-xl text-gray-500 line-through">₹{displayProduct.originalPrice.toFixed(2)}</span>
                 <span className="ml-3 text-lg font-semibold text-green-600">Save {displayProduct.discount}%</span>
               </div>
 

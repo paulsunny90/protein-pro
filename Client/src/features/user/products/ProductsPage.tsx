@@ -161,9 +161,9 @@ const ProductsPage = () => {
 
           <div className="mt-auto flex items-center justify-between">
             <div className="flex items-baseline space-x-3">
-              <span className="text-3xl font-black text-slate-900">${product.price}</span>
+              <span className="text-3xl font-black text-slate-900">₹{product.price}</span>
               {product.originalPrice > product.price && (
-                <span className="text-lg text-slate-300 line-through font-bold">${product.originalPrice}</span>
+                <span className="text-lg text-slate-300 line-through font-bold">₹{product.originalPrice}</span>
               )}
             </div>
             <button
