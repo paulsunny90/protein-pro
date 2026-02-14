@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Target, Award, Plus, Edit3, BarChart3, Heart, Loader2, User as UserIcon, Mail, Phone, ShieldCheck, Crown } from 'lucide-react';
+import { Calendar, Target, Award, Plus,  BarChart3, Heart, Loader2, User as UserIcon, Mail, Phone, ShieldCheck, Crown } from 'lucide-react';
 import { getUserProfile, type User } from '../../../services/userService';
 import { useAuth } from '../../../contexts/AuthContext';
 
