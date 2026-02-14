@@ -1,5 +1,5 @@
 import express from "express";
-import { createOrder, getOrderById, getAllOrders } from "../controllers/order.controller";
+import { createOrder, getOrderById, getAllOrders, updateOrderToPaid } from "../controllers/order.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = express.Router();
@@ -16,5 +16,6 @@ import { adminMiddleware } from "../middleware/admin.middleware";
 // router.route("/:id").get(protect, getOrderById);
 router.route("/").post(authMiddleware, createOrder).get(authMiddleware, adminMiddleware, getAllOrders);
 router.route("/:id").get(authMiddleware, getOrderById);
+router.route("/:id/pay").put(authMiddleware, updateOrderToPaid);
 
 export default router; 

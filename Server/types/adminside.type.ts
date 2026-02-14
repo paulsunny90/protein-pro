@@ -77,6 +77,12 @@ export interface Order extends Document {
   totalPrice: number;
   isPaid: boolean;
   paidAt?: Date;
+  paymentResult?: {
+    id: string;
+    status: string;
+    update_time: string;
+    email_address: string;
+  };
   orderStatus: "Pending" | "Confirmed" | "Shipped" | "Delivered" | "Cancelled";
   deliveredAt?: Date;
 }

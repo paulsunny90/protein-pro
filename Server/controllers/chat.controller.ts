@@ -16,9 +16,21 @@ export const chatController = async (req: any, res: any) => {
     });
   } catch (error: any) {
     console.error("Chat Error:", error);
-    res.status(500).json({
+
+    let errorMessage = error.message || "An unexpected error occurred";
+    let statusCode = 500;
+
+    if (error.status === 429 || error.message?.includes("429")) {
+      errorMessage = "The AI service is currently busy (Rate Limit Exceeded). Please try again in a few seconds.";
+      statusCode = 429;
+    } else if (error.status === 404) {
+      errorMessage = "AI Model not found or unavailable.";
+      statusCode = 404;
+    }
+
+    res.status(statusCode).json({
       success: false,
-      error: error.message,
+      error: errorMessage,
     });
   }
 };

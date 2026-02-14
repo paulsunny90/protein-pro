@@ -29,6 +29,10 @@ app.use("/api", mainRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/orders", orderRoutes);
 
+app.get("/api/config/paypal", (req, res) => {
+  res.send(process.env.PAYPAL_CLIENT_ID || "sb");
+});
+
 // Auth routes (separate from /api to match callback URL)
 import passport from "passport";
 import "./config/google.config";

@@ -43,9 +43,9 @@ const orderSchema = new Schema<Order>(
     },
 
     shippingAddress: {
-      
+
       type: Schema.Types.Mixed,
-      ref: "Address", 
+      ref: "Address",
       required: true,
     },
 
@@ -81,7 +81,12 @@ const orderSchema = new Schema<Order>(
     paidAt: {
       type: Date,
     },
-
+    paymentResult: {
+      id: { type: String },
+      status: { type: String },
+      update_time: { type: String },
+      email_address: { type: String },
+    },
     orderStatus: {
       type: String,
       enum: ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"],
