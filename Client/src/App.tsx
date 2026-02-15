@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import UserLayout from './features/user/UserLayout';
-import HomePage from './features/user/home/PremiumHomePage';
+import HomePage from './features/user/home/HomePage';
 import ProductsPage from './features/user/products/ProductsPage';
 import BabyProductsPage from './features/user/categoryProductsPage/babys';
 import MenProductsPage from './features/user/categoryProductsPage/mens';

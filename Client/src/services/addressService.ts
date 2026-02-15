@@ -5,9 +5,11 @@ export interface Address {
     firstName: string;
     lastName: string;
     email: string;
+    label?: string; // e.g. Home, Office
     houseNoOrName?: string;
     phone: string;
     street: string;
+    landmark?: string;
     city: string;
     state: string;
     postalCode: string;

@@ -20,16 +20,18 @@ const SavedAddressesPage = () => {
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState<Partial<Address>>({
+        label: 'Home',
         firstName: '',
         lastName: '',
         email: '',
         houseNoOrName: '',
         phone: '',
         street: '',
+        landmark: '',
         city: '',
         state: '',
         postalCode: '',
-        country: 'United States',
+        country: 'India',
         isDefault: false
     });
 
@@ -109,16 +111,18 @@ const SavedAddressesPage = () => {
 
     const resetForm = () => {
         setFormData({
+            label: 'Home',
             firstName: '',
             lastName: '',
             email: '',
             houseNoOrName: '',
             phone: '',
             street: '',
+            landmark: '',
             city: '',
             state: '',
             postalCode: '',
-            country: 'United States',
+            country: 'India',
             isDefault: false
         });
         setEditingId(null);
@@ -180,6 +184,37 @@ const SavedAddressesPage = () => {
 
                             {/* Form */}
                             <form onSubmit={handleSubmit} className="p-8">
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Address Label (e.g. Home, Office)</label>
+                                    <div className="flex gap-4">
+                                        {['Home', 'Office', 'Other'].map((l) => (
+                                            <button
+                                                key={l}
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ ...prev, label: l }))}
+                                                className={`px-6 py-2 rounded-xl font-bold transition-all ${formData.label === l ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                            >
+                                                {l}
+                                            </button>
+                                        ))}
+                                        {formData.label !== 'Home' && formData.label !== 'Office' && formData.label !== 'Other' && (
+                                            <input
+                                                type="text"
+                                                value={formData.label || ''}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
+                                                className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none"
+                                                placeholder="Custom Label"
+                                            />
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, label: '' }))}
+                                            className={`px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all ${(formData.label !== 'Home' && formData.label !== 'Office' && formData.label !== 'Other') ? 'hidden' : ''}`}
+                                        >
+                                            Custom
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-2">First Name</label>
@@ -262,18 +297,31 @@ const SavedAddressesPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="mb-6">
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Street Address</label>
-                                    <div className="relative">
-                                        <MapPin className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Street Address</label>
+                                        <div className="relative">
+                                            <MapPin className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                                            <input
+                                                type="text"
+                                                name="street"
+                                                value={formData.street || ''}
+                                                onChange={handleInputChange}
+                                                placeholder="123 Main St"
+                                                required
+                                                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Landmark (Optional)</label>
                                         <input
                                             type="text"
-                                            name="street"
-                                            value={formData.street || ''}
+                                            name="landmark"
+                                            value={formData.landmark || ''}
                                             onChange={handleInputChange}
-                                            placeholder="123 Main St"
-                                            required
-                                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
+                                            placeholder="Near City Mall"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
                                         />
                                     </div>
                                 </div>
@@ -308,13 +356,13 @@ const SavedAddressesPage = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">ZIP Code</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Pincode</label>
                                         <input
                                             type="text"
                                             name="postalCode"
                                             value={formData.postalCode || ''}
                                             onChange={handleInputChange}
-                                            placeholder="10001"
+                                            placeholder="400001"
                                             required
                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
                                         />
@@ -328,6 +376,7 @@ const SavedAddressesPage = () => {
                                             onChange={handleInputChange}
                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none appearance-none cursor-pointer"
                                         >
+                                            <option>India</option>
                                             <option>United States</option>
                                             <option>Canada</option>
                                             <option>United Kingdom</option>
@@ -385,28 +434,36 @@ const SavedAddressesPage = () => {
                             )}
 
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
-                                    <MapPin className="w-5 h-5" />
+                                <div className="bg-blue-100 p-2 rounded-xl text-blue-600 h-fit">
+                                    {address.label?.toLowerCase() === 'home' ? <Home className="w-5 h-5" /> :
+                                        address.label?.toLowerCase() === 'office' ? <Plus className="w-5 h-5 rotate-45" /> : <MapPin className="w-5 h-5" />}
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-900 capitalize">Address</h3>
+                                    <h3 className="text-lg font-bold text-gray-900 capitalize flex items-center gap-2">
+                                        {address.label || 'Address'}
+                                        {address.isDefault && (
+                                            <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest">Default</span>
+                                        )}
+                                    </h3>
                                     <p className="text-sm text-gray-500">{address.firstName} {address.lastName}</p>
                                     <div className="flex items-center text-sm text-gray-500 mt-2">
-                                        <Mail className="w-4 h-4 mr-2" />
+                                        <Mail className="w-3.5 h-3.5 mr-2" />
                                         {address.email}
                                     </div>
                                     <div className="flex items-center text-sm text-gray-500">
-                                        <Phone className="w-4 h-4 mr-2" />
+                                        <Phone className="w-3.5 h-3.5 mr-2" />
                                         {address.phone}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="mb-6 text-gray-700">
-                                <p className="font-medium">{address.street}</p>
-                                {address.houseNoOrName && <p className="text-sm text-gray-500">{address.houseNoOrName}</p>}
-                                <p>{address.city}, {address.state} {address.postalCode}</p>
-                                <p>{address.country}</p>
+                            <div className="mb-6 text-gray-700 space-y-0.5">
+                                <p className="font-bold text-slate-800">{address.houseNoOrName && `${address.houseNoOrName}, `}{address.street}</p>
+                                {address.landmark && <p className="text-sm text-gray-500 flex items-center gap-1">
+                                    <span className="font-bold text-[10px] uppercase text-slate-400">Landmark:</span> {address.landmark}
+                                </p>}
+                                <p className="text-sm font-medium">{address.city}, {address.state} - <span className="text-blue-600 font-bold">{address.postalCode}</span></p>
+                                <p className="text-xs text-gray-400 uppercase tracking-widest font-bold">{address.country}</p>
                             </div>
 
                             <div className="flex gap-3">
@@ -421,8 +478,8 @@ const SavedAddressesPage = () => {
                                     onClick={() => handleSetDefault(address._id!)}
                                     disabled={address.isDefault}
                                     className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded-xl font-bold transition-colors ${address.isDefault
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : 'bg-green-50 text-green-600 hover:bg-green-100'
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : 'bg-green-50 text-green-600 hover:bg-green-100'
                                         }`}
                                 >
                                     Set Default
