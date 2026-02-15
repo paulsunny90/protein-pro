@@ -42,8 +42,8 @@ export const loginUser = async (req: Request, res: Response) => {
     // 5️⃣ Save tokens in cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none",
+      secure: true,
       maxAge: 15 * 60 * 1000,
     });
 
@@ -85,8 +85,8 @@ export const refreshToken = async (req: Request, res: Response) => {
 
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none",
+      secure: true,
       maxAge: 15 * 60 * 1000,
     });
 
@@ -107,15 +107,15 @@ export const googleCallback = (req: Request, res: Response) => {
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
     maxAge: 15 * 60 * 1000,
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false,
+    sameSite: "none",
+    secure: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
