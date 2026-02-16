@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Calculator, Heart, Target, Send, Bot } from 'lucide-react';
+import { Calculator, Send, Bot, Activity, Info, ChevronRight, MessageSquare } from 'lucide-react';
 import { sendChatMessage } from '../../../services/chatService';
 
 const BMICalculator = () => {
-  const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
+  const [unit] = useState<'metric' | 'imperial'>('metric');
   const [height, setHeight] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
   const [age, setAge] = useState<string>('');
@@ -13,12 +13,12 @@ const BMICalculator = () => {
   const [bmiMessage, setBmiMessage] = useState<string>('');
   const [healthRisk, setHealthRisk] = useState<string>('');
 
-  // AI Chatbot state
   const [chatMessages, setChatMessages] = useState([
-    { id: 1, text: "Hello! I'm your health assistant. I can help you understand your BMI results and provide personalized health recommendations. Enter your details in the calculator to get started!", sender: 'ai' }
+    { id: 1, text: "GREETINGS ATHLETE. I am your specialized biometric advisor. Enter your physiological data to initialize performance analysis.", sender: 'ai' }
   ]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isChatLoading, setIsChatLoading] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   const calculateBMI = () => {
     if (!height || !weight) return;
@@ -27,103 +27,79 @@ const BMICalculator = () => {
     let weightInKg = 0;
 
     if (unit === 'metric') {
-      heightInMeters = parseFloat(height) / 100; // Convert cm to meters
+      heightInMeters = parseFloat(height) / 100;
       weightInKg = parseFloat(weight);
     } else {
-      // Convert inches to meters and pounds to kg
       heightInMeters = parseFloat(height) * 0.0254;
       weightInKg = parseFloat(weight) * 0.453592;
     }
 
     if (isNaN(heightInMeters) || isNaN(weightInKg) || heightInMeters <= 0 || weightInKg <= 0) {
-      alert('Please enter valid values');
+      alert('Please enter valid biometric data');
       return;
     }
 
     const bmi = weightInKg / (heightInMeters * heightInMeters);
     setResult(parseFloat(bmi.toFixed(1)));
 
-    // Determine category and health risk
     let cat = '';
     let msg = '';
     let risk = '';
 
     if (bmi < 18.5) {
       cat = 'Underweight';
-      msg = 'You may be underweight. Consider consulting a healthcare provider.';
-      risk = 'Low risk, but may have nutrient deficiencies.';
+      msg = 'Caloric deficit detected. Nutritional reinforcement required.';
+      risk = 'Nutrient deficiency protocol active.';
     } else if (bmi < 25) {
-      cat = 'Normal weight';
-      msg = 'Congratulations! You have a healthy weight.';
-      risk = 'Least risk of developing health problems.';
+      cat = 'Optimal';
+      msg = 'Peak physiological state maintained. Ideal for advanced performance.';
+      risk = 'Minimum biochemical risk detected.';
     } else if (bmi < 30) {
       cat = 'Overweight';
-      msg = 'Consider lifestyle changes to reach a healthier weight.';
-      risk = 'Increased risk of developing health problems.';
+      msg = 'Metabolic load exceeding optimal levels. Lifestyle optimization recommended.';
+      risk = 'Incubation of metabolic risk factors possible.';
     } else {
       cat = 'Obese';
-      msg = 'Consult a healthcare provider for guidance on weight management.';
-      risk = 'High risk of developing health problems.';
+      msg = 'Critical metabolic load. Immediate intervention protocol recommended.';
+      risk = 'Elevated physiological risk level.';
     }
 
     setCategory(cat);
     setBmiMessage(msg);
     setHealthRisk(risk);
 
-    // Add AI recommendation based on result
-    const aiRecommendation = getAIRecommendation(bmi, cat, gender, parseInt(age));
-    setChatMessages(prev => [...prev, { id: Date.now(), text: aiRecommendation, sender: 'ai' }]);
+    const aiRecommendation = getAIRecommendation(bmi, cat, gender, parseInt(age) || 25);
+    setChatMessages((prev: any) => [...prev, { id: Date.now(), text: aiRecommendation, sender: 'ai' }]);
   };
 
   const getAIRecommendation = (bmi: number, category: string, gender: string, age: number) => {
-    let recommendation = `Based on your BMI of ${bmi.toFixed(1)} (${category}), here are some personalized recommendations:\n\n`;
+    let recommendation = `BIOMETRIC ANALYSIS: BMI ${bmi.toFixed(1)} [${category.toUpperCase()}]\n\n`;
 
-    // Gender-specific recommendations
     if (gender === 'female') {
-      recommendation += `As a ${age > 50 ? 'woman over 50' : 'woman'}, consider:\n`;
+      recommendation += `FEMALE PROTOCOL [AGE ${age}]:\n`;
       if (age > 50) {
-        recommendation += "• Focus on calcium and vitamin D for bone health\n";
-        recommendation += "• Include strength training to maintain muscle mass\n";
-        recommendation += "• Monitor iron levels, especially if menstruating\n\n";
+        recommendation += "• Bone density reinforcement: Priority Calcium + Vit D\n";
+        recommendation += "• Lean mass preservation: Resistance training required\n";
       } else {
-        recommendation += "• Ensure adequate iron intake\n";
-        recommendation += "• Consider prenatal nutrition if planning pregnancy\n\n";
+        recommendation += "• Micronutrient focus: Optimize Iron intake\n";
+        recommendation += "• Metabolic optimization via clean proteins\n\n";
       }
     } else {
-      recommendation += `As a ${age > 50 ? 'man over 50' : 'man'}, consider:\n`;
+      recommendation += `MALE PROTOCOL [AGE ${age}]:\n`;
       if (age > 50) {
-        recommendation += "• Focus on heart health with omega-3 fatty acids\n";
-        recommendation += "• Include resistance training for muscle maintenance\n";
-        recommendation += "• Monitor testosterone levels with age\n\n";
+        recommendation += "• Cardiovascular protection: Omega-3 optimization\n";
+        recommendation += "• Hypertrophy maintenance: Heavy resistance training\n";
       } else {
-        recommendation += "• Focus on building lean muscle mass\n";
-        recommendation += "• Ensure adequate protein intake\n\n";
+        recommendation += "• Anabolic environment: Protein threshold 2g/kg\n";
+        recommendation += "• Strength foundation: Core multi-joint movements\n\n";
       }
     }
 
-    if (bmi < 18.5) {
-      recommendation += "• Consider increasing your caloric intake with nutrient-dense foods\n";
-      recommendation += "• Focus on healthy proteins and complex carbohydrates\n";
-      recommendation += "• Consider strength training exercises to build muscle mass\n";
-      recommendation += "• Consult a healthcare provider for personalized advice\n";
-    } else if (bmi >= 18.5 && bmi < 25) {
-      recommendation += "• Maintain your current healthy lifestyle\n";
-      recommendation += "• Continue regular exercise and balanced nutrition\n";
-      recommendation += "• Stay hydrated and get adequate sleep\n";
-      recommendation += "• Monitor your weight periodically\n";
-    } else if (bmi >= 25 && bmi < 30) {
-      recommendation += "• Aim for a calorie deficit through diet and exercise\n";
-      recommendation += "• Incorporate at least 150 minutes of moderate exercise weekly\n";
-      recommendation += "• Focus on portion control and whole foods\n";
-      recommendation += "• Consider consulting a nutritionist\n";
-    } else {
-      recommendation += "• Consult a healthcare provider for a structured weight loss plan\n";
-      recommendation += "• Focus on gradual, sustainable weight loss\n";
-      recommendation += "• Combine diet changes with regular physical activity\n";
-      recommendation += "• Consider professional support for long-term success\n";
-    }
+    const finalAdvice = bmi < 18.5 ? "STRATEGIC GAIN: Increase caloric density via clean fats and complex carbs." :
+      bmi < 25 ? "MAINTENANCE: Sustain current high-performance protocols. Focus on micronutrient timing." :
+        "STRATEGIC DEFICIT: Execute controlled caloric restriction. Prioritize HIIT and protein-sparing nutrition.";
 
-    recommendation += "\nWould you like more specific advice on nutrition or exercise?";
+    recommendation += `STRATEGY: ${finalAdvice}\n\nInitialize deeper consultation?`;
     return recommendation;
   };
 
@@ -138,38 +114,29 @@ const BMICalculator = () => {
   };
 
   const getBmiColor = () => {
-    if (!result) return 'text-gray-500';
-    if (result < 18.5) return 'text-blue-500';
-    if (result < 25) return 'text-green-500';
-    if (result < 30) return 'text-yellow-500';
-    return 'text-red-500';
-  };
-
-  const getBmiBarPosition = () => {
-    if (!result) return 0;
-    // Position the indicator on the scale (0-40 range)
-    return Math.min(Math.max(result, 0), 40) * 2.5; // Scale to 0-100%
+    if (!result) return 'text-slate-600';
+    if (result < 18.5) return 'text-blue-400';
+    if (result < 25) return 'text-[#a3e635]';
+    if (result < 30) return 'text-orange-400';
+    return 'text-rose-500';
   };
 
   const handleSendMessage = async () => {
     if (!currentMessage.trim() || isChatLoading) return;
-
     const userMsgText = currentMessage;
-    // Add user message
     const newUserMessage = { id: Date.now(), text: userMsgText, sender: 'user' as const };
-    setChatMessages(prev => [...prev, newUserMessage]);
+    setChatMessages((prev: any) => [...prev, newUserMessage]);
     setCurrentMessage('');
     setIsChatLoading(true);
 
     try {
       const context = result ? { bmi: result, category, healthRisk, gender, age } : null;
       const aiResponse = await sendChatMessage(userMsgText, context);
-
-      setChatMessages(prev => [...prev, { id: Date.now(), text: aiResponse, sender: 'ai' as const }]);
+      setChatMessages((prev: any) => [...prev, { id: Date.now(), text: aiResponse, sender: 'ai' as const }]);
     } catch (error: any) {
-      setChatMessages(prev => [...prev, {
+      setChatMessages((prev: any) => [...prev, {
         id: Date.now(),
-        text: error.message || "I'm sorry, I'm having trouble connecting to my health knowledge base right now. Please try again later.",
+        text: "CHANNEL INTERFERENCE DETECTED. Re-establishing link...",
         sender: 'ai' as const
       }]);
     } finally {
@@ -178,286 +145,265 @@ const BMICalculator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">BMI Calculator</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Calculate your Body Mass Index and get personalized health insights
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-[#a3e635] selection:text-black">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-24">
+        {/* Header Section */}
+        <div className="mb-20 animate-fade-in text-center lg:text-left">
+          <h1 className="text-6xl md:text-9xl font-black mb-4 tracking-[calc(-0.04em)] uppercase leading-none">
+            CALCULATE YOUR BMI
+          </h1>
+          <p className="text-xl text-slate-500 font-medium tracking-tight">
+            Metric (kg/cm) — Know your body, fuel it right
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Calculator Card */}
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-8">
-            <div className="flex items-center mb-6">
-              <Calculator className="h-8 w-8 text-blue-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">Calculate Your BMI</h2>
-            </div>
-
-            {/* Unit Toggle */}
-            <div className="mb-6">
-              <div className="flex bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setUnit('metric')}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${unit === 'metric'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                >
-                  Metric (kg/cm)
-                </button>
-                <button
-                  onClick={() => setUnit('imperial')}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${unit === 'imperial'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                >
-                  Imperial (lbs/in)
-                </button>
-              </div>
-            </div>
-
-            {/* Form Fields */}
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Height ({unit === 'metric' ? 'cm' : 'inches'})
-                </label>
-                <input
-                  type="number"
-                  value={height}
-                  onChange={(e) => setHeight(e.target.value)}
-                  placeholder={`Enter height in ${unit === 'metric' ? 'cm' : 'inches'}`}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
+        <div className="flex flex-col lg:flex-row gap-16 items-start">
+          {/* Main Calculator Card */}
+          <div className="w-full lg:max-w-2xl mx-auto lg:mx-0">
+            <div className="bg-[#0a0a0a] rounded-[2.5rem] border border-white/5 p-10 lg:p-12 shadow-2xl relative overflow-hidden group">
+              {/* Card Header */}
+              <div className="flex items-center mb-12">
+                <div className="w-14 h-14 bg-[#a3e635] rounded-2xl flex items-center justify-center mr-6 shadow-lg shadow-[#a3e635]/20">
+                  <Calculator className="h-7 w-7 text-black" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-white tracking-tight uppercase">BMI CALCULATOR</h2>
+                  <p className="text-slate-600 text-xs font-bold uppercase tracking-widest mt-0.5">Body Mass Index</p>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Weight ({unit === 'metric' ? 'kg' : 'lbs'})
-                </label>
-                <input
-                  type="number"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  placeholder={`Enter weight in ${unit === 'metric' ? 'kg' : 'lbs'}`}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Age
-                </label>
-                <input
-                  type="number"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  placeholder="Enter your age"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Gender
-                </label>
-                <div className="flex space-x-4">
-                  <label className="flex items-center">
+              {/* Input Section */}
+              <div className="space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] px-1">WEIGHT (KG)</label>
                     <input
-                      type="radio"
-                      name="gender"
-                      value="male"
-                      checked={gender === 'male'}
-                      onChange={() => setGender('male')}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                      type="number"
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      placeholder="e.g. 75"
+                      className="w-full bg-[#0d0d0d] border border-white/5 rounded-2xl py-6 px-8 text-xl font-black text-white focus:outline-none focus:border-[#a3e635]/30 transition-all placeholder:text-slate-800"
                     />
-                    <span className="ml-2 text-gray-700">Male</span>
-                  </label>
-                  <label className="flex items-center">
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] px-1">HEIGHT (CM)</label>
                     <input
-                      type="radio"
-                      name="gender"
-                      value="female"
-                      checked={gender === 'female'}
-                      onChange={() => setGender('female')}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                      type="number"
+                      value={height}
+                      onChange={(e) => setHeight(e.target.value)}
+                      placeholder="e.g. 175"
+                      className="w-full bg-[#0d0d0d] border border-white/5 rounded-2xl py-6 px-8 text-xl font-black text-white focus:outline-none focus:border-[#a3e635]/30 transition-all placeholder:text-slate-800"
                     />
-                    <span className="ml-2 text-gray-700">Female</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="flex space-x-4 pt-4">
-                <button
-                  onClick={calculateBMI}
-                  className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                >
-                  Calculate BMI
-                </button>
-                <button
-                  onClick={resetCalculator}
-                  className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  Reset
-                </button>
-              </div>
-            </div>
-
-            {/* Results Section */}
-            <div className="mt-8">
-              {/* BMI Result */}
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <div className="flex items-center mb-6">
-                  <Heart className="h-8 w-8 text-green-600 mr-3" />
-                  <h2 className="text-2xl font-bold text-gray-900">Your Results</h2>
-                </div>
-
-                {result !== null ? (
-                  <div className="text-center">
-                    <div className={`text-6xl font-bold mb-2 ${getBmiColor()}`}>{result}</div>
-                    <div className="text-xl font-semibold text-gray-900 mb-2">{category}</div>
-                    <p className="text-gray-600 mb-6">{bmiMessage}</p>
-
-                    <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                      <div className="text-sm text-gray-600 mb-2">Health Risk Level</div>
-                      <div className="text-sm text-gray-900 font-medium">{healthRisk}</div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <Calculator className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">Enter your details to calculate your BMI</p>
-                  </div>
-                )}
-              </div>
-
-              {/* BMI Scale */}
-              <div className="bg-white rounded-2xl shadow-lg p-8 mt-6">
-                <div className="flex items-center mb-6">
-                  <Target className="h-8 w-8 text-purple-600 mr-3" />
-                  <h2 className="text-2xl font-bold text-gray-900">BMI Scale</h2>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="relative h-6 bg-gradient-to-r from-blue-400 via-green-400 via-yellow-400 to-red-400 rounded-full overflow-hidden">
-                    {result !== null && (
-                      <div
-                        className="absolute top-0 w-1 h-8 bg-white border-2 border-gray-900 rounded-full -mt-1"
-                        style={{ left: `${getBmiBarPosition()}%` }}
-                      >
-                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs font-bold text-gray-900 whitespace-nowrap">
-                          Your BMI
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex justify-between text-xs text-gray-600">
-                    <span>Underweight<br />&lt;18.5</span>
-                    <span>Normal<br />18.5-24.9</span>
-                    <span>Overweight<br />25-29.9</span>
-                    <span>Obese<br />&ge;30</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          {/* AI Chatbot Panel */}
-          <div className="space-y-8">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-gray-100">
-              {/* Chat Header */}
-              <div className="bg-gradient-to-r from-indigo-600 to-blue-600 p-6 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                <div className="relative z-10 flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md mr-3 group transition-transform hover:scale-110">
-                      <Bot className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold leading-tight">Health Assistant</h2>
-                      <div className="flex items-center text-blue-100 text-xs mt-0.5">
-                        <span className="flex h-2 w-2 mr-2">
-                          <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                        AI Powered • Online
-                      </div>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] px-1">AGE</label>
+                    <input
+                      type="number"
+                      value={age}
+                      onChange={(e) => setAge(e.target.value)}
+                      placeholder="e.g. 25"
+                      className="w-full bg-[#0d0d0d] border border-white/5 rounded-2xl py-6 px-8 text-xl font-black text-white focus:outline-none focus:border-[#a3e635]/30 transition-all placeholder:text-slate-800"
+                    />
                   </div>
-                </div>
-              </div>
-
-              <div className="flex-grow flex flex-col p-4 bg-slate-50/50">
-                <div className="flex-grow overflow-y-auto max-h-[500px] mb-4 pr-2 scrollbar-thin scrollbar-thumb-gray-200">
-                  <div className="space-y-4 pt-2">
-                    {chatMessages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div
-                          className={`max-w-[85%] rounded-2xl p-4 shadow-sm relative ${msg.sender === 'user'
-                            ? 'bg-gradient-to-br from-indigo-600 to-blue-600 text-white rounded-tr-none'
-                            : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
-                            }`}
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] px-1">GENDER</label>
+                    <div className="flex p-1 bg-[#0d0d0d] rounded-2xl border border-white/5 h-[76px]">
+                      {['male', 'female'].map((g) => (
+                        <button
+                          key={g}
+                          onClick={() => setGender(g as any)}
+                          className={`flex-1 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${gender === g
+                            ? 'bg-[#a3e635] text-black shadow-lg shadow-[#a3e635]/10'
+                            : 'text-slate-600 hover:text-white'}`}
                         >
-                          {msg.text.split('\n').map((line, i) => (
-                            <p key={i} className={i > 0 ? 'mt-2' : ''}>
-                              {line.startsWith('•') ? (
-                                <span className="flex items-start">
-                                  <span className="mr-2 text-indigo-400">•</span>
-                                  <span>{line.substring(2)}</span>
-                                </span>
-                              ) : line}
-                            </p>
-                          ))}
-                          <div className={`text-[10px] mt-2 opacity-50 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
-                            {new Date(msg.id).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {isChatLoading && (
-                      <div className="flex justify-start">
-                        <div className="bg-white text-gray-800 rounded-2xl rounded-tl-none p-4 border border-gray-100 shadow-sm flex items-center">
-                          <div className="flex space-x-1">
-                            <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                            <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce"></div>
-                          </div>
-                          <span className="ml-3 text-sm text-gray-500 font-medium">Assistant is thinking...</span>
-                        </div>
-                      </div>
-                    )}
+                          {g}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                <div className="relative mt-2">
-                  <input
-                    type="text"
-                    value={currentMessage}
-                    onChange={(e) => setCurrentMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder="Ask about diet, exercise or supplements..."
-                    className="w-full pl-4 pr-12 py-3.5 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm outline-none"
-                  />
+                <div className="pt-6">
                   <button
-                    onClick={handleSendMessage}
-                    disabled={isChatLoading}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 active:scale-95 transition-all shadow-md disabled:bg-gray-300 disabled:scale-100"
+                    onClick={calculateBMI}
+                    className="w-full bg-[#a3e635] text-black py-7 rounded-2xl font-black uppercase tracking-[0.2em] text-sm hover:translate-y-[-2px] hover:shadow-2xl hover:shadow-[#a3e635]/20 transition-all active:scale-[0.98] flex items-center justify-center group"
                   >
-                    <Send className="h-5 w-5" />
+                    <span>Calculate BMI</span>
+                    <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                  <button
+                    onClick={resetCalculator}
+                    className="w-full mt-4 text-[10px] font-black text-slate-700 uppercase tracking-widest hover:text-slate-400 transition-colors"
+                  >
+                    Reset Biometric Data
                   </button>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Results Section */}
+          <div className="w-full lg:flex-grow flex flex-col gap-10">
+            {result !== null ? (
+              <div className="animate-fade-in space-y-10">
+                <div className="bg-[#0a0a0a] rounded-[2.5rem] border border-white/5 p-12 shadow-2xl text-center relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none">
+                    <Activity className="w-48 h-48 text-[#a3e635]" />
+                  </div>
+
+                  <h3 className="text-xs font-black text-[#a3e635]/50 uppercase tracking-[0.4em] mb-8">Biosensory Result</h3>
+                  <div className={`text-9xl font-black tracking-tighter leading-none mb-6 ${getBmiColor()}`}>
+                    {result}
+                  </div>
+                  <div className="text-3xl font-black text-white uppercase tracking-tighter mb-4 italic">
+                    {category}
+                  </div>
+                  <p className="text-slate-500 font-medium max-w-md mx-auto leading-relaxed mb-10">
+                    {bmiMessage}
+                  </p>
+
+                  <div className="bg-black/40 border border-white/5 rounded-3xl p-8 max-w-sm mx-auto">
+                    <div className="flex items-center justify-center text-[10px] font-black text-slate-600 uppercase tracking-widest mb-3">
+                      <Info className="w-3.5 h-3.5 mr-2" />
+                      Protocol Analysis
+                    </div>
+                    <div className={`text-sm font-black uppercase tracking-widest ${getBmiColor()}`}>
+                      {healthRisk}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tactical Recommendation Card */}
+                <div className="bg-[#0a0a0a] rounded-[2.5rem] border border-white/5 p-10 shadow-2xl group cursor-pointer hover:border-[#a3e635]/20 transition-all"
+                  onClick={() => setShowChat(true)}>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mr-5 border border-white/10">
+                        <Bot className="w-6 h-6 text-[#a3e635]" />
+                      </div>
+                      <h3 className="text-lg font-black text-white uppercase tracking-tight">AI Tactical Summary</h3>
+                    </div>
+                    <div className="text-[10px] font-black text-[#a3e635] uppercase tracking-widest px-3 py-1 bg-[#a3e635]/10 rounded-full">
+                      New Analysis Available
+                    </div>
+                  </div>
+                  <p className="text-slate-500 text-sm font-medium leading-relaxed">
+                    Personalized high-performance nutrition and training protocols have been generated based on your biometric profile.
+                  </p>
+                  <div className="mt-8 flex items-center text-[10px] font-black text-[#a3e635] uppercase tracking-[0.2em] group-hover:translate-x-1 transition-transform">
+                    Initialize Full Consultation <ChevronRight className="ml-1 w-3 h-3" />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center opacity-20 border-2 border-dashed border-white/10 rounded-[3rem]">
+                <Activity className="w-20 h-20 text-[#a3e635] mb-8 animate-pulse" />
+                <h3 className="text-xl font-black text-white uppercase tracking-[0.2em]">Awaiting Data</h3>
+                <p className="text-slate-600 text-xs font-black uppercase tracking-widest mt-2">Initialize analysis to view profile</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Floating Chat Button as seen in screenshot */}
+      <button
+        onClick={() => setShowChat(!showChat)}
+        className="fixed bottom-10 right-10 w-20 h-20 bg-[#a3e635] rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(162,230,53,0.3)] hover:scale-110 transition-all active:scale-95 group focus:outline-none z-50"
+      >
+        <MessageSquare className="w-8 h-8 text-black fill-current" />
+        {isChatLoading && (
+          <div className="absolute top-0 right-0 w-6 h-6 bg-white border-4 border-[#a3e635] rounded-full animate-bounce"></div>
+        )}
+      </button>
+
+      {/* Modern AI Chat Drawer */}
+      {showChat && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowChat(false)}></div>
+          <div className="relative w-full max-w-xl bg-black border-l border-white/10 flex flex-col animate-slide-in-right shadow-2xl">
+            {/* Chat Header */}
+            <div className="p-10 border-b border-white/10 flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-[#a3e635]/10 rounded-2xl flex items-center justify-center mr-5 border border-[#a3e635]/20">
+                  <Bot className="w-6 h-6 text-[#a3e635]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-white uppercase tracking-tight">BIOSENTRY AI</h3>
+                  <div className="flex items-center mt-1">
+                    <span className="w-2 h-2 bg-[#a3e635] rounded-full animate-pulse mr-2 shadow-[0_0_10px_#a3e635]"></span>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Protocol Active</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowChat(false)}
+                className="text-slate-600 hover:text-white transition-colors uppercase text-[10px] font-black tracking-widest"
+              >
+                Close Unit
+              </button>
+            </div>
+
+            {/* Chat Body */}
+            <div className="flex-grow overflow-y-auto p-10 space-y-10 scrollbar-hide">
+              {chatMessages.map((msg: any) => (
+                <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[85%] p-8 rounded-[2.5rem] text-sm font-medium leading-relaxed relative ${msg.sender === 'user'
+                    ? 'bg-[#a3e635] text-black font-black rounded-tr-none shadow-xl shadow-[#a3e635]/10'
+                    : 'bg-[#0d0d0d] text-slate-300 border border-white/5 rounded-tl-none'}`}>
+
+                    {msg.text.split('\n').map((line: string, i: number) => (
+                      <p key={i} className={i > 0 ? 'mt-4' : ''}>
+                        {line.startsWith('•') ? (
+                          <span className="flex items-start">
+                            <span className="mr-3 text-[#a3e635]">•</span>
+                            <span>{line.substring(2)}</span>
+                          </span>
+                        ) : line}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {isChatLoading && (
+                <div className="flex justify-start animate-fade-in">
+                  <div className="bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] rounded-tl-none p-8">
+                    <div className="flex space-x-2">
+                      {[0, 0.2, 0.4].map((d, i) => (
+                        <div key={i} className="w-2 h-2 bg-[#a3e635] rounded-full animate-bounce" style={{ animationDelay: `${d}s` }}></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Chat Input */}
+            <div className="p-10 border-t border-white/10 bg-black">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={currentMessage}
+                  onChange={(e) => setCurrentMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="Input tactical query for biometric lab..."
+                  className="w-full bg-[#0d0d0d] border border-white/5 rounded-3xl pl-8 pr-20 py-6 text-sm font-bold text-white focus:border-[#a3e635]/30 outline-none transition-all placeholder:text-slate-800"
+                />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={isChatLoading}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-14 h-14 bg-[#a3e635] text-black rounded-2xl hover:scale-105 transition-all flex items-center justify-center disabled:opacity-30"
+                >
+                  <Send className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

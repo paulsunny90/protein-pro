@@ -45,15 +45,6 @@ const Dashboard = () => {
     return planNames[plan] || 'Free Plan';
   };
 
-  const getPlanColor = (plan: string) => {
-    const planColors: Record<string, string> = {
-      none: 'text-gray-600 bg-gray-50',
-      silver: 'text-indigo-600 bg-indigo-50',
-      gold: 'text-yellow-600 bg-yellow-50',
-      platinum: 'text-purple-600 bg-purple-50'
-    };
-    return planColors[plan] || 'text-gray-600 bg-gray-50';
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -95,146 +86,155 @@ const Dashboard = () => {
   const user = userData || authUser;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-black">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Profile Header Card */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center mb-4 md:mb-0 w-full md:w-auto">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold border-4 border-white shadow-lg">
-                {user?.name?.charAt(0).toUpperCase() || 'U'}
+        <div className="soft-card p-6 sm:p-10 mb-8 sm:mb-12 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#a3e635]/5 blur-[80px] rounded-full -z-0"></div>
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center text-white text-4xl font-black italic shadow-2xl relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#a3e635]/20 to-transparent rounded-[2rem]"></div>
+              {user?.name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+
+            <div className="flex-1 text-center md:text-left">
+              <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4 justify-center md:justify-start">
+                <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tighter uppercase italic">
+                  WELCOME, {user?.name?.split(' ')[0] || 'WARRIOR'}!
+                </h1>
+                {user?.role === 'admin' && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#a3e635]/10 text-[#a3e635] text-[10px] font-black uppercase tracking-widest rounded-full border border-[#a3e635]/20 self-center">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    System Admin
+                  </span>
+                )}
               </div>
-              <div className="ml-4 flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-bold text-gray-900">Hello, {user?.name || 'User'}!</h1>
-                  {user?.role === 'admin' && (
-                    <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-bold rounded-full flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3" />
-                      Admin
-                    </span>
-                  )}
+
+              <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 sm:gap-6 text-slate-400">
+                <div className="flex items-center text-sm font-bold tracking-tight">
+                  <Mail className="w-4 h-4 mr-2 text-[#a3e635]" />
+                  {user?.email || 'No email'}
                 </div>
-                <div className="flex flex-wrap items-center gap-3 text-sm">
-                  <div className="flex items-center text-gray-600">
-                    <Mail className="w-4 h-4 mr-1" />
-                    {user?.email || 'No email'}
+                {user?.phoneNumber && (
+                  <div className="flex items-center text-sm font-bold tracking-tight">
+                    <Phone className="w-4 h-4 mr-2 text-[#a3e635]" />
+                    {user.phoneNumber}
                   </div>
-                  {user?.phoneNumber && (
-                    <div className="flex items-center text-gray-600">
-                      <Phone className="w-4 h-4 mr-1" />
-                      {user.phoneNumber}
-                    </div>
-                  )}
-                </div>
-                <div className="flex items-center mt-2 gap-3">
-                  <span className="text-sm text-gray-500">
-                    Member since {user?.createdAt ? formatDate(user.createdAt) : 'N/A'}
-                  </span>
-                  <span className="mx-1 text-gray-300">•</span>
-                  <span className={`text-sm font-bold px-3 py-1 rounded-full ${getPlanColor(user?.plan || 'none')}`}>
-                    {user?.plan ? getPlanDisplayName(user.plan) : 'Free Plan'}
-                  </span>
-                  {user?.isVerified && (
-                    <>
-                      <span className="mx-1 text-gray-300">•</span>
-                      <span className="text-sm font-medium text-green-600 flex items-center gap-1">
-                        <ShieldCheck className="w-4 h-4" />
-                        Verified
-                      </span>
-                    </>
-                  )}
-                </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap justify-center md:justify-start items-center mt-6 gap-3">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  DEVOPS STATUS: <span className="text-[#a3e635]">{user?.isVerified ? 'VERIFIED' : 'PENDING'}</span>
+                </span>
+                <div className="w-1 h-1 bg-slate-700 rounded-full hidden sm:block"></div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  RANK: <span className="text-white">{user?.plan ? getPlanDisplayName(user.plan).toUpperCase() : 'FREE PLAN'}</span>
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* User Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase">Account Type</h3>
-              <UserIcon className="w-5 h-5 text-gray-400" />
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div className="glass rounded-[2rem] p-8 border border-white/5 hover:border-[#a3e635]/20 transition-all group">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Access Protocol</h3>
+              <UserIcon className="w-5 h-5 text-[#a3e635]" />
             </div>
-            <p className="text-2xl font-bold text-gray-900 capitalize">{user?.role || 'User'}</p>
-            <p className="text-sm text-gray-500 mt-1">Authentication: {user?.authProvider || 'N/A'}</p>
+            <p className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">{user?.role || 'User'}</p>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Provider: {user?.authProvider || 'SYSTEM'}</p>
           </div>
 
-
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase">Account Status</h3>
-              <ShieldCheck className={`w-5 h-5 ${user?.isVerified ? 'text-green-500' : 'text-gray-400'}`} />
+          <div className="glass rounded-[2rem] p-8 border border-white/5 hover:border-[#a3e635]/20 transition-all">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Status</h3>
+              <ShieldCheck className={`w-5 h-5 ${user?.isVerified ? 'text-[#a3e635]' : 'text-slate-600'}`} />
             </div>
-            <p className={`text-2xl font-bold ${user?.isVerified ? 'text-green-600' : 'text-yellow-600'}`}>
-              {user?.isVerified ? 'Verified' : 'Unverified'}
+            <p className={`text-3xl font-black uppercase italic tracking-tighter mb-2 ${user?.isVerified ? 'text-white' : 'text-slate-400'}`}>
+              {user?.isVerified ? 'OPTIMAL' : 'PENDING'}
             </p>
-            <p className="text-sm text-gray-500 mt-1">
-              {user?.isVerified ? 'Account is verified' : 'Please verify your account'}
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+              {user?.isVerified ? 'All systems authorized' : 'Verification required'}
+            </p>
+          </div>
+
+          <div className="glass rounded-[2rem] p-8 border border-white/5 hover:border-[#a3e635]/20 transition-all sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Timeline</h3>
+              <Plus className="w-5 h-5 text-slate-600" />
+            </div>
+            <p className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">
+              EST. {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2026'}
+            </p>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+              Since {user?.createdAt ? formatDate(user.createdAt).toUpperCase() : 'N/A'}
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12">
           {quickActions.map((action, index) => (
-            <Link key={index} to={action.path} className="bg-white p-4 rounded-xl shadow-md text-center hover:shadow-lg transition-shadow cursor-pointer group">
-              <div className={`${action.color} p-3 rounded-lg inline-block group-hover:scale-105 transition-transform`}>
-                <action.icon className="h-6 w-6 text-white" />
+            <Link key={index} to={action.path} className="soft-card p-6 text-center hover:bg-[#111] transition-all group border-white/5">
+              <div className={`w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-white/5 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#a3e635]/10 group-hover:scale-110 transition-all`}>
+                <action.icon className="h-6 w-6 text-[#a3e635]" />
               </div>
-              <p className="mt-2 font-medium text-gray-800">{action.name}</p>
+              <p className="text-[10px] font-black text-white uppercase tracking-widest">{action.name}</p>
             </Link>
           ))}
         </div>
 
         {/* Saved Addresses Section */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <MapPin className="w-6 h-6 text-emerald-600" />
-              Saved Addresses
+        <div className="glass rounded-[2.5rem] p-6 sm:p-10 border border-white/5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
+            <h2 className="text-2xl sm:text-3xl font-black text-white uppercase italic tracking-tighter flex items-center gap-3">
+              <MapPin className="w-6 h-6 sm:w-8 sm:h-8 text-[#a3e635]" />
+              LOGISTICS NODES
             </h2>
-            <Link to="/saved-addresses" className="text-sm font-bold text-emerald-600 hover:text-emerald-700">
-              Manage Addresses
+            <Link to="/saved-addresses" className="text-[10px] font-black text-[#a3e635] uppercase tracking-widest hover:underline px-4 py-2 bg-[#a3e635]/5 rounded-xl border border-[#a3e635]/10 transition-all">
+              MANAGE DATABASE
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {addresses.length > 0 ? (
               addresses.map((address) => (
-                <div key={address._id} className={`p-4 rounded-xl border-2 transition-all ${address.isDefault ? 'border-emerald-500 bg-emerald-50/30' : 'border-gray-100'}`}>
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                      {address.label || 'Address'}
+                <div key={address._id} className={`p-6 sm:p-8 rounded-[2rem] border-2 transition-all group ${address.isDefault ? 'border-[#a3e635]/20 bg-[#a3e635]/5' : 'border-white/5 bg-white/5 hover:border-white/10'}`}>
+                  <div className="flex justify-between items-start mb-6">
+                    <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+                      {address.label || 'ADDRESS'}
                       {address.isDefault && (
-                        <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white px-2 py-0.5 rounded">Default</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest bg-[#a3e635] text-black px-2 py-0.5 rounded-full">DEFAULT</span>
                       )}
                     </h3>
                   </div>
-                  <div className="text-sm text-gray-600 space-y-1">
-                    <p className="font-medium text-slate-800">{address.houseNoOrName && `${address.houseNoOrName}, `}{address.street}</p>
-                    {address.landmark && <p className="text-xs text-gray-500"><span className="font-bold uppercase text-[9px]">Landmark:</span> {address.landmark}</p>}
-                    <p>{address.city}, {address.state} - <span className="font-bold text-emerald-600">{address.postalCode}</span></p>
-                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">{address.country}</p>
-                    <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
-                      <Phone className="w-3 h-3" /> {address.phone}
-                    </p>
+                  <div className="space-y-3 font-medium">
+                    <p className="text-sm text-slate-300 leading-relaxed">{address.houseNoOrName && `${address.houseNoOrName}, `}{address.street}</p>
+                    {address.landmark && <p className="text-[10px] text-slate-500 uppercase tracking-wider"><span className="text-[#a3e635]/60">LANDMARK:</span> {address.landmark}</p>}
+                    <p className="text-sm text-slate-300"><span className="text-white font-black">{address.city}</span>, {address.state} — <span className="text-[#a3e635] font-black">{address.postalCode}</span></p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">{address.country}</p>
+
+                    <div className="pt-4 mt-4 border-t border-white/5 flex items-center gap-2 text-slate-400">
+                      <Phone className="w-3.5 h-3.5 text-[#a3e635]" />
+                      <span className="text-xs font-bold font-mono tracking-tighter">{address.phone}</span>
+                    </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="col-span-full py-12 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 font-medium">No saved addresses found</p>
-                <Link to="/saved-addresses" className="inline-block mt-4 text-emerald-600 font-bold hover:underline">
-                  Add your first address
+              <div className="col-span-full py-20 text-center glass rounded-[2rem] border border-white/5 border-dashed">
+                <MapPin className="w-16 h-16 text-slate-700 mx-auto mb-6 opacity-50" />
+                <p className="text-slate-500 font-black uppercase tracking-widest text-xs mb-6">NO DEPLOYMENT NODES CONFIGURED</p>
+                <Link to="/saved-addresses" className="inline-flex bg-[#a3e635] text-black px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#b4f04a] transition-all">
+                  INITIALIZE ADDRESS
                 </Link>
               </div>
             )}
           </div>
         </div>
-
-
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, Truck, Calendar, Clock, ArrowRight, ShoppingBag } from 'lucide-react';
+import { CheckCircle, Truck, Calendar, ArrowRight, ShoppingBag, Zap } from 'lucide-react';
 
 interface OrderSuccessPageProps {
     orderSummary: any;
@@ -14,7 +14,6 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
     onContinueShopping,
     onViewDashboard
 }) => {
-    // Calculate estimated delivery date based on today + 3-5 days
     const today = new Date();
     const deliveryStart = new Date(today);
     deliveryStart.setDate(today.getDate() + 3);
@@ -22,82 +21,82 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
     deliveryEnd.setDate(today.getDate() + 5);
 
     return (
-        <div className="max-w-2xl mx-auto soft-card p-8 md:p-12 text-center animate-fade-in relative overflow-hidden">
-            {/* Background decoration */}
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-emerald-500"></div>
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-green-50 rounded-full blur-3xl -z-10"></div>
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl -z-10"></div>
+        <div className="max-w-4xl mx-auto soft-card p-6 xs:p-8 sm:p-12 md:p-20 text-center animate-fade-in relative">
+            {/* Top accent line */}
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-[#a3e635]"></div>
 
-            <div className="mx-auto w-24 h-24 bg-green-100/80 rounded-full flex items-center justify-center mb-8 animate-pulse-soft shadow-[0_0_0_8px_rgba(220,252,231,0.6)]">
-                <CheckCircle className="h-12 w-12 text-green-600" strokeWidth={2.5} />
+            <div className="mx-auto w-20 h-20 sm:w-28 sm:h-28 bg-[#a3e635]/10 rounded-full flex items-center justify-center mb-8 sm:mb-12 border-4 border-[#a3e635]/20 animate-pulse">
+                <CheckCircle className="h-10 w-10 sm:h-14 sm:h-14 text-[#a3e635]" strokeWidth={2.5} />
             </div>
 
-            <h2 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">Order Confirmed!</h2>
-            <p className="text-lg text-gray-600 mb-10 max-w-md mx-auto leading-relaxed">
-                Thank you for your purchase. We have received your order and will begin processing it right away.
+            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black text-white mb-6 tracking-tighter uppercase italic italic">
+                MISSION <span className="text-[#a3e635]">SUCCESS</span>
+            </h2>
+            <p className="text-base sm:text-lg text-slate-400 mb-10 sm:mb-16 max-w-md mx-auto font-medium leading-relaxed">
+                Your performance gear has been authorized and is now entering the preparation protocol.
             </p>
 
-            {/* Order Info Card */}
-            <div className="bg-white border border-gray-100 rounded-2xl p-6 mb-8 text-left shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <Truck className="w-24 h-24 text-blue-600" />
+            {/* Order Info Card - Tactical Style */}
+            <div className="glass-dark rounded-[2rem] p-6 sm:p-10 mb-10 sm:mb-16 text-left relative overflow-hidden group border border-white/5">
+                <div className="absolute -top-10 -right-10 p-8 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none rotate-12">
+                    <Zap className="w-40 h-40 sm:w-64 sm:h-64 text-[#a3e635]" />
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-gray-100 pb-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 sm:mb-12 border-b border-white/5 pb-8 sm:pb-12">
                     <div>
-                        <p className="text-sm text-gray-500 font-medium mb-1">Order Number</p>
-                        <p className="text-xl font-mono font-bold text-gray-900">#{orderId}</p>
+                        <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 sm:mb-2">DEPLOYMENT ID</p>
+                        <p className="text-xl sm:text-3xl font-black text-white tracking-widest">#{orderId}</p>
                     </div>
-                    <div className="mt-4 md:mt-0 text-left md:text-right">
-                        <p className="text-sm text-gray-500 font-medium mb-1">Total Amount</p>
-                        <p className="text-2xl font-bold text-blue-600">${orderSummary?.total || "0.00"}</p>
+                    <div className="text-left sm:text-right">
+                        <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 sm:mb-2">TOTAL AUTHORIZED</p>
+                        <p className="text-3xl sm:text-5xl font-black text-[#a3e635]">₹{orderSummary?.total || "0"}</p>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-gray-50 rounded-xl p-4 flex items-start">
-                        <div className="bg-white p-2 rounded-lg shadow-sm text-blue-600 mr-4">
-                            <Calendar className="w-6 h-6" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
+                    <div className="bg-white/5 rounded-2xl p-5 sm:p-6 flex items-start border border-white/5 hover:border-white/10 transition-colors">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#a3e635] rounded-xl flex items-center justify-center text-black mr-4 sm:offset-5 shrink-0">
+                            <Calendar className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                         <div>
-                            <h4 className="text-sm font-bold text-gray-900 mb-1">Estimated Delivery</h4>
-                            <p className="text-sm text-gray-600">{deliveryStart.toLocaleDateString()} - {deliveryEnd.toLocaleDateString()}</p>
-                            <p className="text-xs text-gray-400 mt-1">By end of day</p>
+                            <h4 className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">ARRIVAL WINDOW</h4>
+                            <p className="text-sm sm:text-base text-white font-black">{deliveryStart.toLocaleDateString()} — {deliveryEnd.toLocaleDateString()}</p>
+                            <p className="text-[9px] sm:text-[10px] text-[#a3e635] font-black uppercase tracking-widest mt-1">EOD Priority</p>
                         </div>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-4 flex items-start">
-                        <div className="bg-white p-2 rounded-lg shadow-sm text-blue-600 mr-4">
-                            <Clock className="w-6 h-6" />
+                    <div className="bg-white/5 rounded-2xl p-5 sm:p-6 flex items-start border border-white/5 hover:border-white/10 transition-colors">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/10 rounded-xl flex items-center justify-center text-white mr-4 sm:offset-5 shrink-0">
+                            <Truck className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                         <div>
-                            <h4 className="text-sm font-bold text-gray-900 mb-1">Shipping Speed</h4>
-                            <p className="text-sm text-gray-600">Standard Shipping</p>
-                            <p className="text-xs text-gray-400 mt-1">3-5 Business Days</p>
+                            <h4 className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">LOGISTICS CLASS</h4>
+                            <p className="text-sm sm:text-base text-white font-black">STANDARD DEPLOYMENT</p>
+                            <p className="text-[9px] sm:text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">3–5 TRADING DAYS</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <button
                     onClick={onContinueShopping}
-                    className="group flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-8 rounded-xl font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 hover:-translate-y-1 transition-all duration-300"
+                    className="flex-1 bg-[#a3e635] text-black py-4 sm:py-6 px-8 rounded-2xl font-black uppercase tracking-widest text-xs sm:text-sm hover:bg-[#b4f04a] transition-all shadow-xl shadow-[#a3e635]/10 flex items-center justify-center group active:scale-95"
                 >
-                    <ShoppingBag className="w-5 h-5 mr-2 group-hover:animate-bounce" />
-                    Continue Shopping
+                    <ShoppingBag className="w-5 h-5 mr-3 group-hover:animate-bounce" />
+                    ACQUIRE MORE
                 </button>
                 <button
                     onClick={onViewDashboard}
-                    className="group flex items-center justify-center bg-white border-2 border-gray-200 text-gray-700 py-4 px-8 rounded-xl font-bold hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
+                    className="flex-1 bg-white/5 border border-white/10 text-white py-4 sm:py-6 px-8 rounded-2xl font-black uppercase tracking-widest text-xs sm:text-sm hover:bg-white/10 transition-all flex items-center justify-center group active:scale-95"
                 >
-                    View Dashboard
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    MISSION CONTROL
+                    <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
                 </button>
             </div>
 
-            <p className="mt-8 text-sm text-gray-400">
-                Need help? <a href="/contact" className="text-blue-600 hover:underline">Contact Support</a>
+            <p className="mt-12 sm:mt-16 text-[9px] sm:text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                Encountering interference? <a href="/contact" className="text-[#a3e635] hover:underline">Contact Signal Command</a>
             </p>
         </div>
     );
