@@ -126,7 +126,7 @@ const WomenProductsPage = () => {
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-12">
                 {/* Header Section */}
                 <div className="mb-12">
-                    <h1 className="text-6xl md:text-8xl font-black mb-4 tracking-tighter uppercase leading-none">
+                    <h1 className="text-2xl tracking-widest font-normal md:text-5xl font-black mb-4 tracking-tighter uppercase leading-none">
                         WOMEN'S COLLECTION
                     </h1>
                     <p className="text-xl text-slate-500 font-medium">
@@ -144,7 +144,7 @@ const WomenProductsPage = () => {
                         placeholder="Search women's products..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-[#0d0d0d] border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-lg font-medium focus:outline-none focus:border-[#a3e635]/30 transition-all placeholder:text-slate-700"
+                        className="w-full h-10 bg-[#0d0d0d] border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-lg font-medium focus:outline-none focus:border-[#a3e635]/30 transition-all placeholder:text-slate-700"
                     />
                 </div>
 

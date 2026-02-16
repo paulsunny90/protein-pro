@@ -20,7 +20,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({
     return (
         <div className="bg-[#0d0d0d] rounded-[3rem] p-8 lg:p-12 shadow-2xl animate-fade-in max-w-4xl mx-auto border border-white/5">
             <div className="flex items-center justify-between mb-10">
-                <h2 className="text-3xl font-black text-white tracking-tight uppercase">Payment Protocol</h2>
+                <h2 className="text-2xl font-normal font-black text-white tracking-tight uppercase">Payment Protocol</h2>
                 <span className="text-[10px] font-black text-[#a3e635] uppercase tracking-widest bg-[#a3e635]/10 px-4 py-2 rounded-full border border-[#a3e635]/20">Stage 02/02</span>
             </div>
 

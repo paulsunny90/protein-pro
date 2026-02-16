@@ -79,7 +79,7 @@ const SignupPage = () => {
           <div className="w-16 h-16 bg-[#a3e635] rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-[#a3e635]/20">
             <span className="text-black font-black text-2xl tracking-tighter">PP</span>
           </div>
-          <h1 className="text-5xl font-black text-white tracking-[calc(-0.04em)] uppercase leading-none mb-4">
+          <h1 className="text-2xl font-black text-white tracking-[calc(-0.04em)] uppercase leading-none mb-4">
             CREATE ACCOUNT
           </h1>
           <p className="text-slate-500 font-medium tracking-tight">

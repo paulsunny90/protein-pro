@@ -149,7 +149,7 @@ const BMICalculator = () => {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-24">
         {/* Header Section */}
         <div className="mb-20 animate-fade-in text-center lg:text-left">
-          <h1 className="text-6xl md:text-9xl font-black mb-4 tracking-[calc(-0.04em)] uppercase leading-none">
+          <h1 className="text-2xl tracking-widest font-normal  md:text-5xl font-black mb-4 tracking-[calc(-0.04em)] uppercase leading-none">
             CALCULATE YOUR BMI
           </h1>
           <p className="text-xl text-slate-500 font-medium tracking-tight">

@@ -147,7 +147,7 @@ const OrderPage = () => {
   const renderShippingForm = () => (
     <div className="bg-[#0d0d0d] rounded-[3rem] border border-white/5 p-8 lg:p-12 shadow-2xl animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-        <h2 className="text-3xl font-black text-white tracking-tight uppercase">Mission Deployment</h2>
+        <h2 className="text-1xl font-black text-white tracking-tight uppercase">Mission Deployment</h2>
         <div className="flex items-center gap-4">
           {addresses.length > 0 && (
             <button
@@ -272,7 +272,7 @@ const OrderPage = () => {
               <ShieldCheck className="h-4 w-4" />
               <span className="text-xs font-black uppercase tracking-widest">Authorized Acquisition Unit</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter uppercase leading-none">Checkout Protocol</h1>
+            <h1 className="text-2xl md:text-4xl font-normal font-black text-white mb-6 tracking-tighter uppercase leading-none">Checkout Protocol</h1>
             <div className="w-20 h-1.5 bg-[#a3e635] mx-auto rounded-full"></div>
           </div>
         )}

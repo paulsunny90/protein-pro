@@ -6,7 +6,6 @@ import ProductsPage from './features/user/products/ProductsPage';
 import BabyProductsPage from './features/user/categoryProductsPage/babys';
 import MenProductsPage from './features/user/categoryProductsPage/mens';
 import WomenProductsPage from './features/user/categoryProductsPage/women';
-import SubscriptionsPage from './features/user/subscriptions/SubscriptionsPage';
 import Dashboard from './features/user/dashboard/Dashboard';
 import BMICalculator from './features/user/bmi-calculator/BMICalculator';
 import CartPage from './features/user/products/CartPage';
@@ -47,7 +46,6 @@ const App = () => {
               <Route path="/products/men" element={<UserLayout><MenProductsPage /></UserLayout>} />
               <Route path="/products/women" element={<UserLayout><WomenProductsPage /></UserLayout>} />
               <Route path="/products/:id" element={<UserLayout><ProductDetailsPage /></UserLayout>} />
-              <Route path="/subscriptions" element={<UserLayout><SubscriptionsPage /></UserLayout>} />
               <Route path="/bmi" element={<UserLayout><BMICalculator /></UserLayout>} />
               <Route path="/cart" element={<UserLayout><CartPage /></UserLayout>} />
               <Route path="/order" element={<UserLayout><OrderPage /></UserLayout>} />

@@ -73,7 +73,7 @@ const LoginSuccess = () => {
                             <Loader2 className="w-6 h-6 text-[#a3e635] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter italic">Initializing Protocol</h2>
+                            <h2 className="text-base font-normal font-black text-white mb-2  ">Initializing Protocol</h2>
                             <p className="text-slate-500 font-bold text-xs uppercase tracking-widest leading-loose">
                                 {retryCount > 0 ? `Retry Sequence ${retryCount}/${maxRetries}` : 'Establishing secure authentication link'}
                             </p>
@@ -85,7 +85,7 @@ const LoginSuccess = () => {
                             <CheckCircle className="w-10 h-10 text-[#a3e635]" strokeWidth={2.5} />
                         </div>
                         <div>
-                            <h2 className="text-4xl font-black text-white mb-2 uppercase tracking-tighter italic">Mission Authorized</h2>
+                            <h2 className="text-base font-normal font-black text-white mb-2   ">Mission Authorized</h2>
                             <p className="text-slate-400 font-bold mb-6">Welcome back, {user.name.split(' ')[0]}</p>
                             <div className="flex flex-col items-center gap-4">
                                 <div className="h-1 w-32 bg-white/5 rounded-full overflow-hidden">
@@ -101,7 +101,7 @@ const LoginSuccess = () => {
                             <AlertCircle className="w-10 h-10 text-rose-500" strokeWidth={2.5} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter italic">Authorization Denied</h2>
+                            <h2 className="text-base font-normal font-black text-white mb-2">Authorization Denied</h2>
                             <p className="text-slate-500 font-bold text-sm mb-8 leading-relaxed max-w-[250px] mx-auto">
                                 {error || 'Security protocol failed to verify user identity.'}
                             </p>

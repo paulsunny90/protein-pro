@@ -40,13 +40,13 @@ const HomePage = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
         </div>
 
-        <div className="relative container-max z-10 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl">
+        <div className="relative  z-10 px-4 sm:px-6 lg:px-8">
+          <div className=" pl-30 max-w-4xl">
             <div className="inline-flex items-center space-x-3 text-[#a3e635] mb-6 animate-slide-up">
               <span className="text-xs font-black uppercase tracking-[0.3em]">Premium Sports Nutrition</span>
             </div>
 
-            <h1 className="text-4xl xs:text-5xl sm:text-7xl md:text-8xl lg:text-[10rem] font-black leading-[0.85] tracking-tighter mb-8 animate-slide-up">
+            <h1 className="mt-4 font-display text-6xl md:text-8xl leading-none tracking-widest mb-8 animate-slide-up ">
               <span className="text-white block">FUEL YOUR</span>
               <span className="text-[#a3e635] block">GREATNESS</span>
             </h1>
@@ -79,11 +79,11 @@ const HomePage = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="py-32 bg-[#0d0d0d] relative overflow-hidden">
+      <section className="py-10 bg-[#0d0d0d] relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]"></div>
         <div className="container-max relative z-10 px-4">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">PROTEIN PERFORMANCE</h2>
+            <h2 className="text-2xl tracking-widest font-normal  md:text-5xl font-black text-white mb-6 tracking-tight">PROTEIN PERFORMANCE</h2>
             <div className="w-20 h-1.5 bg-[#a3e635] mx-auto rounded-full mb-8"></div>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto font-medium">
               Every Protein Pro formula is engineered with clinical precision
@@ -109,46 +109,86 @@ const HomePage = () => {
       </section>
 
       {/* Shop by Collection */}
-      <section className="py-32 bg-black relative overflow-hidden">
-        <div className="container-max px-4 relative z-10">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-16 tracking-tight">SHOP BY COLLECTION</h2>
+      <section className="py-20 relative overflow-hidden bg-[#0d0d0d]">
+        <div className="max-w-7xl mx-auto px-4 relative z-10 ">
 
+          {/* Section Title */}
+          <h2 className="text-2xl md:text-5xl tracking-widest font-normal  font-black text-white mb-16 tracking-tight">
+            SHOP BY COLLECTION
+          </h2>
+
+          {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
             {/* Men's Collection */}
-            <Link to="/products" className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all hover:border-[#a3e635]/20">
+            <Link
+              to="/products"
+              className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
+            >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#1a237e33,_transparent_70%)]"></div>
+
               <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                <span className="text-[#a3e635] text-[10px] font-black uppercase tracking-[0.3em] mb-3">PEAK PERFORMANCE</span>
-                <h3 className="text-4xl font-black text-white mb-6">Men's Collection</h3>
-                <span className="text-[#a3e635] text-sm font-black flex items-center opacity-80 group-hover:opacity-100 transition-opacity">
-                  Explore <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
+                <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
+                  PEAK PERFORMANCE
+                </span>
+
+                <h3 className="text-3xl font-semibold text-white mb-4">
+                  Men's Collection
+                </h3>
+
+                <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
+                  Explore
+                  <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
               </div>
             </Link>
 
             {/* Women's Collection */}
-            <Link to="/products" className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all hover:border-[#a3e635]/20">
+            <Link
+              to="/products"
+              className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
+            >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#4a148c33,_transparent_70%)]"></div>
+
               <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                <span className="text-[#a3e635] text-[10px] font-black uppercase tracking-[0.3em] mb-3">LEAN & STRONG</span>
-                <h3 className="text-4xl font-black text-white mb-6">Women's Collection</h3>
-                <span className="text-[#a3e635] text-sm font-black flex items-center opacity-80 group-hover:opacity-100 transition-opacity">
-                  Explore <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
+                <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
+                  LEAN & STRONG
+                </span>
+
+                <h3 className="text-3xl font-semibold text-white mb-4">
+                  Women's Collection
+                </h3>
+
+                <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
+                  Explore
+                  <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
               </div>
             </Link>
 
             {/* Kids & Baby */}
-            <Link to="/products" className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all hover:border-[#a3e635]/20">
+            <Link
+              to="/products"
+              className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
+            >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#5d403733,_transparent_70%)]"></div>
+
               <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                <span className="text-[#a3e635] text-[10px] font-black uppercase tracking-[0.3em] mb-3">GROWING STRONG</span>
-                <h3 className="text-4xl font-black text-white mb-6">Kids & Baby</h3>
-                <span className="text-[#a3e635] text-sm font-black flex items-center opacity-80 group-hover:opacity-100 transition-opacity">
-                  Explore <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
+                <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
+                  GROWING STRONG
+                </span>
+
+                <h3 className="text-3xl font-semibold text-white mb-4">
+                  Kids & Baby
+                </h3>
+
+                <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
+                  Explore
+                  <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
               </div>
             </Link>
+
           </div>
         </div>
       </section>
@@ -157,7 +197,7 @@ const HomePage = () => {
       <section className="py-32 relative overflow-hidden bg-[#0a0a0a]">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#a3e635]/10 rounded-full blur-[120px]"></div>
         <div className="container-max relative z-10 text-center px-4">
-          <h2 className="text-5xl md:text-8xl font-black text-white mb-8 tracking-tighter">
+          <h2 className="text-2xl tracking-widest font-normal  md:text-5xl font-black text-white mb-8 tracking-tighter">
             READY TO LEVEL UP?
           </h2>
           <p className="text-xl mb-12 text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed">

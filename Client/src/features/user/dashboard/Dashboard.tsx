@@ -100,8 +100,8 @@ const Dashboard = () => {
 
             <div className="flex-1 text-center md:text-left">
               <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4 justify-center md:justify-start">
-                <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tighter uppercase italic">
-                  WELCOME, {user?.name?.split(' ')[0] || 'WARRIOR'}!
+                <h1 className="text-lg sm:text-2xl font-black text-white tracking-tighter uppercase ">
+                  {user?.name?.split(' ')[0] || 'WARRIOR'}!
                 </h1>
                 {user?.role === 'admin' && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#a3e635]/10 text-[#a3e635] text-[10px] font-black uppercase tracking-widest rounded-full border border-[#a3e635]/20 self-center">
@@ -144,7 +144,7 @@ const Dashboard = () => {
               <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Access Protocol</h3>
               <UserIcon className="w-5 h-5 text-[#a3e635]" />
             </div>
-            <p className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">{user?.role || 'User'}</p>
+            <p className="text-base font-normal font-black text-white mb-2">{user?.role || 'User'}</p>
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Provider: {user?.authProvider || 'SYSTEM'}</p>
           </div>
 
@@ -153,7 +153,7 @@ const Dashboard = () => {
               <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Status</h3>
               <ShieldCheck className={`w-5 h-5 ${user?.isVerified ? 'text-[#a3e635]' : 'text-slate-600'}`} />
             </div>
-            <p className={`text-3xl font-black uppercase italic tracking-tighter mb-2 ${user?.isVerified ? 'text-white' : 'text-slate-400'}`}>
+            <p className={`text-base font-normal font-black uppercase   mb-2 ${user?.isVerified ? 'text-white' : 'text-slate-400'}`}>
               {user?.isVerified ? 'OPTIMAL' : 'PENDING'}
             </p>
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
@@ -166,7 +166,7 @@ const Dashboard = () => {
               <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Timeline</h3>
               <Plus className="w-5 h-5 text-slate-600" />
             </div>
-            <p className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">
+            <p className="text-base font-normal font-black text-white  mb-2">
               EST. {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2026'}
             </p>
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
@@ -190,7 +190,7 @@ const Dashboard = () => {
         {/* Saved Addresses Section */}
         <div className="glass rounded-[2.5rem] p-6 sm:p-10 border border-white/5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
-            <h2 className="text-2xl sm:text-3xl font-black text-white uppercase italic tracking-tighter flex items-center gap-3">
+            <h2 className="text-2xl  sm:text-3xl  font-normal font-black text-white flex items-center gap-3">
               <MapPin className="w-6 h-6 sm:w-8 sm:h-8 text-[#a3e635]" />
               LOGISTICS NODES
             </h2>
