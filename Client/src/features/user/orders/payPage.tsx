@@ -55,7 +55,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({
                                 purchase_units: [
                                     {
                                         amount: {
-                                            currency_code: "USD",
+                                            currency_code: "INR",
                                             value: totalAmount,
                                         },
                                     },
