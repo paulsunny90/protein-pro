@@ -1,34 +1,6 @@
 import { Request, Response } from "express";
 import OrderModel from "../models/Order.model";
-// import "../models/user.model.js";
 
-// Create order and mark as paid
-// export const createOrder = async (req: Request, res: Response) => {
-//   try {
-//     const { orderItems, shippingAddress, itemsPrice, shippingPrice, totalPrice } = req.body;
-
-//     if (!orderItems || orderItems.length === 0)
-//       return res.status(400).json({ message: "No order items" });
-
-//     const order = new OrderModel({
-//       user: req.user?.id,
-//       orderItems,
-//       shippingAddress,
-//       paymentMethod: "ONLINE",   //payment methos set here
-//       itemsPrice,
-//       shippingPrice,
-//       totalPrice,
-//       isPaid: true,             //this is the payment status
-//       paidAt: new Date(),
-//       orderStatus: "Confirmed",
-//     });
-
-//     const createdOrder = await order.save();
-//     res.status(201).json(createdOrder);
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 
 export const createOrder = async (req: Request, res: Response) => {
   try {
@@ -64,18 +36,6 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-// Get order by ID
-// export const getOrderById = async (req: Request, res: Response) => {
-//   try {
-//     const order = await OrderModel.findById(req.params.id)
-//       .populate("orderItems.product")
-//       // .populate("shippingAddress");
-//     if (!order) return res.status(404).json({ message: "Order not found" });
-//     res.json(order);
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 
 export const getOrderById = async (req: Request, res: Response) => {
   try {

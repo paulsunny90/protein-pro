@@ -40,7 +40,6 @@ async function seedAdmin() {
                 isVerified: true,
                 phoneNumber: "9876543210",
                 authProvider: "local",
-                plan: "platinum"
             });
 
             await admin.save();
@@ -52,6 +51,8 @@ async function seedAdmin() {
         await mongoose.disconnect();
         console.log("Disconnected from MongoDB.");
     } catch (err) {
+
+        
         console.error("Error seeding admin:", err);
         process.exit(1);
     }
