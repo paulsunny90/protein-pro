@@ -13,7 +13,7 @@ app.use(cookieParser());
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: [process.env.CLIENT_URL || "https://protein-pro-client-79c3.vercel.app"], // Vite's ports
+  origin: [process.env.CLIENT_URL || "https://paulsunny90-protein-pro-user-zbt8.vercel.app/"], // Vite's ports
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
