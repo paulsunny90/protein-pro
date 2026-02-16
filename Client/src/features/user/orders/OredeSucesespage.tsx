@@ -29,7 +29,7 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
                 <CheckCircle className="h-10 w-10 sm:h-14 sm:h-14 text-[#a3e635]" strokeWidth={2.5} />
             </div>
 
-            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black text-white mb-6 tracking-tighter uppercase italic italic">
+            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black text-white mb-6 tracking-tighter uppercase italic">
                 MISSION <span className="text-[#a3e635]">SUCCESS</span>
             </h2>
             <p className="text-base sm:text-lg text-slate-400 mb-10 sm:mb-16 max-w-md mx-auto font-medium leading-relaxed">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Phone, Mail, User, Building2, CheckCircle, ChevronRight, ArrowLeft, ShieldCheck, Zap } from 'lucide-react';
+import { MapPin, Phone, Mail, User, Building2, CheckCircle, ChevronRight, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';

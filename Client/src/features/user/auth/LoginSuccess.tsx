@@ -20,7 +20,7 @@ const LoginSuccess = () => {
             try {
                 // Small delay to ensure cookies are available
                 await new Promise(resolve => setTimeout(resolve, 500));
-                
+
                 const result = await dispatch(checkAuth()).unwrap();
                 console.log('Auth check successful:', result);
                 setChecked(true);
@@ -28,7 +28,7 @@ const LoginSuccess = () => {
             } catch (error: any) {
                 console.error('Authentication check failed:', error);
                 setError(error || 'Authentication failed');
-                
+
                 // Retry logic
                 if (retryCount < maxRetries) {
                     setTimeout(() => {
@@ -61,42 +61,58 @@ const LoginSuccess = () => {
     }, [isAuthenticated, loading, checked, navigate, user, retryCount]);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-            <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full mx-4">
+        <div className="flex items-center justify-center min-h-screen bg-black font-sans">
+            <div className="glass p-12 rounded-[2rem] border border-white/5 text-center max-w-md w-full mx-4 relative overflow-hidden">
+                {/* Decorative background element */}
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#a3e635]/10 rounded-full blur-3xl"></div>
+
                 {loading || !checked ? (
-                    <>
-                        <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Verifying Login...</h2>
-                        <p className="text-gray-600">
-                            {retryCount > 0 ? `Retrying... (${retryCount}/${maxRetries})` : 'Please wait while we verify your account'}
-                        </p>
-                    </>
+                    <div className="relative z-10 space-y-8 animate-fade-in">
+                        <div className="relative">
+                            <div className="w-16 h-16 border-4 border-[#a3e635]/20 border-t-[#a3e635] rounded-full animate-spin mx-auto"></div>
+                            <Loader2 className="w-6 h-6 text-[#a3e635] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+                        </div>
+                        <div>
+                            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter italic">Initializing Protocol</h2>
+                            <p className="text-slate-500 font-bold text-xs uppercase tracking-widest leading-loose">
+                                {retryCount > 0 ? `Retry Sequence ${retryCount}/${maxRetries}` : 'Establishing secure authentication link'}
+                            </p>
+                        </div>
+                    </div>
                 ) : isAuthenticated && user ? (
-                    <>
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <CheckCircle className="w-10 h-10 text-green-600" />
+                    <div className="relative z-10 space-y-8 animate-scale-in">
+                        <div className="w-20 h-20 bg-[#a3e635]/10 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-[#a3e635]/20">
+                            <CheckCircle className="w-10 h-10 text-[#a3e635]" strokeWidth={2.5} />
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Login Successful!</h2>
-                        <p className="text-gray-600 mb-4">Welcome back, {user.name}!</p>
-                        <p className="text-sm text-gray-500">Redirecting to dashboard...</p>
-                    </>
+                        <div>
+                            <h2 className="text-4xl font-black text-white mb-2 uppercase tracking-tighter italic">Mission Authorized</h2>
+                            <p className="text-slate-400 font-bold mb-6">Welcome back, {user.name.split(' ')[0]}</p>
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="h-1 w-32 bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-full bg-[#a3e635] animate-[shimmer_2s_infinite]"></div>
+                                </div>
+                                <p className="text-[10px] text-[#a3e635] font-black uppercase tracking-[0.3em]">Entering Dashboard</p>
+                            </div>
+                        </div>
+                    </div>
                 ) : (
-                    <>
-                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <AlertCircle className="w-10 h-10 text-red-600" />
+                    <div className="relative z-10 space-y-8 animate-fade-in">
+                        <div className="w-20 h-20 bg-rose-500/10 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
+                            <AlertCircle className="w-10 h-10 text-rose-500" strokeWidth={2.5} />
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Failed</h2>
-                        <p className="text-gray-600 mb-4">
-                            {error || 'Unable to verify your login. Please try again.'}
-                        </p>
-                        <p className="text-sm text-gray-500">Redirecting to login page...</p>
-                        <button
-                            onClick={() => navigate('/login', { replace: true })}
-                            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                        >
-                            Go to Login
-                        </button>
-                    </>
+                        <div>
+                            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter italic">Authorization Denied</h2>
+                            <p className="text-slate-500 font-bold text-sm mb-8 leading-relaxed max-w-[250px] mx-auto">
+                                {error || 'Security protocol failed to verify user identity.'}
+                            </p>
+                            <button
+                                onClick={() => navigate('/login', { replace: true })}
+                                className="w-full bg-white/5 border border-white/10 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all active:scale-95"
+                            >
+                                Return to Terminal
+                            </button>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>
