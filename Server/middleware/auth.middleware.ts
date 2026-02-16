@@ -54,7 +54,7 @@ export const authMiddleware = (
 
     console.log(token);
     if (token) {
-      console.log("TOKEN LENGTH 👉", token.length);
+      // console.log("TOKEN LENGTH ", token.length);
     }
 
     if (!token) {
@@ -71,7 +71,7 @@ export const authMiddleware = (
     next();
 
   } catch (error) {
-    console.error("AUTH ERROR 👉", error);
+    // console.error("AUTH ERROR ", error);
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

@@ -3,7 +3,6 @@ import * as addressService from "../services/address.service";
 
 /**
  * Get all addresses for the authenticated user
- * GET /api/addresses
  */
 export const getUserAddresses = async (req: Request, res: Response) => {
     try {
@@ -31,7 +30,6 @@ export const getUserAddresses = async (req: Request, res: Response) => {
 
 /**
  * Get a single address by ID
- * GET /api/addresses/:id
  */
 export const getAddressById = async (req: Request, res: Response) => {
     try {
@@ -63,7 +61,6 @@ export const getAddressById = async (req: Request, res: Response) => {
 
 /**
  * Create a new address
- * POST /api/addresses
  */
 export const createAddress = async (req: Request, res: Response) => {
     try {
@@ -163,7 +160,6 @@ export const createAddress = async (req: Request, res: Response) => {
 
 /**
  * Update an existing address
- * PUT /api/addresses/:id
  */
 export const updateAddress = async (req: Request, res: Response) => {
     try {
@@ -248,7 +244,6 @@ export const updateAddress = async (req: Request, res: Response) => {
 
 /**
  * Delete an address
- * DELETE /api/addresses/:id
  */
 export const deleteAddress = async (req: Request, res: Response) => {
     try {
@@ -285,7 +280,6 @@ export const deleteAddress = async (req: Request, res: Response) => {
 
 /**
  * Set an address as default
- * PATCH /api/addresses/:id/set-default
  */
 export const setDefaultAddress = async (req: Request, res: Response) => {
     try {
@@ -323,7 +317,6 @@ export const setDefaultAddress = async (req: Request, res: Response) => {
 
 /**
  * Get the default address for the authenticated user
- * GET /api/addresses/default
  */
 export const getDefaultAddress = async (req: Request, res: Response) => {
     try {
