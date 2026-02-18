@@ -145,7 +145,7 @@ const SavedAddressesPage = () => {
                             <MapPin className="w-4 h-4" />
                             <span className="text-xs font-black uppercase tracking-[0.3em]">Personal Information</span>
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
+                        <h1 className="text-2xl font-normal  md:text-4xl font-black text-white ">
                             SAVED <span className="text-[#a3e635]">ADDRESSES</span>
                         </h1>
                     </div>
@@ -324,8 +324,8 @@ const SavedAddressesPage = () => {
                                             type="button"
                                             onClick={() => setFormData(prev => ({ ...prev, label: l }))}
                                             className={`px-8 py-3.5 rounded-xl font-black text-sm transition-all ${formData.label === l
-                                                    ? 'bg-[#a3e635] text-black shadow-lg shadow-[#a3e635]/20'
-                                                    : 'bg-white/5 text-slate-400 border border-white/5 hover:bg-white/10 hover:text-white'
+                                                ? 'bg-[#a3e635] text-black shadow-lg shadow-[#a3e635]/20'
+                                                : 'bg-white/5 text-slate-400 border border-white/5 hover:bg-white/10 hover:text-white'
                                                 }`}
                                         >
                                             {l}

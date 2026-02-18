@@ -45,7 +45,7 @@ const GiftCardsPage = () => {
                             <Gift className="w-4 h-4" />
                             <span className="text-xs font-black uppercase tracking-[0.3em]">Member Rewards</span>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-6 leading-none">
+                        <h1 className="text-2xl font-normal md:text-4xl font-black text-white tracking-tighter mb-6 leading-none">
                             MY <span className="text-[#a3e635]">GIFT CARDS</span>
                         </h1>
                         <p className="text-xl text-slate-400 font-medium leading-relaxed">
@@ -167,12 +167,12 @@ const GiftCardsPage = () => {
                                     <CreditCard className="w-10 h-10 text-[#a3e635]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2 uppercase">GIVE THE GIFT OF POWER</h3>
+                                    <h3 className="text-2xl font-normal md:text-4xl font-black text-white tracking-tight mb-2 uppercase">GIVE THE GIFT OF POWER</h3>
                                     <p className="text-lg text-slate-400 font-medium">Surprise your workout partners with Protein Pro credits.</p>
                                 </div>
                             </div>
                             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-                                {['$25', '$50', '$100', '$250'].map(val => (
+                                {['₹25', '₹50', '₹100', '₹250'].map(val => (
                                     <span key={val} className="px-6 py-2 rounded-full bg-white/5 border border-white/10 text-white font-black text-sm tracking-widest">{val}</span>
                                 ))}
                             </div>
