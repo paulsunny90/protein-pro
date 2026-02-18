@@ -1,13 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Search, Menu, User, LogOut, ShoppingBag, Gift, MapPin, LayoutGrid, X } from 'lucide-react';
+import { ShoppingCart, Search, Menu, User, LogOut, ShoppingBag, Gift, MapPin, LayoutGrid, X, Shield, Clock } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [loginTime, setLoginTime] = useState<string | null>(null);
   const location = useLocation();
-  const { logout, isAuthenticated } = useAuth();
+  const { logout, isAuthenticated, user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
+  useEffect(() => {
+    if (isAuthenticated && isAdmin && !loginTime) {
+      const now = new Date();
+      setLoginTime(
+        now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) +
+        ' · ' +
+        now.toLocaleDateString([], { day: '2-digit', month: 'short' })
+      );
+    }
+    if (!isAuthenticated) {
+      setLoginTime(null);
+    }
+  }, [isAuthenticated, isAdmin]);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -54,6 +70,14 @@ const Navigation = () => {
 
           {/* Action Icons */}
           <div className="flex items-center space-x-6">
+            {/* Admin Login Time Badge */}
+            {isAdmin && loginTime && (
+              <div className="hidden md:flex items-center space-x-2 bg-[#a3e635]/10 border border-[#a3e635]/30 rounded-xl px-3 py-1.5">
+                <Clock className="h-3.5 w-3.5 text-[#a3e635]" />
+                <span className="text-[10px] font-bold text-[#a3e635] tracking-wide uppercase">Admin</span>
+                <span className="text-[10px] text-slate-400 font-medium">{loginTime}</span>
+              </div>
+            )}
             <button className="text-slate-400 hover:text-white transition-colors p-2">
               <Search className="h-5 w-5" />
             </button>
@@ -108,6 +132,22 @@ const Navigation = () => {
                         <LayoutGrid className="h-4 w-4" />
                         <span className="text-sm font-bold">Personal Dashboard</span>
                       </Link>
+
+                      {isAdmin && (
+                        <Link
+                          to="/admin/dashboard"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex items-center space-x-4 px-4 py-3 text-[#a3e635] hover:bg-[#a3e635]/10 rounded-xl transition-all border border-[#a3e635]/20"
+                        >
+                          <Shield className="h-4 w-4" />
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold">Admin Dashboard</span>
+                            {loginTime && (
+                              <span className="text-[10px] text-slate-400 font-medium">Logged in: {loginTime}</span>
+                            )}
+                          </div>
+                        </Link>
+                      )}
 
                       <button
                         onClick={handleLogout}
