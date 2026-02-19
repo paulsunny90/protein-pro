@@ -135,7 +135,7 @@ const Navigation = () => {
 
                       {isAdmin && (
                         <Link
-                          to="/admin/dashboard"
+                          to="/admin"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex items-center space-x-4 px-4 py-3 text-[#a3e635] hover:bg-[#a3e635]/10 rounded-xl transition-all border border-[#a3e635]/20"
                         >
