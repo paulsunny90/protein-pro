@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Star, ShoppingCart, Heart, Shield, Truck, RotateCcw, StarHalf, Loader2, ArrowLeft, CheckCircle2, Zap, Activity, Minus, Plus } from 'lucide-react';
+import { Star, ShoppingCart,  Shield, Truck, RotateCcw, StarHalf, Loader2, ArrowLeft, CheckCircle2, Zap, Activity, Minus, Plus } from 'lucide-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
@@ -281,16 +281,13 @@ const ProductDetailsPage = () => {
                   className="flex-1 bg-white text-black py-5 px-8 rounded-2xl font-black text-lg hover:bg-slate-200 transition-all active:scale-95 flex items-center justify-center shadow-xl"
                 >
                   <ShoppingCart className="h-5 w-5 mr-3" />
-                  ADD TO GEAR
+                  ADD TO CART
                 </button>
                 <button
                   onClick={handleBuyNow}
                   className="flex-1 bg-[#a3e635] text-black py-5 px-8 rounded-2xl font-black text-lg hover:bg-[#b4f04a] transition-all active:scale-95 shadow-xl shadow-[#a3e635]/10"
                 >
-                  CHECKOUT NOW
-                </button>
-                <button className="p-5 bg-white/5 border border-white/5 rounded-2xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 transition-all">
-                  <Heart className="h-6 w-6" />
+                  CHECKOUT
                 </button>
               </div>
             </div>

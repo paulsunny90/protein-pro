@@ -78,9 +78,10 @@ const Navigation = () => {
                 <span className="text-[10px] text-slate-400 font-medium">{loginTime}</span>
               </div>
             )}
-            <button className="text-slate-400 hover:text-white transition-colors p-2">
+            <Link to={"/products"} className="text-slate-400 hover:text-white transition-colors p-2">
               <Search className="h-5 w-5" />
-            </button>
+            </Link>
+
             <Link to="/cart" className="text-slate-400 hover:text-white transition-colors p-2">
               <ShoppingCart className="h-5 w-5" />
             </Link>
