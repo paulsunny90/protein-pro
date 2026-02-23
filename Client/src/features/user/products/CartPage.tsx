@@ -38,7 +38,7 @@ const CartPage = () => {
             <ShoppingCart className="h-4 w-4" />
             <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest">Secure Checkout System</span>
           </div>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white mb-6 tracking-tighter uppercase leading-[0.9]">
+          <h1 className="text-2xl sm:text-4xl md:text-6xl font-black text-white mb-6 tracking-tighter uppercase leading-[0.9]">
             YOUR <span className="text-[#a3e635]">TACTICAL</span> GEAR
           </h1>
           <div className="w-16 sm:w-20 h-1.5 bg-[#a3e635] mx-auto rounded-full"></div>
