@@ -17,8 +17,6 @@ import OrderPage from './features/user/orders/OrderPage';
 import MyOrdersPage from './features/user/orders/MyOrdersPage';
 import SavedAddressesPage from './features/user/profile/SavedAddressesPage';
 import GiftCardsPage from './features/user/profile/GiftCardsPage';
-import SupplementQuiz from './features/user/quiz/SupplementQuiz';
-
 // Admin routes
 import AdminLayout from './features/admin/AdminLayout'
 import AdminDashboard from './features/admin/dashboard/Dashboard'
