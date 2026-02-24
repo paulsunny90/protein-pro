@@ -15,7 +15,7 @@ The project is divided into two main parts:
 ### Frontend (Client)
 - **Framework**: React 18+ (Vite)
 - **Language**: TypeScript
-- **Styling**: Vanilla CSS / Tailwind (as seen in some features)
+- **Styling**:  CSS  Tailwind (as seen in some features)
 - **State Management**: Redux Toolkit & React Context API
 - **Routing**: React Router DOM (v6)
 - **Payments**: PayPal SDK Integration

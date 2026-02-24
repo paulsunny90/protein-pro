@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { MapPin, Plus, Edit2, Trash2, Home, CheckCircle, X, User, Phone, Loader2, Mail, Globe, Map } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
@@ -67,9 +68,12 @@ const SavedAddressesPage = () => {
             setShowAddForm(false);
             setEditingId(null);
             resetForm();
+            toast.success(`Address ${editingId ? 'updated' : 'added'} successfully!`);
         } catch (err: any) {
             console.error('Error saving address:', err);
-            dispatch(setAddressError(err.message || err || 'Failed to save address'));
+            const errorMessage = err.message || err || 'Failed to save address';
+            dispatch(setAddressError(errorMessage));
+            toast.error(errorMessage);
         } finally {
             setSubmitting(false);
         }
@@ -99,7 +103,13 @@ const SavedAddressesPage = () => {
         if (!window.confirm('Are you sure you want to delete this address?')) {
             return;
         }
-        dispatch(removeAddress(id));
+
+        try {
+            await dispatch(removeAddress(id)).unwrap();
+            toast.success('Address deleted successfully');
+        } catch (err: any) {
+            toast.error(err.message || 'Failed to delete address');
+        }
     };
 
     const handleSetDefault = async (id: string) => {

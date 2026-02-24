@@ -31,12 +31,31 @@ import EditOrder from './features/admin/orders/EditOrder'
 import SubscriptionPage from './features/admin/subscriptions/SubscriptionPage'
 import AdminProtectedRoute from './features/admin/auth/AdminProtectedRoute'
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   return (
     <AuthProvider>
       <PayPalScriptProvider options={{ clientId: "sb" }}>
         <BrowserRouter>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#111',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.1)',
+                fontFamily: 'black'
+              },
+              success: {
+                iconTheme: {
+                  primary: '#a3e635',
+                  secondary: '#000',
+                },
+              },
+            }}
+          />
           <div className="App">
             <Routes>
               {/* Public routes */}

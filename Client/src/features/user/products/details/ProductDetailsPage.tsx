@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Star, ShoppingCart,  Shield, Truck, RotateCcw, StarHalf, Loader2, ArrowLeft, CheckCircle2, Zap, Activity, Minus, Plus } from 'lucide-react';
+import { Star, ShoppingCart, Shield, Truck, RotateCcw, StarHalf, Loader2, ArrowLeft, CheckCircle2, Zap, Activity, Minus, Plus } from 'lucide-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { fetchProductById } from '../../../../store/slice/productSlice';
 import { addToCart } from '../../../../store/slice/cartSlice';
+import toast from 'react-hot-toast';
 
 const ProductDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,9 +38,9 @@ const ProductDetailsPage = () => {
           quantity,
           size: selectedSize
         })).unwrap();
-        alert(`${product.name} added to cart!`);
+        toast.success(`${product.name} added to cart!`);
       } catch (err: any) {
-        alert(err || 'Failed to add to cart');
+        toast.error(err || 'Failed to add to cart');
       }
     }
   };

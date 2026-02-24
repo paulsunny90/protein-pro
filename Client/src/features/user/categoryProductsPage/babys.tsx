@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { fetchProducts } from '../../../store/slice/productSlice';
 import { addToCart } from '../../../store/slice/cartSlice';
+import toast from 'react-hot-toast';
 import type { Product } from '../../../store/slice/productSlice';
 import { ShoppingCart, Star, Search, Grid, List, Heart, Package, ChevronRight } from 'lucide-react';
 import { Link, useNavigate, NavLink } from 'react-router-dom';
@@ -37,9 +38,9 @@ const BabyProductsPage = () => {
                     quantity: 1,
                     size: 'Medium'
                 })).unwrap();
-                alert(`${product.name} added to cart!`);
+                toast.success(`${product.name} added to cart!`);
             } catch (err: any) {
-                alert(err || 'Failed to add to cart');
+                toast.error(err || 'Failed to add to cart');
             }
         }
     };
