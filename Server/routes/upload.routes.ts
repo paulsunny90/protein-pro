@@ -25,13 +25,11 @@ router.post('/', authMiddleware, adminMiddleware, (req: Request, res: Response, 
                 return res.status(400).json({ message: 'No file uploaded' });
             }
 
-            // Return relative path for database storage
-            const imageUrl = `/uploads/${req.file.filename}`;
-
-            console.log('File uploaded successfully:', req.file.filename);
+            // Cloudinary storage provides the URL in req.file.path
+            const imageUrl = req.file.path;
 
             res.status(200).json({
-                message: 'Image uploaded successfully',
+                message: 'Image uploaded successfully to Cloudinary',
                 imageUrl
             });
         } catch (error) {
