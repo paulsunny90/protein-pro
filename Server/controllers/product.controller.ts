@@ -196,11 +196,29 @@ export const deleteProductController = async (req: Request<{ id: string }>, res:
 export const createProductReview = async (req: Request, res: Response) => {
     try {
         const { rating, comment } = req.body;
+
+        if (!rating || !comment) {
+            return res.status(400).json({
+                success: false,
+                message: "Rating and comment are required",
+            });
+        }
+
         const product = await ProductModel.findById(req.params.id);
 
         if (product) {
+            const userId = req.user?.id || req.user?._id;
+            const userName = req.user?.name || "Anonymous";
+
+            if (!userId) {
+                return res.status(401).json({
+                    success: false,
+                    message: "User context missing",
+                });
+            }
+
             const alreadyReviewed = product.reviews.find(
-                (r: any) => r.user.toString() === req.user?._id?.toString()
+                (r: any) => r.user.toString() === userId.toString()
             );
 
             if (alreadyReviewed) {
@@ -211,10 +229,10 @@ export const createProductReview = async (req: Request, res: Response) => {
             }
 
             const review = {
-                name: req.user?.name,
+                name: userName,
                 rating: Number(rating),
                 comment,
-                user: req.user?._id,
+                user: userId,
             };
 
             product.reviews.push(review as any);

@@ -3,9 +3,10 @@ import { Types } from "mongoose";
 
 // Define user payload interface
 interface UserPayload {
-  id: Types.ObjectId;
+  id: any;
   email: string;
   role: string;
+  name: string;
 }
 
 /**
@@ -13,21 +14,23 @@ interface UserPayload {
  * @param user - User object containing id, email, and role
  * @returns JWT access token string
  */
-export const generateAccessToken = (user: { 
-  _id: Types.ObjectId; 
-  email: string; 
-  role: string 
+export const generateAccessToken = (user: {
+  _id: any;
+  email: string;
+  role: string;
+  name: string;
 }): string => {
   const payload: UserPayload = {
     id: user._id,
     email: user.email,
-    role: user.role
+    role: user.role,
+    name: user.name
   };
 
   return jwt.sign(
     payload,
     process.env.JWT_ACCESS_SECRET || "fallback_access_secret",
-    { expiresIn: "15m" }
+    { expiresIn: "1h" } // Increased to 1h for better DX
   );
 };
 
@@ -36,15 +39,17 @@ export const generateAccessToken = (user: {
  * @param user - User object containing id, email, and role
  * @returns JWT refresh token string
  */
-export const generateRefreshToken = (user: { 
-  _id: Types.ObjectId; 
-  email: string; 
-  role: string 
+export const generateRefreshToken = (user: {
+  _id: any;
+  email: string;
+  role: string;
+  name: string;
 }): string => {
   const payload: UserPayload = {
     id: user._id,
     email: user.email,
-    role: user.role
+    role: user.role,
+    name: user.name
   };
 
   return jwt.sign(
