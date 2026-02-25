@@ -45,6 +45,7 @@ export interface Product extends Document {
   reviews: Review[];
   rating: number;
   numReviews: number;
+  discount?: number;
 }
 
 export interface Productinput {
