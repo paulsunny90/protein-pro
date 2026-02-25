@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   Search,
-  UserPlus,
   Eye,
-  Pencil,
   Power,
   Loader2,
   AlertCircle,
@@ -95,11 +93,6 @@ export default function UserManagement() {
           </h1>
           <p className="text-slate-500 mt-1">Manage your customer base and user accounts</p>
         </div>
-
-        <button className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 hover:scale-105">
-          <UserPlus className="w-5 h-5" />
-          <span className="font-medium">New User</span>
-        </button>
       </div>
 
       {/* Search + Filters */}
@@ -233,7 +226,6 @@ export default function UserManagement() {
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
                       <ActionButton icon={Eye} label="View" color="blue" />
-                      <ActionButton icon={Pencil} label="Edit" color="green" />
                       <ActionButton
                         icon={Power}
                         label={u.isVerified ? "Suspend" : "Activate"}

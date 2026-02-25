@@ -18,7 +18,7 @@ export default function AdminLayout() {
         { label: "Products", icon: Package, path: "/admin/products" },
         { label: "Orders", icon: ShoppingCart, path: "/admin/orders" },
         { label: "Subscriptions", icon: CreditCard, path: "/admin/subscriptions" },
-        { label: "userpage", icon: Settings, path: "/" },
+        { label: "userpage", icon: Settings, path: "/products" },
     ];
 
     const isActive = (path: string, exact: boolean = false) => {

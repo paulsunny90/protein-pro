@@ -4,15 +4,18 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import api from '../../utils/api';
 import { formatImageUrl } from "../../utils/imageUtils";
 
-// ✅ axios instance (cleaner)
-// const api = axios.create({
-//   baseURL: "http://localhost:5000/api/product",
-// });
-
-
 // ==============================
 // Types
 // ==============================
+
+export interface Review {
+  _id?: string;
+  name: string;
+  rating: number;
+  comment: string;
+  user: string;
+  createdAt?: string;
+}
 
 export interface Product {
   _id?: string;
@@ -25,22 +28,24 @@ export interface Product {
   productType: 'Foods' | 'Supplements';
   price: number;
   originalPrice: number;
-  rating: number; // Added
-  reviewCount: number; // Added
-  image: string; // Changed from imageUrl to image to match component
-  imageUrl?: string; // Keep for backward compatibility if needed
-  images?: string[]; // Multiple images array
+  rating: number;
+  reviewCount: number;
+  image: string;
+  imageUrl?: string;
+  images?: string[];
   isActive: boolean;
-  inStock: boolean; // Added
-  discount: number; // Added
+  inStock: boolean;
+  discount: number;
+  reviews?: Review[];
+  numReviews?: number;
   calories?: number;
   protein?: number;
   carbs?: number;
   fat?: number;
   fiber?: number;
   stock?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface ProductState {
@@ -73,10 +78,10 @@ export const fetchProducts = createAsyncThunk(
     // Map backend data to frontend structure
     return res.data.data.map((p: any) => ({
       ...p,
-      image: formatImageUrl(p.images?.[0] || p.imageUrl), // Use first image from array or fallback to imageUrl
-      images: p.images?.map((img: string) => formatImageUrl(img)) || [], // Map all images
-      rating: p.rating || 4.5, // Default rating if missing
-      reviewCount: p.reviewCount || 0,
+      image: formatImageUrl(p.images?.[0] || p.imageUrl),
+      images: p.images?.map((img: string) => formatImageUrl(img)) || [],
+      rating: p.rating || 0,
+      reviewCount: p.numReviews || 0,
       discount: p.discount || 0,
       inStock: p.stock > 0,
       originalPrice: p.originalPrice || p.price
@@ -96,8 +101,8 @@ export const fetchProductById = createAsyncThunk(
       return {
         ...p,
         image: formatImageUrl(p.imageUrl),
-        rating: p.rating || 4.5,
-        reviewCount: p.reviewCount || 0,
+        rating: p.rating || 0,
+        reviewCount: p.numReviews || 0,
         discount: p.discount || 0,
         inStock: p.stock > 0,
         originalPrice: p.originalPrice || p.price
@@ -117,10 +122,8 @@ export const addProduct = createAsyncThunk(
       ? { headers: { "Content-Type": "multipart/form-data" } }
       : {};
 
-    // Check if we need to adjust this to /products or if it was /product in original
-    // Backend route is now mounted at /products
     const res = await api.post("/products", data, config);
-    return res.data.data; // Extract data from response structure
+    return res.data.data;
   }
 );
 
@@ -134,7 +137,7 @@ export const updateProduct = createAsyncThunk(
       : {};
 
     const res = await api.put(`/products/${id}`, data, config);
-    return res.data.data; // Extract data from response structure
+    return res.data.data;
   }
 );
 
@@ -148,6 +151,19 @@ export const deleteProduct = createAsyncThunk(
       return id;
     } else {
       throw new Error(res.data.message || "Failed to delete product");
+    }
+  }
+);
+
+// ✅ CREATE REVIEW
+export const createProductReview = createAsyncThunk(
+  "product/createReview",
+  async ({ productId, rating, comment }: { productId: string; rating: number; comment: string }, { rejectWithValue }) => {
+    try {
+      const res = await api.post(`/products/${productId}/reviews`, { rating, comment });
+      return res.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to add review");
     }
   }
 );
@@ -186,7 +202,6 @@ const productSlice = createSlice({
       })
       .addCase(fetchProductById.fulfilled, (state, action: PayloadAction<Product>) => {
         state.loading = false;
-        // Update the product in the list or add it if not present
         const index = state.products.findIndex(p => p._id === action.payload._id);
         if (index !== -1) {
           state.products[index] = action.payload;
@@ -222,6 +237,19 @@ const productSlice = createSlice({
         state.products = state.products.filter(
           (p) => p._id !== action.payload
         );
+      })
+
+      // ================= create review
+      .addCase(createProductReview.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createProductReview.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(createProductReview.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || "Failed to add review";
       });
   },
 });

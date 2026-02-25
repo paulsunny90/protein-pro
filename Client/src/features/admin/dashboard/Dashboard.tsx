@@ -1,19 +1,13 @@
-
+import { useEffect, useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Users,
   Package,
   DollarSign,
   CreditCard,
+  Loader2,
+  AlertCircle
 } from "lucide-react";
-
-/*
-  ✅ UPDATED: Using chart libraries as requested
-  Libraries used:
-  - recharts (BarChart, AreaChart, PieChart)
-
-  Install first:
-  npm install recharts
-*/
 
 import {
   ResponsiveContainer,
@@ -28,59 +22,129 @@ import {
   Cell,
 } from "recharts";
 
+import { fetchProducts } from "../../../store/slice/productSlice";
+import { fetchAllOrders } from "../../../store/slice/orderSlice";
+import { getAllUsers, type User } from "../../../services/userService";
+import type { AppDispatch, RootState } from "../../../store";
 
-/* ----------------------------- Data ----------------------------- */
+/* ----------------------------- Config ----------------------------- */
 
-const salesData = [
-  { month: "Jan", sales: 4000 },
-  { month: "Feb", sales: 3000 },
-  { month: "Mar", sales: 2000 },
-  { month: "Apr", sales: 2800 },
-  { month: "May", sales: 1900 },
-  { month: "Jun", sales: 2400 },
-];
-
-const categories = [
-  { name: "Protein", value: 45 },
-  { name: "Fitness", value: 25 },
-  { name: "Baby Nutrition", value: 20 },
-  { name: "Supplements", value: 10 },
-];
-
-const PIE_COLORS = ["#4f46e5", "#10b981", "#f59e0b", "#f97316"];
-
-const orders = [
-  { id: "#ORD-0001", customer: "Customer 1", status: "Processing", amount: "$50" },
-  { id: "#ORD-0002", customer: "Customer 2", status: "Pending", amount: "$60" },
-  { id: "#ORD-0003", customer: "Customer 3", status: "Delivered", amount: "$70" },
-  { id: "#ORD-0004", customer: "Customer 4", status: "Processing", amount: "$80" },
-  { id: "#ORD-0005", customer: "Customer 5", status: "Pending", amount: "$90" },
-];
-
-const users = [
-  { name: "User 1", email: "user1@example.com", date: "2023-01-15" },
-  { name: "User 2", email: "user2@example.com", date: "2023-02-15" },
-  { name: "User 3", email: "user3@example.com", date: "2023-03-15" },
-  { name: "User 4", email: "user4@example.com", date: "2023-04-15" },
-  { name: "User 5", email: "user5@example.com", date: "2023-05-15" },
-];
+const PIE_COLORS = ["#4f46e5", "#10b981", "#f59e0b", "#f97316", "#ec4899", "#8b5cf6"];
 
 const statusStyle: Record<string, string> = {
   Processing: "bg-yellow-100 text-yellow-700",
   Pending: "bg-blue-100 text-blue-700",
   Delivered: "bg-green-100 text-green-700",
+  Confirmed: "bg-indigo-100 text-indigo-700",
+  Shipped: "bg-purple-100 text-purple-700",
+  Cancelled: "bg-red-100 text-red-700",
 };
 
 
 /* --------------------------- Component --------------------------- */
 
 export default function AdminDashboard() {
-  const stats = [
-    { title: "Total Users", value: "1,248", change: "+12%", icon: Users, color: "from-blue-500 to-cyan-500" },
-    { title: "Total Orders", value: "3,562", change: "+8%", icon: Package, color: "from-purple-500 to-indigo-500" },
-    { title: "Revenue", value: "$42,568", change: "+15%", icon: DollarSign, color: "from-green-500 to-emerald-500" },
-    { title: "Active Subscriptions", value: "842", change: "+5%", icon: CreditCard, color: "from-orange-500 to-red-500" },
-  ];
+  const dispatch = useDispatch<AppDispatch>();
+  const { products, loading: productsLoading } = useSelector((state: RootState) => state.product);
+  const { orders, loading: ordersLoading } = useSelector((state: RootState) => state.order);
+  
+  const [users, setUsers] = useState<User[]>([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          dispatch(fetchProducts(true)),
+          dispatch(fetchAllOrders()),
+          (async () => {
+            const data = await getAllUsers();
+            setUsers(data);
+            setUsersLoading(false);
+          })()
+        ]);
+        setError(null);
+      } catch (err: any) {
+        console.error("Dashboard Load Error:", err);
+        setError("Failed to load dashboard data.");
+      }
+    };
+    loadData();
+  }, [dispatch]);
+
+  // Calculations
+  const stats = useMemo(() => {
+    const totalUsers = users.length;
+    const totalOrders = orders.length;
+    const revenue = orders.reduce((acc, order) => acc + (order.totalAmount || 0), 0);
+    const activeSubs = users.filter(u => u.plan && u.plan !== 'none').length;
+
+    return [
+      { title: "Total Users", value: totalUsers.toLocaleString(), change: "+12%", icon: Users, color: "from-blue-500 to-cyan-500" },
+      { title: "Total Orders", value: totalOrders.toLocaleString(), change: "+8%", icon: Package, color: "from-purple-500 to-indigo-500" },
+      { title: "Revenue", value: `$${revenue.toLocaleString()}`, change: "+15%", icon: DollarSign, color: "from-green-500 to-emerald-500" },
+      { title: "Active Subscriptions", value: activeSubs.toLocaleString(), change: "+5%", icon: CreditCard, color: "from-orange-500 to-red-500" },
+    ];
+  }, [users, orders]);
+
+  const salesData = useMemo(() => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const last6Months: { month: string; sales: number }[] = [];
+    const now = new Date();
+    
+    for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        last6Months.push({
+            month: months[d.getMonth()],
+            sales: 0
+        });
+    }
+
+    orders.forEach(order => {
+        if (!order.createdAt) return;
+        const d = new Date(order.createdAt);
+        const monthName = months[d.getMonth()];
+        const dataPoint = last6Months.find(m => m.month === monthName);
+        if (dataPoint) {
+            dataPoint.sales += (order.totalAmount || 0);
+        }
+    });
+
+    return last6Months;
+  }, [orders]);
+
+  const categoryData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    products.forEach(p => {
+        const cat = p.category || "Uncategorized";
+        counts[cat] = (counts[cat] || 0) + 1;
+    });
+
+    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+  }, [products]);
+
+  const loading = productsLoading || ordersLoading || usersLoading;
+
+  if (loading && users.length === 0) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
+        <p className="text-slate-500 font-medium">Crunching dashboard data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="bg-red-50 p-4 rounded-2xl flex items-center gap-3 border border-red-200 text-red-700">
+          <AlertCircle className="w-6 h-6" />
+          <p className="font-medium">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-8">
@@ -172,34 +236,38 @@ export default function AdminDashboard() {
           </div>
 
           <div className="h-80 min-h-[320px] flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <PieChart>
-                <Pie
-                  data={categories}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={90}
-                  innerRadius={60}
-                  paddingAngle={3}
-                  label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
-                  labelLine={false}
-                >
-                  {categories.map((_, index) => (
-                    <Cell key={index} fill={PIE_COLORS[index]} stroke="#fff" strokeWidth={2} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "rgba(255, 255, 255, 0.95)",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "12px",
-                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            {categoryData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                <PieChart>
+                    <Pie
+                    data={categoryData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={90}
+                    innerRadius={60}
+                    paddingAngle={3}
+                    label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
+                    labelLine={false}
+                    >
+                    {categoryData.map((_, index) => (
+                        <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="#fff" strokeWidth={2} />
+                    ))}
+                    </Pie>
+                    <Tooltip
+                    contentStyle={{
+                        backgroundColor: "rgba(255, 255, 255, 0.95)",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
+                    }}
+                    />
+                </PieChart>
+                </ResponsiveContainer>
+            ) : (
+                <div className="text-slate-400 text-sm">No product data available</div>
+            )}
           </div>
         </div>
       </section>
@@ -210,31 +278,36 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-bold text-xl text-slate-800">Recent Orders</h2>
             <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-              {orders.length} orders
+              {orders.slice(0, 5).length} orders
             </div>
           </div>
           <div className="overflow-hidden rounded-xl">
             <table className="w-full text-sm">
               <tbody>
-                {orders.map((o, i) => (
-                  <tr key={i} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
+                {orders.slice(0, 5).map((o, i) => (
+                  <tr key={o._id || i} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
                     <td className="py-4 pl-4 font-semibold text-slate-800">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
-                        {o.id}
+                        #{o._id?.slice(-6).toUpperCase()}
                       </div>
                     </td>
-                    <td className="py-4 text-slate-600">{o.customer}</td>
+                    <td className="py-4 text-slate-600">{(o.user as any)?.name || 'Guest'}</td>
                     <td className="py-4">
                       <span
-                        className={`px-3 py-1.5 rounded-full text-xs font-semibold ${statusStyle[o.status]} shadow-sm`}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold ${statusStyle[o.status] || 'bg-slate-100 text-slate-700'} shadow-sm`}
                       >
                         {o.status}
                       </span>
                     </td>
-                    <td className="py-4 pr-4 text-right font-bold text-slate-800">{o.amount}</td>
+                    <td className="py-4 pr-4 text-right font-bold text-slate-800">${o.totalAmount?.toLocaleString()}</td>
                   </tr>
                 ))}
+                {orders.length === 0 && (
+                    <tr>
+                        <td colSpan={4} className="py-8 text-center text-slate-400">No orders found</td>
+                    </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -253,13 +326,13 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="space-y-4">
-            {users.map((u, i) => (
+            {users.slice(0, 5).map((u, i) => (
               <div
-                key={i}
+                key={u._id || i}
                 className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50/50 transition-all border border-transparent hover:border-green-100"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold shadow-md">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold shadow-md uppercase">
                     {u.name.charAt(0)}
                   </div>
                   <div>
@@ -269,10 +342,13 @@ export default function AdminDashboard() {
                 </div>
                 <div className="text-right">
                   <span className="text-xs font-medium text-slate-400 block">Joined</span>
-                  <span className="text-sm font-semibold text-slate-600">{u.date}</span>
+                  <span className="text-sm font-semibold text-slate-600">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}</span>
                 </div>
               </div>
             ))}
+            {users.length === 0 && (
+                <div className="py-8 text-center text-slate-400">No users found</div>
+            )}
           </div>
           <div className="mt-4 pt-4 border-t border-slate-200">
             <button className="w-full py-2.5 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors">

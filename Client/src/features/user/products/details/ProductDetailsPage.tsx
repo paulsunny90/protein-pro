@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Star, ShoppingCart, Shield, Truck, RotateCcw, StarHalf, Loader2, ArrowLeft, CheckCircle2, Zap, Activity, Minus, Plus } from 'lucide-react';
+import { Star, ShoppingCart, Shield, Truck, RotateCcw, StarHalf, Loader2, ArrowLeft, CheckCircle2, Zap, Activity, Minus, Plus, MessageSquare } from 'lucide-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
-import { fetchProductById } from '../../../../store/slice/productSlice';
+import { fetchProductById, createProductReview } from '../../../../store/slice/productSlice';
 import { addToCart } from '../../../../store/slice/cartSlice';
 import toast from 'react-hot-toast';
 
 const ProductDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const dispatch = useAppDispatch();
 
   const { products, loading: productLoading, error: productError } = useAppSelector((state) => state.product);
@@ -18,6 +18,11 @@ const ProductDetailsPage = () => {
 
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('Medium');
+
+  // Review form state
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -66,10 +71,35 @@ const ProductDetailsPage = () => {
     }
   };
 
+  const submitReviewHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comment) {
+      toast.error('Please enter a comment');
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      await dispatch(createProductReview({
+        productId: id!,
+        rating,
+        comment
+      })).unwrap();
+      toast.success('Review submitted successfully!');
+      setComment('');
+      setRating(5);
+      dispatch(fetchProductById(id!)); // Refresh product data
+    } catch (err: any) {
+      toast.error(err || 'Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
   const renderStars = (rating: number) => {
     const stars = [];
     const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
+    const hasHalfStar = rating % 1 >= 0.5;
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(<Star key={i} className="w-5 h-5 text-[#a3e635] fill-current" />);
@@ -119,8 +149,8 @@ const ProductDetailsPage = () => {
     ...product,
     originalPrice: product.originalPrice || product.price * 1.2,
     discount: product.discount || 15,
-    rating: product.rating || 4.5,
-    reviewCount: product.reviewCount || 100,
+    rating: product.rating || 0,
+    reviewCount: product.numReviews || product.reviews?.length || 0,
     features: [
       '25g Pharmaceutical-Grade Protein',
       'Zero Artificial Sweeteners',
@@ -131,9 +161,9 @@ const ProductDetailsPage = () => {
     ],
     sizes: ['1KG', '2KG', '4KG'],
     flavors: ['Shadow Vanilla', 'Midnight Chocolate', 'Neon Berry'],
-    images: product.image ? [product.image] : [
+    images: (product.images && product.images.length > 0) ? product.images : (product.image ? [product.image] : [
       'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
-    ],
+    ]),
     nutritionalInfo: {
       calories: product.calories || 120,
       protein: product.protein || 25,
@@ -166,7 +196,7 @@ const ProductDetailsPage = () => {
         {/* Product Details Container */}
         <div className="bg-[#0d0d0d] rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            {/* Product Images - Dark Minimalist Display */}
+            {/* Product Images */}
             <div className="p-8 lg:p-12 bg-black flex flex-col items-center justify-center border-r border-white/5">
               <div className="relative w-full aspect-square rounded-[2rem] overflow-hidden bg-[#0d0d0d] border border-white/5 group">
                 <img
@@ -193,7 +223,7 @@ const ProductDetailsPage = () => {
               </div>
             </div>
 
-            {/* Product Info - High Performance Typography */}
+            {/* Product Info */}
             <div className="p-8 lg:p-16 flex flex-col">
               <div className="inline-flex items-center space-x-2 text-[#a3e635] mb-6">
                 <Zap className="h-4 w-4" />
@@ -221,7 +251,7 @@ const ProductDetailsPage = () => {
 
               <p className="text-lg text-slate-400 font-medium leading-relaxed mb-10">{displayProduct.description}</p>
 
-              {/* Size Selection - Dark Mode Pills */}
+              {/* Size Selection */}
               <div className="mb-10">
                 <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-4">SELECT DOSAGE SIZE</h3>
                 <div className="flex flex-wrap gap-3">
@@ -275,7 +305,7 @@ const ProductDetailsPage = () => {
                 </div>
               </div>
 
-              {/* Action Buttons - High Impact */}
+              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-5 mt-auto">
                 <button
                   onClick={handleAddToCart}
@@ -294,7 +324,7 @@ const ProductDetailsPage = () => {
             </div>
           </div>
 
-          {/* Performance Data visualization */}
+          {/* Performance Specs */}
           <div className="bg-[#111] border-t border-white/5 p-12">
             <h2 className="text-3xl font-black text-white mb-10 tracking-tight flex items-center">
               <Activity className="mr-4 text-[#a3e635] w-8 h-8" />
@@ -333,8 +363,103 @@ const ProductDetailsPage = () => {
             </div>
           </div>
 
+          {/* REVIEWS SECTION */}
+          <div className="p-12 border-t border-white/5 bg-[#080808]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              {/* Review Summary & Form */}
+              <div className="lg:col-span-1">
+                <h2 className="text-3xl font-black text-white mb-6 tracking-tight flex items-center">
+                  <MessageSquare className="mr-4 text-[#a3e635] w-8 h-8" />
+                  REVIEWS
+                </h2>
+
+                <div className="bg-black/30 border border-white/5 p-8 rounded-[2rem] mb-8">
+                  <div className="text-5xl font-black text-[#a3e635] mb-2">{displayProduct.rating.toFixed(1)}</div>
+                  <div className="mb-4">{renderStars(displayProduct.rating)}</div>
+                  <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Based on {displayProduct.reviewCount} reviews</p>
+                </div>
+
+                {isAuthenticated ? (
+                  <div className="bg-[#111] border border-white/5 p-8 rounded-[2rem]">
+                    <h3 className="text-white font-black uppercase tracking-widest text-sm mb-6">Write a Review</h3>
+                    <form onSubmit={submitReviewHandler} className="space-y-6">
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">Rating</label>
+                        <select
+                          value={rating}
+                          onChange={(e) => setRating(Number(e.target.value))}
+                          className="w-full bg-black border border-white/10 rounded-xl p-4 text-white font-bold focus:border-[#a3e635] transition-colors outline-none cursor-pointer"
+                        >
+                          <option value="5">5 - Excellent</option>
+                          <option value="4">4 - Very Good</option>
+                          <option value="3">3 - Good</option>
+                          <option value="2">2 - Fair</option>
+                          <option value="1">1 - Poor</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">Comment</label>
+                        <textarea
+                          rows={4}
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          placeholder="Share your experience with this product..."
+                          className="w-full bg-black border border-white/10 rounded-xl p-4 text-white font-medium focus:border-[#a3e635] transition-colors outline-none resize-none"
+                        ></textarea>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={submittingReview}
+                        className="w-full bg-[#a3e635] text-black py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#b4f049] transition-all disabled:opacity-50"
+                      >
+                        {submittingReview ? 'Submitting...' : 'Post Review'}
+                      </button>
+                    </form>
+                  </div>
+                ) : (
+                  <div className="bg-[#111] border border-white/5 p-8 rounded-[2rem] text-center">
+                    <p className="text-slate-400 font-bold mb-4">Please log in to write a review</p>
+                    <Link to="/login" className="text-[#a3e635] font-black uppercase tracking-widest text-xs hover:text-white transition-colors">Log In Now →</Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Review List */}
+              <div className="lg:col-span-2">
+                <div className="space-y-6">
+                  {product.reviews && product.reviews.length > 0 ? (
+                    product.reviews.map((rev: any, index: number) => (
+                      <div key={index} className="bg-black/20 border border-white/5 p-8 rounded-[2rem] hover:border-white/10 transition-all">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h4 className="text-white font-black text-lg tracking-tight mb-1">{rev.name}</h4>
+                            <div className="flex items-center space-x-3">
+                              {renderStars(rev.rating)}
+                              <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                                {new Date(rev.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                          {rev.user === user?._id && (
+                            <span className="text-[8px] bg-[#a3e635]/10 text-[#a3e635] border border-[#a3e635]/20 px-2 py-1 rounded font-black tracking-widest uppercase">Your Review</span>
+                          )}
+                        </div>
+                        <p className="text-slate-400 font-medium leading-relaxed italic">"{rev.comment}"</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center py-12 text-center bg-black/10 border border-dashed border-white/5 rounded-[2.5rem]">
+                      <MessageSquare className="w-12 h-12 text-white/5 mb-4" />
+                      <p className="text-slate-500 font-bold">No reviews yet. Be the first to share your intensity!</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Security & Logistics */}
-          <div className="bg-black/40 p-12 border-t border-white/5">
+          <div className="bg-black p-12 border-t border-white/5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               <div className="flex items-center group">
                 <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mr-6 border border-white/5 group-hover:border-[#a3e635]/30 transition-all">
