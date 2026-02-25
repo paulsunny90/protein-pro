@@ -20,8 +20,11 @@ export const createProductController = async (req: Request, res: Response) => {
             Productdata.images = (req.files as any[]).map((file: any) => file.path);
             // Set the first image as primary imageUrl for backward compatibility
             Productdata.imageUrl = Productdata.images[0];
+        } else if (req.body.data && typeof req.body.data === 'string') {
+            // FormData request without file (frontend sends JSON string in 'data')
+            Productdata = JSON.parse(req.body.data);
         } else {
-            // JSON request
+            // Regular JSON request
             Productdata = req.body;
         }
 

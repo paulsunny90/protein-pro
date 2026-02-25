@@ -32,7 +32,7 @@ export const getCategories = async (_req: Request, res: Response) => {
 
 // GET BY ID
 export const getCategoryById = async (
-  req: Request <{ id:string }>,
+  req: Request<{ id: string }>,
   res: Response
 ) => {
   try {
@@ -48,7 +48,7 @@ export const getCategoryById = async (
 
 // UPDATE
 export const updateCategory = async (
-  req: Request <{ id: string}>,
+  req: Request<{ id: string }>,
   res: Response
 ) => {
   try {
@@ -64,9 +64,9 @@ export const updateCategory = async (
 
 // DELETE
 export const deleteCategory = async (
-  req: Request <{id:string}>,
-   res: Response
-  ) => {
+  req: Request<{ id: string }>,
+  res: Response
+) => {
   try {
     await deleteCategoryService(req.params.id);
     res.status(200).json({ message: "Category deleted successfully" });
