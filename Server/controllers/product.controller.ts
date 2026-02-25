@@ -108,6 +108,7 @@ export const getProductByIdController = async (req: Request<{ id: string }>, res
 export const editProductController = async (req: Request<{ id: string }>, res: Response) => {
     try {
         const { id } = req.params;
+        console.log("Updating product ID:", id);
         let updateData: Partial<Productinput>;
 
         // Handle both JSON and FormData
@@ -130,6 +131,11 @@ export const editProductController = async (req: Request<{ id: string }>, res: R
         } else {
             // Regular JSON request
             updateData = req.body;
+        }
+
+        console.log("Final updateData:", JSON.stringify(updateData, null, 2));
+        if (req.files) {
+            console.log("New files uploaded:", (req.files as any[]).length);
         }
 
         const updatedProduct = await editProduct(id, updateData);

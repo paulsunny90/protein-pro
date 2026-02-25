@@ -58,6 +58,12 @@ const ProductSchema: Schema<Product> = new Schema(
       default: 0,
       min: 0
     },
+    discount: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    },
     sizes: [{
       type: String,
       enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
@@ -83,17 +89,19 @@ const ProductSchema: Schema<Product> = new Schema(
       default: 0
     },
     reviews: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          required: true,
-          ref: "Userdata",
+      new Schema(
+        {
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: "Userdata",
+          },
+          name: { type: String, required: true },
+          rating: { type: Number, required: true },
+          comment: { type: String, required: true },
         },
-        name: { type: String, required: true },
-        rating: { type: Number, required: true },
-        comment: { type: String, required: true },
-      },
-      { timestamps: true },
+        { timestamps: true }
+      ),
     ],
     rating: {
       type: Number,

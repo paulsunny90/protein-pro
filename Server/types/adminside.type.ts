@@ -65,6 +65,7 @@ export interface Productinput {
   carbs?: number;
   fat?: number;
   fiber?: number;
+  discount?: number;
 }
 
 export interface Category extends Document {
