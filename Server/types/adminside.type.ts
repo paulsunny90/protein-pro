@@ -7,12 +7,21 @@ declare global {
       user?: {
         id: string;
         _id?: string;
+        name: string;
         email: string;
         role: string;
         [key: string]: any;
       }
     }
   }
+}
+
+export interface Review {
+  user: Types.ObjectId;
+  name: string;
+  rating: number;
+  comment: string;
+  createdAt: Date;
 }
 
 export interface Product extends Document {
@@ -33,6 +42,9 @@ export interface Product extends Document {
   carbs?: number;
   fat?: number;
   fiber?: number;
+  reviews: Review[];
+  rating: number;
+  numReviews: number;
 }
 
 export interface Productinput {
@@ -125,4 +137,3 @@ export interface IWishlist extends Document {
   user: Types.ObjectId;
   products: IWishlistItem[];
 }
-

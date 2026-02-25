@@ -7,6 +7,7 @@ import {
     getProductById
 } from "../services/product.services";
 import { Productinput } from "../types/adminside.type";
+import ProductModel from "../models/product.model";
 
 export const createProductController = async (req: Request, res: Response) => {
     try {
@@ -16,7 +17,7 @@ export const createProductController = async (req: Request, res: Response) => {
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
             // FormData request with multiple files
             Productdata = JSON.parse(req.body.data);
-            Productdata.images = req.files.map(file => `/uploads/${file.filename}`);
+            Productdata.images = (req.files as any[]).map((file: any) => file.path);
             // Set the first image as primary imageUrl for backward compatibility
             Productdata.imageUrl = Productdata.images[0];
         } else {
@@ -113,7 +114,7 @@ export const editProductController = async (req: Request<{ id: string }>, res: R
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
             // FormData request with new files
             updateData = JSON.parse(req.body.data);
-            const newImages = req.files.map(file => `/uploads/${file.filename}`);
+            const newImages = (req.files as any[]).map(file => file.path);
 
             // Preserve existing images if specified in the request
             const existingImages = updateData.images || [];
@@ -182,3 +183,53 @@ export const deleteProductController = async (req: Request<{ id: string }>, res:
         });
     }
 }
+
+export const createProductReview = async (req: Request, res: Response) => {
+    try {
+        const { rating, comment } = req.body;
+        const product = await ProductModel.findById(req.params.id);
+
+        if (product) {
+            const alreadyReviewed = product.reviews.find(
+                (r: any) => r.user.toString() === req.user?._id?.toString()
+            );
+
+            if (alreadyReviewed) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Product already reviewed",
+                });
+            }
+
+            const review = {
+                name: req.user?.name,
+                rating: Number(rating),
+                comment,
+                user: req.user?._id,
+            };
+
+            product.reviews.push(review as any);
+            product.numReviews = product.reviews.length;
+            product.rating =
+                product.reviews.reduce((acc: number, item: any) => item.rating + acc, 0) /
+                product.reviews.length;
+
+            await product.save();
+            res.status(201).json({
+                success: true,
+                message: "Review added",
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to add review",
+            error: error.message,
+        });
+    }
+};

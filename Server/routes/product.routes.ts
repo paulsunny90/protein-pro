@@ -5,8 +5,10 @@ import {
     getProductController,
     editProductController,
     deleteProductController,
-    getProductByIdController
+    getProductByIdController,
+    createProductReview
 } from "../controllers/product.controller";
+import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
@@ -16,6 +18,7 @@ router.post("/", upload.array("images", 5), createProductController);
 router.get("/", getProductController)
 router.put("/:id", upload.array("images", 5), editProductController)
 router.delete("/:id", deleteProductController)
+router.post("/:id/reviews", authMiddleware, createProductReview)
 
 
 export default router;

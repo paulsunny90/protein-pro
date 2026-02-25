@@ -81,7 +81,30 @@ const ProductSchema: Schema<Product> = new Schema(
     fiber: {
       type: Number,
       default: 0
-    }
+    },
+    reviews: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: "Userdata",
+        },
+        name: { type: String, required: true },
+        rating: { type: Number, required: true },
+        comment: { type: String, required: true },
+      },
+      { timestamps: true },
+    ],
+    rating: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    numReviews: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
