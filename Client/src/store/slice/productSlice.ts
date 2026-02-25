@@ -100,7 +100,8 @@ export const fetchProductById = createAsyncThunk(
       // Format the single product response
       return {
         ...p,
-        image: formatImageUrl(p.imageUrl),
+        image: formatImageUrl(p.images?.[0] || p.imageUrl),
+        images: p.images?.map((img: string) => formatImageUrl(img)) || [],
         rating: p.rating || 0,
         reviewCount: p.numReviews || 0,
         discount: p.discount || 0,
@@ -118,12 +119,18 @@ export const fetchProductById = createAsyncThunk(
 export const addProduct = createAsyncThunk(
   "product/add",
   async (data: Product | FormData) => {
-    const config = data instanceof FormData
-      ? { headers: { "Content-Type": "multipart/form-data" } }
-      : {};
-
-    const res = await api.post("/products", data, config);
-    return res.data.data;
+    const res = await api.post("/products", data);
+    const p = res.data.data;
+    return {
+      ...p,
+      image: formatImageUrl(p.images?.[0] || p.imageUrl),
+      images: p.images?.map((img: string) => formatImageUrl(img)) || [],
+      rating: p.rating || 0,
+      reviewCount: p.numReviews || 0,
+      discount: p.discount || 0,
+      inStock: p.stock > 0,
+      originalPrice: p.originalPrice || p.price
+    };
   }
 );
 
@@ -132,12 +139,18 @@ export const addProduct = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
   "product/update",
   async ({ id, data }: { id: string; data: Product | FormData }) => {
-    const config = data instanceof FormData
-      ? { headers: { "Content-Type": "multipart/form-data" } }
-      : {};
-
-    const res = await api.put(`/products/${id}`, data, config);
-    return res.data.data;
+    const res = await api.put(`/products/${id}`, data);
+    const p = res.data.data;
+    return {
+      ...p,
+      image: formatImageUrl(p.images?.[0] || p.imageUrl),
+      images: p.images?.map((img: string) => formatImageUrl(img)) || [],
+      rating: p.rating || 0,
+      reviewCount: p.numReviews || 0,
+      discount: p.discount || 0,
+      inStock: p.stock > 0,
+      originalPrice: p.originalPrice || p.price
+    };
   }
 );
 
