@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, User, LogOut, ShoppingBag, Gift, MapPin, LayoutGrid, X, Shield, Clock } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState, AppDispatch } from '../../../store';
+import { fetchCart } from '../../../store/slice/cartSlice';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,6 +13,17 @@ const Navigation = () => {
   const location = useLocation();
   const { logout, isAuthenticated, user } = useAuth();
   const isAdmin = user?.role === 'admin';
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { items: cartItems } = useSelector((state: RootState) => state.cart);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchCart());
+    }
+  }, [isAuthenticated, dispatch]);
+
+  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
     if (isAuthenticated && isAdmin && !loginTime) {
@@ -82,8 +96,13 @@ const Navigation = () => {
               <Search className="h-5 w-5" />
             </Link>
 
-            <Link to="/cart" className="text-slate-400 hover:text-white transition-colors p-2">
+            <Link to="/cart" className="text-slate-400 hover:text-white transition-colors p-2 relative">
               <ShoppingCart className="h-5 w-5" />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#a3e635] text-black text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#0a0a0a]">
+                  {cartItemCount}
+                </span>
+              )}
             </Link>
 
             {isAuthenticated ? (

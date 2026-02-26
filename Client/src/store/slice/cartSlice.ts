@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
 import { formatImageUrl } from '../../utils/imageUtils';
+import { logoutUser } from './authSlice';
 
 // Types
 export interface CartItem {
@@ -131,6 +132,10 @@ const cartSlice = createSlice({
             })
             // Clear
             .addCase(clearCart.fulfilled, (state) => {
+                state.items = [];
+            })
+            // Logout
+            .addCase(logoutUser.fulfilled, (state) => {
                 state.items = [];
             });
     },
