@@ -16,6 +16,7 @@ export const createProductController = async (req: Request, res: Response) => {
         // Handle both JSON and FormData
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
             // FormData request with multiple files
+            console.log("FILES RECEIVED:", (req.files as any[]).map(f => ({ path: f.path, name: f.originalname })));
             Productdata = JSON.parse(req.body.data);
             Productdata.images = (req.files as any[]).map((file: any) => file.path);
             // Set the first image as primary imageUrl for backward compatibility
@@ -27,6 +28,8 @@ export const createProductController = async (req: Request, res: Response) => {
             // Regular JSON request
             Productdata = req.body;
         }
+
+        console.log("FINAL PRODUCT DATA TO SAVE:", JSON.stringify(Productdata, null, 2));
 
         const Product = await createProduct(Productdata);
         return res.status(201).json({
