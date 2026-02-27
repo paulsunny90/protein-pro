@@ -82,8 +82,8 @@ const ProductDashboard = () => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${isActive
-                      ? 'bg-white text-slate-800 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
+                    ? 'bg-white text-slate-800 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-700'
                     }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? `text-${tab.color}-500` : ''}`} />
@@ -176,8 +176,8 @@ const ProductDashboard = () => {
                   </td>
                   <td className="p-4">
                     <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${product.isActive
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-slate-100 text-slate-500'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-slate-100 text-slate-500'
                       }`}>
                       {product.isActive ? 'Active' : 'Draft'}
                     </span>

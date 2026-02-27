@@ -15,10 +15,10 @@ export const createProductController = async (req: Request, res: Response) => {
 
         // Handle both JSON and FormData
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-            // FormData request with multiple files
+            // FormData request with multiple files (Multer disk storage)
             console.log("FILES RECEIVED:", (req.files as any[]).map(f => ({ path: f.path, name: f.originalname })));
             Productdata = JSON.parse(req.body.data);
-            Productdata.images = (req.files as any[]).map((file: any) => file.path);
+            Productdata.images = (req.files as any[]).map((file: any) => `/uploads/${file.filename}`);
             // Set the first image as primary imageUrl for backward compatibility
             Productdata.imageUrl = Productdata.images[0];
         } else if (req.body.data && typeof req.body.data === 'string') {
@@ -119,9 +119,9 @@ export const editProductController = async (req: Request<{ id: string }>, res: R
 
         // Handle both JSON and FormData
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-            // FormData request with new files
+            // FormData request with new files (Multer disk storage)
             updateData = JSON.parse(req.body.data);
-            const newImages = (req.files as any[]).map(file => file.path);
+            const newImages = (req.files as any[]).map((file: any) => `/uploads/${file.filename}`);
 
             // Preserve existing images if specified in the request
             const existingImages = updateData.images || [];

@@ -25,11 +25,11 @@ router.post('/', authMiddleware, adminMiddleware, (req: Request, res: Response, 
                 return res.status(400).json({ message: 'No file uploaded' });
             }
 
-            // Cloudinary storage provides the URL in req.file.path
-            const imageUrl = req.file.path;
+            // Multer disk storage saves file locally — return the relative path
+            const imageUrl = `/uploads/${req.file.filename}`;
 
             res.status(200).json({
-                message: 'Image uploaded successfully to Cloudinary',
+                message: 'Image uploaded successfully',
                 imageUrl
             });
         } catch (error) {
