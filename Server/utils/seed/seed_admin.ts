@@ -51,8 +51,6 @@ async function seedAdmin() {
         await mongoose.disconnect();
         console.log("Disconnected from MongoDB.");
     } catch (err) {
-
-        
         console.error("Error seeding admin:", err);
         process.exit(1);
     }
