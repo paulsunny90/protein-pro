@@ -20,4 +20,5 @@ export const storage = new CloudinaryStorage({
     } as any,
 });
 
+export { cloudinary };
 export default cloudinary;

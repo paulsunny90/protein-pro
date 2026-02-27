@@ -15,12 +15,13 @@ export const createProductController = async (req: Request, res: Response) => {
 
         // Handle both JSON and FormData
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-            // FormData request with multiple files (Multer disk storage)
+            // FormData request with multiple files (Cloudinary storage)
             console.log("FILES RECEIVED:", (req.files as any[]).map(f => ({ path: f.path, name: f.originalname })));
             Productdata = JSON.parse(req.body.data);
-            Productdata.images = (req.files as any[]).map((file: any) => `/uploads/${file.filename}`);
+            Productdata.images = (req.files as any[]).map((file: any) => file.path);
             // Set the first image as primary imageUrl for backward compatibility
             Productdata.imageUrl = Productdata.images[0];
+
         } else if (req.body.data && typeof req.body.data === 'string') {
             // FormData request without file (frontend sends JSON string in 'data')
             Productdata = JSON.parse(req.body.data);
@@ -119,9 +120,9 @@ export const editProductController = async (req: Request<{ id: string }>, res: R
 
         // Handle both JSON and FormData
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-            // FormData request with new files (Multer disk storage)
+            // FormData request with new files (Cloudinary storage)
             updateData = JSON.parse(req.body.data);
-            const newImages = (req.files as any[]).map((file: any) => `/uploads/${file.filename}`);
+            const newImages = (req.files as any[]).map((file: any) => file.path);
 
             // Preserve existing images if specified in the request
             const existingImages = updateData.images || [];
@@ -131,6 +132,7 @@ export const editProductController = async (req: Request<{ id: string }>, res: R
             if (updateData.images.length > 0) {
                 updateData.imageUrl = updateData.images[0];
             }
+
         } else if (req.body.data && typeof req.body.data === 'string') {
             // FormData request without file (frontend sends JSON string in 'data')
             updateData = JSON.parse(req.body.data);

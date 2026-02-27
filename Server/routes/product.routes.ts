@@ -1,5 +1,7 @@
 import express from "express";
-import { upload } from "../config/upload.config";
+import multer from 'multer';
+import { storage } from "../config/cloudinary.config";
+
 import {
     createProductController,
     getProductController,
@@ -11,12 +13,14 @@ import {
 import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = express.Router();
+const upload = multer({ storage: storage });
 
 router.get("/:id", getProductByIdController);
 
 router.post("/", upload.array("images", 5), createProductController);
 router.get("/", getProductController)
 router.put("/:id", upload.array("images", 5), editProductController)
+
 router.delete("/:id", deleteProductController)
 router.post("/:id/reviews", authMiddleware, createProductReview)
 

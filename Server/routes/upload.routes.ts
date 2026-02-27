@@ -1,11 +1,12 @@
 import express from 'express';
-import { upload } from '../config/upload.config';
+import { storage } from '../config/cloudinary.config';
 import { Request, Response, NextFunction } from 'express';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { adminMiddleware } from '../middleware/admin.middleware';
 import multer from 'multer';
 
 const router = express.Router();
+const upload = multer({ storage: storage });
 
 router.post('/', authMiddleware, adminMiddleware, (req: Request, res: Response, next: NextFunction) => {
     upload.single('image')(req, res, (err: any) => {
@@ -25,8 +26,8 @@ router.post('/', authMiddleware, adminMiddleware, (req: Request, res: Response, 
                 return res.status(400).json({ message: 'No file uploaded' });
             }
 
-            // Multer disk storage saves file locally — return the relative path
-            const imageUrl = `/uploads/${req.file.filename}`;
+            // Cloudinary storage returns the full URL in path
+            const imageUrl = req.file.path;
 
             res.status(200).json({
                 message: 'Image uploaded successfully',
