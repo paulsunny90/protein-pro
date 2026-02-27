@@ -2,7 +2,7 @@ import { API_URL } from './api';
 export const BASE_URL = API_URL.replace('/api', '');
 
 export const formatImageUrl = (url: string | undefined): string => {
-    if (!url) return "https://via.placeholder.com/300";
+    if (!url) return "https://images.unsplash.com/photo-1593095948071-474c5cc2989d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
 
     let processedUrl = url;
 
@@ -17,13 +17,10 @@ export const formatImageUrl = (url: string | undefined): string => {
     const normalizedPath = url.replace(/\\/g, '/');
 
     // Ensure relative paths starting with 'uploads' or '/uploads' use the BASE_URL
-    if (normalizedPath.startsWith('/uploads')) {
-        return `${BASE_URL}${normalizedPath}`;
-    }
-    if (normalizedPath.startsWith('uploads')) {
-        return `${BASE_URL}/${normalizedPath}`;
+    if (normalizedPath.startsWith('/uploads') || normalizedPath.startsWith('uploads/')) {
+        // Return a default protein image since render instance loses local uploads
+        return "https://images.unsplash.com/photo-1593095948071-474c5cc2989d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
     }
 
     return normalizedPath;
 };
-      

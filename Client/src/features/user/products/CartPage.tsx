@@ -64,18 +64,20 @@ const CartPage = () => {
                 <div className="divide-y divide-white/5">
                   {cartItems.map((item: any) => (
                     <div key={item._id} className="p-5 sm:p-8 group hover:bg-white/[0.02] transition-colors flex flex-row sm:flex-row gap-4 sm:gap-8 items-start sm:items-center">
-                      <div className="flex-shrink-0 bg-black border border-white/5 rounded-xl sm:rounded-2xl p-1.5 w-20 h-20 sm:w-28 sm:h-28 overflow-hidden">
+                      <Link to={`/products/${item.product?._id}`} className="flex-shrink-0 bg-black border border-white/5 rounded-xl sm:rounded-2xl p-1.5 w-20 h-20 sm:w-28 sm:h-28 overflow-hidden hover:border-[#a3e635]/50 transition-colors block">
                         <img
                           src={item.product?.image || 'placeholder.jpg'}
                           alt={item.product?.name}
-                          className="w-full h-full object-cover rounded-lg sm:rounded-xl"
+                          className="w-full h-full object-cover rounded-lg sm:rounded-xl group-hover:scale-105 transition-transform duration-500"
                         />
-                      </div>
+                      </Link>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-col gap-3">
                           <div className="flex justify-between items-start gap-2">
-                            <h3 className="text-base sm:text-xl font-black text-white leading-tight uppercase truncate">{item.product?.name}</h3>
+                            <Link to={`/products/${item.product?._id}`} className="truncate block">
+                              <h3 className="text-base sm:text-xl font-black text-white hover:text-[#a3e635] transition-colors leading-tight uppercase truncate">{item.product?.name}</h3>
+                            </Link>
                             <button
                               onClick={() => removeItem(item.product?._id)}
                               className="text-slate-600 hover:text-rose-500 transition-all p-1"

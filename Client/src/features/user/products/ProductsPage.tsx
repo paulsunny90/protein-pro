@@ -80,7 +80,7 @@ const ProductsPage = () => {
             src={product.image}
             alt={product.name}
             onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300?text=No+Image';
+              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
             }}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />

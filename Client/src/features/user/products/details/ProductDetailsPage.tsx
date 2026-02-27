@@ -18,6 +18,7 @@ const ProductDetailsPage = () => {
 
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('Medium');
+  const [mainImageIndex, setMainImageIndex] = useState(0);
 
   // Review form state
   const [rating, setRating] = useState(5);
@@ -200,7 +201,7 @@ const ProductDetailsPage = () => {
             <div className="p-8 lg:p-12 bg-black flex flex-col items-center justify-center border-r border-white/5">
               <div className="relative w-full aspect-square rounded-[2rem] overflow-hidden bg-[#0d0d0d] border border-white/5 group">
                 <img
-                  src={displayProduct.images[0]}
+                  src={displayProduct.images[mainImageIndex] || displayProduct.images[0]}
                   alt={displayProduct.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -210,13 +211,19 @@ const ProductDetailsPage = () => {
               </div>
 
               {/* Secondary Images */}
-              <div className="grid grid-cols-3 gap-6 mt-8 w-full">
-                {displayProduct.images.slice(0, 3).map((image, index) => (
-                  <div key={index} className="aspect-square bg-black border border-white/5 rounded-2xl overflow-hidden hover:border-[#a3e635]/50 transition-colors cursor-pointer">
+              <div className="grid grid-cols-4 gap-4 mt-8 w-full">
+                {displayProduct.images.slice(0, 4).map((image, index) => (
+                  <div
+                    key={index}
+                    onClick={() => setMainImageIndex(index)}
+                    className={`aspect-square bg-black border rounded-2xl overflow-hidden transition-colors cursor-pointer ${mainImageIndex === index ? 'border-[#a3e635]' : 'border-white/5 hover:border-[#a3e635]/50'
+                      }`}
+                  >
                     <img
                       src={image}
                       alt={`${displayProduct.name} ${index + 1}`}
-                      className="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity"
+                      className={`w-full h-full object-cover transition-opacity ${mainImageIndex === index ? 'opacity-100' : 'opacity-60 hover:opacity-100'
+                        }`}
                     />
                   </div>
                 ))}
