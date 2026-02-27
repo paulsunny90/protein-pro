@@ -100,7 +100,7 @@ const Dashboard = () => {
 
             <div className="flex-1 text-center md:text-left">
               <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4 justify-center md:justify-start">
-                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tighter uppercase ">
+                <h1 className="text-2xl font-normal sm:text-2xl font-black text-white tracking-tighter uppercase ">
                   {user?.name?.split(' ')[0] || 'WARRIOR'}!
                 </h1>
                 {user?.role === 'admin' && (
@@ -112,7 +112,7 @@ const Dashboard = () => {
               </div>
 
               <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 sm:gap-6 text-slate-400">
-                <div className="flex items-center text-sm font-bold tracking-tight">
+                <div className="flex items-center text-sm font- bold tracking-tight">
                   <Mail className="w-4 h-4 mr-2 text-[#a3e635]" />
                   {user?.email || 'No email'}
                 </div>
