@@ -1,7 +1,17 @@
 import { Link } from 'react-router-dom';
-import { Package, Shield, Truck, Activity, ArrowRight } from 'lucide-react';
+import { Package, Shield, Truck, Activity, ArrowRight, Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { fetchCategories } from '../../../store/slice/categorySlice';
 
 const HomePage = () => {
+  const dispatch = useAppDispatch();
+  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.category);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
   const heroFeatures = [
     {
       icon: Package,
@@ -119,76 +129,69 @@ const HomePage = () => {
 
           {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-            {/* Men's Collection */}
-            <Link
-              to="/products"
-              className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
-            >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#1a237e33,_transparent_70%)]"></div>
-
-              <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
-                  PEAK PERFORMANCE
-                </span>
-
-                <h3 className="text-3xl font-semibold text-white mb-4">
-                  Men's Collection
-                </h3>
-
-                <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
-                  Explore
-                  <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
+            {categoriesLoading ? (
+              <div className="col-span-full flex justify-center py-20">
+                <Loader2 className="w-12 h-12 text-[#a3e635] animate-spin" />
               </div>
-            </Link>
+            ) : categories.length > 0 ? (
+              categories.slice(0, 3).map((cat) => (
+                <Link
+                  key={cat._id}
+                  to={`/products?category=${cat.name}`}
+                  className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
+                >
+                  {/* Category Image from Cloudinary */}
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
 
-            {/* Women's Collection */}
-            <Link
-              to="/products"
-              className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
-            >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#4a148c33,_transparent_70%)]"></div>
+                  <div className="absolute inset-0 p-10 flex flex-col justify-end">
+                    <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
+                      {cat.description || 'ELITE COLLECTION'}
+                    </span>
 
-              <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
-                  LEAN & STRONG
-                </span>
+                    <h3 className="text-3xl font-semibold text-white mb-4">
+                      {cat.name}
+                    </h3>
 
-                <h3 className="text-3xl font-semibold text-white mb-4">
-                  Women's Collection
-                </h3>
+                    <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
+                      Explore Collection
+                      <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                    </span>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              /* Fallback to static if no categories */
+              <>
+                {/* Men's Collection */}
+                <Link
+                  to="/products"
+                  className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
+                >
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#1a237e33,_transparent_70%)]"></div>
 
-                <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
-                  Explore
-                  <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
-              </div>
-            </Link>
+                  <div className="absolute inset-0 p-10 flex flex-col justify-end">
+                    <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
+                      PEAK PERFORMANCE
+                    </span>
 
-            {/* Kids & Baby */}
-            <Link
-              to="/products"
-              className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
-            >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#5d403733,_transparent_70%)]"></div>
+                    <h3 className="text-3xl font-semibold text-white mb-4">
+                      Men's Collection
+                    </h3>
 
-              <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
-                  GROWING STRONG
-                </span>
-
-                <h3 className="text-3xl font-semibold text-white mb-4">
-                  Kids & Baby
-                </h3>
-
-                <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
-                  Explore
-                  <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
-              </div>
-            </Link>
-
+                    <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
+                      Explore
+                      <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                    </span>
+                  </div>
+                </Link>
+                {/* Women's & Kids fallbacks... */}
+              </>
+            )}
           </div>
         </div>
       </section>
