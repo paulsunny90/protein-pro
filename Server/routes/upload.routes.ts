@@ -26,8 +26,8 @@ router.post('/', authMiddleware, adminMiddleware, (req: Request, res: Response, 
                 return res.status(400).json({ message: 'No file uploaded' });
             }
 
-            // Construct full URL for the client
-            const imageUrl = `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}`;
+            // Construct full URL for the client (using Cloudinary path directly)
+            const imageUrl = req.file.path;
 
             res.status(200).json({
                 message: 'Image uploaded successfully',
