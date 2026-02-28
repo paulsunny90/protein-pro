@@ -1,6 +1,5 @@
 import express from "express";
-import multer from 'multer';
-import { storage } from "../config/cloudinary.config";
+import { upload } from "../config/upload.config";
 import { createCategory, getCategories, getCategoryById, updateCategory, deleteCategory } from "../controllers/category.controller";
 
 
@@ -8,7 +7,6 @@ import { authMiddleware } from "../middleware/auth.middleware";
 import { adminMiddleware } from "../middleware/admin.middleware";
 
 const router = express.Router();
-const upload = multer({ storage: storage });
 
 router.get('/', getCategories);
 router.get('/:id', getCategoryById);

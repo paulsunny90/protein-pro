@@ -1,6 +1,5 @@
 import express from "express";
-import multer from 'multer';
-import { storage } from "../config/cloudinary.config";
+import { upload } from "../config/upload.config";
 
 import {
     createProductController,
@@ -13,7 +12,6 @@ import {
 import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = express.Router();
-const upload = multer({ storage: storage });
 
 router.get("/:id", getProductByIdController);
 

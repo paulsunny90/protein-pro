@@ -14,8 +14,8 @@ export const createCategory = async (req: Request, res: Response) => {
 
     // Handle FormData with image
     if (req.file) {
-      // Cloudinary returns the URL in req.file.path
-      categoryData.image = req.file.path;
+      // Normalizing path to use forward slashes (especially for Windows)
+      categoryData.image = req.file.path.replace(/\\/g, '/');
     }
 
     // If data is sent as a JSON string in a FormData field named 'data'
@@ -71,7 +71,7 @@ export const updateCategory = async (
 
     // Handle FormData with image
     if (req.file) {
-      updateData.image = req.file.path;
+      updateData.image = req.file.path.replace(/\\/g, '/');
     }
 
     // If data is sent as a JSON string in a FormData field named 'data'
