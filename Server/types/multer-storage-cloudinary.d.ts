@@ -6,7 +6,7 @@ declare module 'multer-storage-cloudinary' {
         cloudinary: typeof cloudinary;
         params?: {
             folder?: string;
-            allowed_formats?: string[];
+            allowedFormats?: string[];
             transformation?: Array<{ [key: string]: any }>;
             [key: string]: any;
         };

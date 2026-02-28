@@ -14,11 +14,22 @@ export const createProductController = async (req: Request, res: Response) => {
         let Productdata: Productinput;
 
         // Handle both JSON and FormData
-        if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+        console.log("Create Product Request Received");
+        let files: any[] = [];
+        if (req.files) {
+            if (Array.isArray(req.files)) {
+                files = req.files;
+            } else if (typeof req.files === 'object') {
+                const filesObj = req.files as Record<string, any[]>;
+                files = filesObj.images || [];
+            }
+        }
+
+        if (files.length > 0) {
             // FormData request with multiple files (Cloudinary storage)
-            console.log("FILES RECEIVED:", (req.files as any[]).map(f => ({ path: f.path, name: f.originalname })));
+            console.log("FILES RECEIVED:", files.map(f => ({ path: f.path, name: f.originalname })));
             Productdata = JSON.parse(req.body.data);
-            Productdata.images = (req.files as any[]).map((file: any) => file.path);
+            Productdata.images = files.map((file: any) => file.path);
             // Set the first image as primary imageUrl for backward compatibility
             Productdata.imageUrl = Productdata.images[0];
 
@@ -119,10 +130,21 @@ export const editProductController = async (req: Request<{ id: string }>, res: R
         let updateData: Partial<Productinput>;
 
         // Handle both JSON and FormData
-        if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+        console.log("Edit Product Request Received for ID:", id);
+        let files: any[] = [];
+        if (req.files) {
+            if (Array.isArray(req.files)) {
+                files = req.files;
+            } else if (typeof req.files === 'object') {
+                const filesObj = req.files as Record<string, any[]>;
+                files = filesObj.images || [];
+            }
+        }
+
+        if (files.length > 0) {
             // FormData request with new files (Cloudinary storage)
             updateData = JSON.parse(req.body.data);
-            const newImages = (req.files as any[]).map((file: any) => file.path);
+            const newImages = files.map((file: any) => file.path);
 
             // Preserve existing images if specified in the request
             const existingImages = updateData.images || [];
