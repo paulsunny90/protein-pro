@@ -23,7 +23,8 @@ const AddProduct = () => {
     fat: '0',
     fiber: '0',
     stock: '0',
-    discount: '0'
+    discount: '0',
+    imageUrl: ''
   });
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -297,7 +298,26 @@ const AddProduct = () => {
             <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
               <div className="mb-6 text-center">
                 <h3 className="text-lg font-black text-slate-900">Product Images</h3>
-                <p className="text-xs text-slate-400 mt-1">Upload up to 5 images (1080x1080px)</p>
+                <p className="text-xs text-slate-400 mt-1">Upload files or provide an external URL</p>
+              </div>
+
+              {/* URL Input */}
+              <div className="mb-6">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Direct Image URL</label>
+                <input
+                  type="text"
+                  name="imageUrl"
+                  value={formData.imageUrl}
+                  onChange={handleChange}
+                  placeholder="https://example.com/image.jpg"
+                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold focus:border-indigo-400 transition-all"
+                />
+              </div>
+
+              <div className="relative flex items-center gap-4 mb-6">
+                <div className="flex-grow h-px bg-slate-100"></div>
+                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">OR UPLOAD FILES</span>
+                <div className="flex-grow h-px bg-slate-100"></div>
               </div>
 
               {/* Image Previews Grid */}

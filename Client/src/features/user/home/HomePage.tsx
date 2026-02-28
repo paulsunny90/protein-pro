@@ -1,16 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Package, Shield, Truck, Activity, ArrowRight, Loader2 } from 'lucide-react';
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { fetchCategories } from '../../../store/slice/categorySlice';
+import { Package, Shield, Truck, Activity, ArrowRight } from 'lucide-react';
+
 
 const HomePage = () => {
-  const dispatch = useAppDispatch();
-  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.category);
-
-  useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
 
   const heroFeatures = [
     {
@@ -32,6 +24,27 @@ const HomePage = () => {
       icon: Truck,
       title: 'Fast Shipping',
       description: 'Get your premium products delivered to your doorstep in record time'
+    }
+  ];
+
+  const collections = [
+    {
+      name: "Men's Collection",
+      subtitle: "PEAK PERFORMANCE",
+      gradient: "from-[#0f172a] to-[#0a0a0a]",
+      link: "/products/men"
+    },
+    {
+      name: "Women's Collection",
+      subtitle: "LEAN & STRONG",
+      gradient: "from-[#1e1b4b] to-[#0a0a0a]",
+      link: "/products/women"
+    },
+    {
+      name: "Kids & Baby",
+      subtitle: "GROWING STRONG",
+      gradient: "from-[#1a1c1a] to-[#0a0a0a]",
+      link: "/products/baby"
     }
   ];
 
@@ -128,70 +141,35 @@ const HomePage = () => {
           </h2>
 
           {/* Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {categoriesLoading ? (
-              <div className="col-span-full flex justify-center py-20">
-                <Loader2 className="w-12 h-12 text-[#a3e635] animate-spin" />
-              </div>
-            ) : categories.length > 0 ? (
-              categories.slice(0, 3).map((cat) => (
-                <Link
-                  key={cat._id}
-                  to={`/products?category=${cat.name}`}
-                  className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
-                >
-                  {/* Category Image from Cloudinary */}
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {collections.map((col, index) => (
+              <Link
+                key={index}
+                to={col.link}
+                className={`group relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br ${col.gradient} border border-white/5 transition-all duration-500 hover:border-[#a3e635]/40 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(163,230,53,0.1)]`}
+              >
+                {/* Spotlight Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
-                  <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                    <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
-                      {cat.description || 'ELITE COLLECTION'}
-                    </span>
+                {/* Glow Reflection */}
+                <div className="absolute -top-[50%] -right-[50%] w-full h-full bg-[#a3e635]/5 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
-                    <h3 className="text-3xl font-semibold text-white mb-4">
-                      {cat.name}
-                    </h3>
+                <div className="absolute inset-0 p-8 flex flex-col justify-end transform transition-transform duration-500 group-hover:-translate-y-2">
+                  <span className="text-[#a3e635] text-[10px] font-bold uppercase tracking-wider mb-2 transform transition-transform duration-500 group-hover:translate-x-1">
+                    {col.subtitle}
+                  </span>
 
-                    <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
-                      Explore Collection
-                      <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              /* Fallback to static if no categories */
-              <>
-                {/* Men's Collection */}
-                <Link
-                  to="/products"
-                  className="group relative aspect-[16/9] rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 transition-all duration-500 hover:border-[#a3e635]/30 hover:shadow-[0_0_40px_rgba(163,230,53,0.15)]"
-                >
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#1a237e33,_transparent_70%)]"></div>
+                  <h3 className="text-2xl font-medium text-white mb-6 transform transition-transform duration-500 group-hover:translate-x-1">
+                    {col.name}
+                  </h3>
 
-                  <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                    <span className="text-[#a3e635] text-[11px] font-black uppercase tracking-[0.3em] mb-3">
-                      PEAK PERFORMANCE
-                    </span>
-
-                    <h3 className="text-3xl font-semibold text-white mb-4">
-                      Men's Collection
-                    </h3>
-
-                    <span className="text-[#a3e635] text-sm font-semibold flex items-center opacity-80 group-hover:opacity-100 transition-all">
-                      Explore
-                      <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
-                {/* Women's & Kids fallbacks... */}
-              </>
-            )}
+                  <span className="text-[#a3e635] text-xs font-medium flex items-center opacity-80 group-hover:opacity-100 transition-all transform transition-transform duration-500 group-hover:translate-x-1">
+                    Explore
+                    <ArrowRight className="h-3 w-3 ml-1.5 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
