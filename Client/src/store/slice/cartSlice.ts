@@ -23,6 +23,19 @@ const initialState: CartState = {
     error: null,
 };
 
+// Helper to format product images in cart items
+const formatCartItems = (items: any[]) => {
+    return items.map((item: any) => ({
+        ...item,
+        product: item.product ? {
+            ...item.product,
+            image: formatImageUrl(
+                item.product.images?.[0] || item.product.imageUrl || item.product.image
+            )
+        } : item.product
+    }));
+};
+
 // Async Thunks
 
 // Fetch Cart
@@ -33,15 +46,7 @@ export const fetchCart = createAsyncThunk(
             const response = await api.get('/cart');
             // Backend returns { items: [...] } or the cart object with items populated
             const items = response.data.items || [];
-
-            // Format product images in cart items
-            return items.map((item: any) => ({
-                ...item,
-                product: item.product ? {
-                    ...item.product,
-                    image: formatImageUrl(item.product.imageUrl || item.product.image)
-                } : item.product
-            }));
+            return formatCartItems(items);
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch cart');
         }
@@ -54,7 +59,7 @@ export const addToCart = createAsyncThunk(
     async ({ productId, quantity, size }: { productId: string; quantity: number; size: string }, { rejectWithValue }) => {
         try {
             const response = await api.post('/cart/add', { productId, quantity, size });
-            return response.data.cart.items; // Backend returns updated cart
+            return formatCartItems(response.data.cart.items);
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to add to cart');
         }
@@ -67,7 +72,7 @@ export const removeFromCart = createAsyncThunk(
     async (productId: string, { rejectWithValue }) => {
         try {
             const response = await api.delete(`/cart/remove/${productId}`);
-            return response.data.cart.items;
+            return formatCartItems(response.data.cart.items);
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to remove from cart');
         }
@@ -80,7 +85,7 @@ export const updateCartItem = createAsyncThunk(
     async ({ productId, quantity, size }: { productId: string; quantity: number; size: string }, { rejectWithValue }) => {
         try {
             const response = await api.put('/cart/update', { productId, quantity, size });
-            return response.data.cart.items;
+            return formatCartItems(response.data.cart.items);
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to update cart');
         }

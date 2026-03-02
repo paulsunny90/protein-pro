@@ -1,5 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
+import { formatImageUrl } from '../../utils/imageUtils';
+
+// Helper to format order items with processed images
+const formatOrders = (orders: any | any[]) => {
+    const processOrder = (order: any) => ({
+        ...order,
+        items: (order.orderItems || order.items || []).map((item: any) => ({
+            ...item,
+            product: item.product ? {
+                ...item.product,
+                image: formatImageUrl(
+                    item.product.images?.[0] || item.product.imageUrl || item.product.image
+                )
+            } : item.product
+        })),
+        totalAmount: order.totalPrice || order.totalAmount,
+        status: order.orderStatus || order.status
+    });
+
+    return Array.isArray(orders) ? orders.map(processOrder) : processOrder(orders);
+};
 
 // Types
 export interface Order {
@@ -40,7 +61,7 @@ export const createOrder = createAsyncThunk(
     async (orderData: any, { rejectWithValue }) => {
         try {
             const response = await api.post('/orders', orderData);
-            return response.data;
+            return formatOrders(response.data);
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to create order');
         }
@@ -48,12 +69,12 @@ export const createOrder = createAsyncThunk(
 );
 
 // Get User Orders
-export const fetchMyOrders = createAsyncThunk(
-    'order/fetchMyOrders',
+export const fetchOrders = createAsyncThunk(
+    'order/fetchOrders',
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('/orders/myorders');
-            return response.data;
+            return formatOrders(response.data);
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch orders');
         }
@@ -66,7 +87,7 @@ export const fetchAllOrders = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('/orders');
-            return response.data;
+            return formatOrders(response.data);
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch orders');
         }
@@ -108,6 +129,20 @@ const orderSlice = createSlice({
                 state.orders = action.payload;
             })
             .addCase(fetchAllOrders.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            // Fetch My Orders
+            .addCase(fetchOrders.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchOrders.fulfilled, (state, action) => {
+                state.loading = false;
+                state.orders = action.payload;
+            })
+            .addCase(fetchOrders.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });

@@ -81,7 +81,7 @@ const App = () => {
               <Route path="/dashboard" element={<UserLayout><Dashboard /></UserLayout>} />
 
               {/* Admin routes */}
-              <Route path="/admin" element={<AdminProtectedRoute />}>
+              <Route path="/admin" element={<AdminProtectedRoute />}>add clludenary  and add images  fech thate images
                 <Route element={<AdminLayout />}>
                   <Route index element={<AdminDashboard />} />
                   <Route path="users" element={<UserManagement />} />

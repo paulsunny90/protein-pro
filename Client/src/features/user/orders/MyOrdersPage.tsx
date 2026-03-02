@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Package, Truck, CheckCircle, Clock, Eye, ChevronRight, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { fetchOrders } from '../../../store/slice/orderSlice';
 
 const MyOrdersPage = () => {
     const navigate = useNavigate();
@@ -10,7 +11,7 @@ const MyOrdersPage = () => {
 
     useEffect(() => {
         // Fetch orders when component mounts
-        // dispatch(fetchOrders());
+        dispatch(fetchOrders());
     }, [dispatch]);
 
     const getStatusIcon = (status: string) => {
@@ -112,7 +113,16 @@ const MyOrdersPage = () => {
                                                     key={idx}
                                                     className="bg-white/5 border border-white/5 px-4 py-2.5 rounded-xl text-sm text-slate-300 font-medium flex items-center gap-3 group/item hover:bg-white/10 transition-all"
                                                 >
-                                                    <div className="w-2 h-2 rounded-full bg-[#a3e635]/50 group-hover/item:scale-125 transition-transform"></div>
+                                                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-black/40 flex-shrink-0 border border-white/5">
+                                                        <img
+                                                            src={item.product?.image}
+                                                            alt={item.product?.name}
+                                                            className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500"
+                                                            onError={(e) => {
+                                                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                                                            }}
+                                                        />
+                                                    </div>
                                                     <span>{item.product?.name || 'Product'}</span>
                                                     <span className="text-[#a3e635] font-black">x{item.quantity}</span>
                                                 </div>
