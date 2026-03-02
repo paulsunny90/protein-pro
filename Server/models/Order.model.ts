@@ -5,8 +5,7 @@ import { Order } from "../types/adminside.type";
 const orderItemSchema = new Schema(
   {
     product: {
-      // type: Schema.Types.ObjectId,
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: "Product",
       required: true,
     },

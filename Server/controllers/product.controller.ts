@@ -43,6 +43,15 @@ export const createProductController = async (req: Request, res: Response) => {
 
         console.log("FINAL PRODUCT DATA TO SAVE:", JSON.stringify(Productdata, null, 2));
 
+        // Ensure images array is populated from imageUrl if no files were uploaded
+        if ((!Productdata.images || Productdata.images.length === 0) && Productdata.imageUrl) {
+            Productdata.images = [Productdata.imageUrl];
+        }
+        // Ensure imageUrl is set from images array if not provided
+        if (!Productdata.imageUrl && Productdata.images && Productdata.images.length > 0) {
+            Productdata.imageUrl = Productdata.images[0];
+        }
+
         const Product = await createProduct(Productdata);
         return res.status(201).json({
             success: true,
@@ -166,6 +175,15 @@ export const editProductController = async (req: Request<{ id: string }>, res: R
         console.log("Final updateData:", JSON.stringify(updateData, null, 2));
         if (req.files) {
             console.log("New files uploaded:", (req.files as any[]).length);
+        }
+
+        // Ensure images array is populated from imageUrl if not present
+        if ((!updateData.images || updateData.images.length === 0) && updateData.imageUrl) {
+            updateData.images = [updateData.imageUrl];
+        }
+        // Ensure imageUrl is set from images array if not provided
+        if (!updateData.imageUrl && updateData.images && updateData.images.length > 0) {
+            updateData.imageUrl = updateData.images[0];
         }
 
         const updatedProduct = await editProduct(id, updateData);
