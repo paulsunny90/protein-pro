@@ -101,3 +101,32 @@ export const getMyOrders = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server Error: " + error.message });
   }
 };
+
+export const updateOrder = async (req: Request, res: Response) => {
+  try {
+    const order = await OrderModel.findById(req.params.id);
+
+    if (order) {
+      order.orderStatus = req.body.orderStatus || order.orderStatus;
+      if (typeof req.body.isPaid !== 'undefined') order.isPaid = req.body.isPaid;
+      if (req.body.shippingAddress) order.shippingAddress = req.body.shippingAddress;
+
+      if (req.body.orderItems) {
+        order.orderItems = req.body.orderItems;
+        if (req.body.totalPrice) order.totalPrice = req.body.totalPrice;
+        if (req.body.itemsPrice) order.itemsPrice = req.body.itemsPrice;
+      }
+
+      if (order.orderStatus === 'Delivered') {
+        order.deliveredAt = new Date();
+      }
+
+      const updatedOrder = await order.save();
+      res.json(updatedOrder);
+    } else {
+      res.status(404).json({ message: "Order not found" });
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: "Server Error: " + error.message });
+  }
+};

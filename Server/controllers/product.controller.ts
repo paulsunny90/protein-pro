@@ -26,7 +26,7 @@ export const createProductController = async (req: Request, res: Response) => {
         }
 
         if (files.length > 0) {
-            // FormData request with multiple files (Local Disk storage)
+            // FormData request with multiple files (Cloudinary storage)
             console.log("FILES RECEIVED:", files.map(f => ({ path: f.path, name: f.originalname })));
             Productdata = JSON.parse(req.body.data);
             Productdata.images = files.map((file: any) => file.path.replace(/\\/g, '/'));
@@ -151,7 +151,7 @@ export const editProductController = async (req: Request<{ id: string }>, res: R
         }
 
         if (files.length > 0) {
-            // FormData request with new files (Local Disk storage)
+            // FormData request with new files (Cloudinary storage)
             updateData = JSON.parse(req.body.data);
             const newImages = files.map((file: any) => file.path.replace(/\\/g, '/'));
 

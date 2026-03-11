@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as addressService from "../services/address.service";
 
 /**
- * Get all addresses for the authenticated user
+ * Get all addresses 
  */
 export const getUserAddresses = async (req: Request, res: Response) => {
     try {
@@ -29,7 +29,7 @@ export const getUserAddresses = async (req: Request, res: Response) => {
 };
 
 /**
- * Get a single address by ID
+ * Get a single address 
  */
 export const getAddressById = async (req: Request, res: Response) => {
     try {
@@ -89,7 +89,7 @@ export const createAddress = async (req: Request, res: Response) => {
             isDefault
         } = req.body;
 
-        // Handle field mapping (zipCode -> postalCode)
+        // Handle field mapping 
         const finalPostalCode = postalCode || zipCode;
 
         // Handle name splitting if Full Name is provided instead of first/last name
@@ -158,9 +158,7 @@ export const createAddress = async (req: Request, res: Response) => {
     }
 };
 
-/**
- * Update an existing address
- */
+
 export const updateAddress = async (req: Request, res: Response) => {
     try {
         const userId = req.user?.id;
@@ -185,7 +183,6 @@ export const updateAddress = async (req: Request, res: Response) => {
             isDefault
         } = req.body;
 
-        // Handle field mapping
         const finalPostalCode = postalCode || zipCode;
 
         let finalFirstName = firstName;
