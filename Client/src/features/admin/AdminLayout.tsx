@@ -6,7 +6,7 @@ import {
     LayoutDashboard,
     ShoppingCart,
     UserCircle,
-    Settings,
+    Home,
 } from "lucide-react";
 
 export default function AdminLayout() {
@@ -18,7 +18,7 @@ export default function AdminLayout() {
         { label: "Products", icon: Package, path: "/admin/products" },
         { label: "Orders", icon: ShoppingCart, path: "/admin/orders" },
         { label: "Subscriptions", icon: CreditCard, path: "/admin/subscriptions" },
-        { label: "userpage", icon: Settings, path: "/products" },
+        { label: "Home", icon: Home, path: "/" },
     ];
 
     const isActive = (path: string, exact: boolean = false) => {

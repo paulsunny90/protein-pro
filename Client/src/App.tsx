@@ -30,13 +30,18 @@ import EditSubscription from './features/admin/subscriptions/EditSubscription'
 import EditOrder from './features/admin/orders/EditOrder'
 import SubscriptionPage from './features/admin/subscriptions/SubscriptionPage'
 import AdminProtectedRoute from './features/admin/auth/AdminProtectedRoute'
+// import CategoriesPage from './features/admin/categories/CategoriesTable'
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   return (
     <AuthProvider>
-      <PayPalScriptProvider options={{ clientId: "sb" }}>
+      <PayPalScriptProvider options={{
+        clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "sb",
+        currency: "USD",
+        intent: "capture"
+      }}>
         <BrowserRouter>
           <Toaster
             position="top-right"
@@ -81,7 +86,7 @@ const App = () => {
               <Route path="/dashboard" element={<UserLayout><Dashboard /></UserLayout>} />
 
               {/* Admin routes */}
-              <Route path="/admin" element={<AdminProtectedRoute />}>add clludenary  and add images  fech thate images
+              <Route path="/admin" element={<AdminProtectedRoute />}>
                 <Route element={<AdminLayout />}>
                   <Route index element={<AdminDashboard />} />
                   <Route path="users" element={<UserManagement />} />

@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, DollarSign, CreditCard, UserCircle } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, DollarSign, CreditCard, UserCircle, Loader2, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getOrderById, updateOrder, type Order } from '../../../services/orderService';
 
 const EditOrder = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>(); // Order ID from URL params
-  
+  const { id } = useParams<{ id: string }>();
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     orderId: '',
     customerName: '',
@@ -14,13 +19,13 @@ const EditOrder = () => {
     customerPhone: '',
     shippingAddress: '',
     shippingCity: '',
-    shippingCountry: '',
+    shippingCountry: 'India',
     shippingZipCode: '',
     orderDate: '',
-    status: 'Processing',
-    paymentMethod: 'Credit Card',
-    paymentStatus: 'Paid',
-    items: [] as { productName: string; quantity: number; price: number; subtotal: number }[],
+    status: 'Pending',
+    paymentMethod: 'ONLINE',
+    paymentStatus: 'Pending',
+    items: [] as any[],
     subtotal: 0,
     tax: 0,
     shipping: 0,
@@ -28,65 +33,60 @@ const EditOrder = () => {
     total: 0,
   });
 
-  const statuses = [
-    'Processing',
-    'Shipped',
-    'Delivered',
-    'Cancelled',
-  ];
-
-  const paymentMethods = [
-    'Credit Card',
-    'PayPal',
-    'Bank Transfer',
-    'Cash on Delivery',
-  ];
-
-  const paymentStatuses = [
-    'Paid',
-    'Pending',
-    'Failed',
-    'Refunded',
-  ];
+  const statuses = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+  const paymentStatuses = ['Paid', 'Pending', 'Failed', 'Refunded'];
+  const paymentMethods = ['Credit Card', 'PayPal', 'Bank Transfer', 'Cash on Delivery', 'ONLINE', 'COD'];
 
   const nav = [
-    { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
-    { label: 'Users', icon: UserCircle, path: '/UserManagement' },
-    { label: 'Products', icon: Package, path: '/ProductDashboard' },
-    { label: 'Orders', icon: ShoppingCart, path: '/OrdersPage' },
-    { label: 'Subscriptions', icon: CreditCard, path: '/SubscriptionPage' },
-    { label: 'Settings', icon: DollarSign, path: '/Settings' },
+    { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
+    { label: 'Users', icon: UserCircle, path: '/admin/users' },
+    { label: 'Products', icon: Package, path: '/admin/products' },
+    { label: 'Orders', icon: ShoppingCart, path: '/admin/orders' },
+    { label: 'Subscriptions', icon: CreditCard, path: '/admin/subscriptions' },
   ];
 
-  // Simulate loading order data (in a real app, this would come from an API)
   useEffect(() => {
-    // This is where you would fetch the order data based on the ID
-    // For now, we'll simulate loading with dummy data
-    const dummyOrder = {
-      orderId: 'ORD-001',
-      customerName: 'John Doe',
-      customerEmail: 'john@example.com',
-      customerPhone: '+1 (555) 123-4567',
-      shippingAddress: '123 Main Street',
-      shippingCity: 'New York',
-      shippingCountry: 'USA',
-      shippingZipCode: '10001',
-      orderDate: '2023-06-15',
-      status: 'Processing',
-      paymentMethod: 'Credit Card',
-      paymentStatus: 'Paid',
-      items: [
-        { productName: 'Whey Protein Powder', quantity: 2, price: 29.99, subtotal: 59.98 },
-        { productName: 'Protein Bar', quantity: 1, price: 4.99, subtotal: 4.99 },
-      ],
-      subtotal: 64.97,
-      tax: 5.20,
-      shipping: 9.99,
-      discount: 0,
-      total: 80.16,
+    const fetchOrder = async () => {
+      try {
+        if (!id) return;
+        setLoading(true);
+        const data = await getOrderById(id);
+
+        setFormData({
+          orderId: data._id,
+          customerName: data.user?.name || '',
+          customerEmail: data.user?.email || '',
+          customerPhone: (data.shippingAddress as any)?.phone || '',
+          shippingAddress: (data.shippingAddress as any)?.address || (data.shippingAddress as any)?.street || '',
+          shippingCity: (data.shippingAddress as any)?.city || '',
+          shippingCountry: (data.shippingAddress as any)?.country || 'India',
+          shippingZipCode: (data.shippingAddress as any)?.zipCode || (data.shippingAddress as any)?.postalCode || '',
+          orderDate: data.createdAt ? new Date(data.createdAt).toISOString().split('T')[0] : '',
+          status: data.orderStatus,
+          paymentMethod: data.paymentMethod,
+          paymentStatus: data.isPaid ? 'Paid' : 'Pending',
+          items: data.orderItems.map((item: any) => ({
+            productName: item.product?.name || 'Product',
+            quantity: item.quantity,
+            price: item.price,
+            subtotal: item.price * item.quantity,
+            productId: item.product?._id || item.product
+          })),
+          subtotal: data.itemsPrice,
+          tax: (data.totalPrice - data.itemsPrice - data.shippingPrice),
+          shipping: data.shippingPrice,
+          discount: 0,
+          total: data.totalPrice,
+        });
+      } catch (err: any) {
+        console.error('Error fetching order:', err);
+        setError(err.response?.data?.message || 'Failed to load order');
+      } finally {
+        setLoading(false);
+      }
     };
-    
-    setFormData(dummyOrder);
+
+    fetchOrder();
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -97,47 +97,105 @@ const EditOrder = () => {
     }));
   };
 
-  const handleItemChange = (index: number, field: keyof typeof formData.items[0], value: string | number) => {
+  const handleItemChange = (index: number, field: string, value: any) => {
     const newItems = [...formData.items];
-    (newItems[index][field] as any) = value;
+    newItems[index] = { ...newItems[index], [field]: value };
+
+    if (field === 'quantity' || field === 'price') {
+      newItems[index].subtotal = newItems[index].quantity * newItems[index].price;
+    }
+
+    const subtotal = newItems.reduce((acc, item) => acc + item.subtotal, 0);
+
     setFormData(prev => ({
       ...prev,
-      items: newItems
+      items: newItems,
+      subtotal,
+      total: subtotal + prev.shipping + prev.tax - prev.discount
     }));
   };
 
   const addItem = () => {
+    // This would ideally open a product picker
     setFormData(prev => ({
       ...prev,
       items: [
         ...prev.items,
-        { productName: '', quantity: 1, price: 0, subtotal: 0 }
+        { productName: '', quantity: 1, price: 0, subtotal: 0, productId: '' }
       ]
     }));
   };
 
   const removeItem = (index: number) => {
-    const newItems = [...formData.items];
-    newItems.splice(index, 1);
+    const newItems = formData.items.filter((_, i) => i !== index);
+    const subtotal = newItems.reduce((acc, item) => acc + item.subtotal, 0);
+
     setFormData(prev => ({
       ...prev,
-      items: newItems
+      items: newItems,
+      subtotal,
+      total: subtotal + prev.shipping + prev.tax - prev.discount
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Order data updated:', formData);
-    
-    // In a real app, you would send this data to your backend API
-    // For now, just showing a success message
-    alert('Order updated successfully!');
-    navigate('/OrdersPage'); // Navigate back to orders page
+    try {
+      if (!id) return;
+      setIsSubmitting(true);
+
+      const updateData = {
+        orderStatus: formData.status,
+        isPaid: formData.paymentStatus === 'Paid',
+        shippingAddress: {
+          address: formData.shippingAddress,
+          city: formData.shippingCity,
+          country: formData.shippingCountry,
+          postalCode: formData.shippingZipCode,
+          phone: formData.customerPhone,
+        },
+        orderItems: formData.items.map(item => ({
+          product: item.productId,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        totalPrice: formData.total,
+        itemsPrice: formData.subtotal,
+        shippingPrice: formData.shipping
+      };
+
+      await updateOrder(id, updateData);
+      alert('Order updated successfully!');
+      navigate('/admin/orders');
+    } catch (err: any) {
+      console.error('Error updating order:', err);
+      alert(err.response?.data?.message || 'Failed to update order');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
-    navigate('/OrdersPage');
+    navigate('/admin/orders');
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <AlertCircle className="w-12 h-12 text-red-500" />
+        <p className="text-xl font-bold text-slate-800">{error}</p>
+        <button onClick={() => navigate('/admin/orders')} className="px-6 py-2 bg-indigo-600 text-white rounded-lg">Go Back</button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -160,11 +218,10 @@ const EditOrder = () => {
             <Link
               key={i}
               to={item.path}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm transition-all duration-300 hover:translate-x-1 ${
-                window.location.pathname === item.path
-                  ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/20 text-white border border-indigo-500/30 shadow-lg'
-                  : 'text-slate-300 hover:bg-white/5 hover:text-white'
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm transition-all duration-300 hover:translate-x-1 ${window.location.pathname === item.path
+                ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/20 text-white border border-indigo-500/30 shadow-lg'
+                : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                }`}
             >
               <div className={`p-1.5 rounded-lg ${window.location.pathname === item.path ? 'bg-indigo-500' : 'bg-slate-700'}`}>
                 <item.icon className="w-5 h-5" />
@@ -415,7 +472,7 @@ const EditOrder = () => {
                       + Add Item
                     </button>
                   </div>
-                  
+
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-slate-50/50">
@@ -513,9 +570,11 @@ const EditOrder = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+                    disabled={isSubmitting}
+                    className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
                   >
-                    Update Order
+                    {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {isSubmitting ? 'Updating...' : 'Update Order'}
                   </button>
                 </div>
               </form>

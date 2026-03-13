@@ -65,8 +65,15 @@ export const createOrder = async (orderData: {
     return response.data;
 };
 
+// Update order (Admin only)
+export const updateOrder = async (orderId: string, orderData: any): Promise<Order> => {
+    const response = await api.put(`/orders/${orderId}`, orderData);
+    return response.data;
+};
+
 export default {
     getAllOrders,
     getOrderById,
     createOrder,
+    updateOrder,
 };

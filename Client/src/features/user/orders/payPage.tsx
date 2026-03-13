@@ -54,13 +54,16 @@ const PaymentPage: React.FC<PaymentPageProps> = ({
                             label: "pay"
                         }}
                         createOrder={(_, actions) => {
+                            // Convert INR to USD for testing (approx 1 USD = 80 INR)
+                            const usdAmount = (parseFloat(totalAmount) / 80).toFixed(2);
+                            
                             return actions.order.create({
                                 intent: "CAPTURE",
                                 purchase_units: [
                                     {
                                         amount: {
-                                            currency_code: "INR",
-                                            value: totalAmount,
+                                            currency_code: "USD",
+                                            value: usdAmount,
                                         },
                                     },
                                 ],
