@@ -13,6 +13,11 @@ const api = axios.create({
 // Request interceptor to add access token if you are using local storage (optional backup to cookies)
 api.interceptors.request.use(
     (config) => {
+        // Let the browser set the boundary for multipart/form-data
+        if (config.data instanceof FormData) {
+            delete config.headers['Content-Type'];
+        }
+        
         // If you were using localStorage for tokens:
         // const token = localStorage.getItem('accessToken');
         // if (token) {
