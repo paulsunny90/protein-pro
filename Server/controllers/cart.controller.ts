@@ -36,7 +36,7 @@ export const addToCart = async (req: Request, res: Response) => {
       });
     } else {
       const existingItem = cart.items.find(
-        (item:any) => item.product.toString() === productId && item.size === size
+        (item: any) => item.product.toString() === productId && item.size === size
       );
 
       if (existingItem) {
