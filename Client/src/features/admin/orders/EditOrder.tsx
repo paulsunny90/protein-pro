@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, DollarSign, CreditCard, UserCircle, Loader2, AlertCircle } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, CreditCard, UserCircle, Loader2, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getOrderById, updateOrder, type Order } from '../../../services/orderService';
+import { getOrderById, updateOrder } from '../../../services/orderService';
 
 const EditOrder = () => {
   const navigate = useNavigate();
