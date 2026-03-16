@@ -1,18 +1,13 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy application files
 COPY . .
 
-# Expose port
-EXPOSE 5000
+EXPOSE 5173
 
-# Run in development mode
-CMD ["npm", "run", "dev"]
+CMD ["npm","run","dev"]
