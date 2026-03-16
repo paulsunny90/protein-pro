@@ -4,6 +4,7 @@ services:
       context: ./Server
       dockerfile: Dockerfile
     container_name: protein_server
+    image: paulsunny90/protein-pro-server:latest
     ports:
       - "5000:5000"
     volumes:
@@ -20,6 +21,7 @@ services:
       context: ./Client
       dockerfile: Dockerfile
     container_name: protein_client
+    image: paulsunny90/protein-pro-client:latest
     ports:
       - "5173:5173"
     volumes:
